@@ -460,7 +460,7 @@ def bell(tl, t):
         if T("b_pop", 0.12) <= t < T("b_pop", 0.24):
             u = tl.prog("b_pop", t, 0.12, 0.24)
             D.cat(c, lerp(700, 610, u), 612 + arc_y(u, 70), P.LUNA_NOBELL, 0.9, -1, "leap", t=t, seed=1.3)
-            P.collar(c, lerp(700, 610, u), 612 + arc_y(u, 70), 0.9, -1, "leap", bell=bell_state)
+            P.collar(c, lerp(700, 610, u), 612 + arc_y(u, 70), 0.9, -1, "leap", bell=bell_state)  # noqa
         else:
             actor(c, tl, t, "luna", lk, 612 - hop, 0.9, face=1, pose=pose,
                   eyes="happy" if T("b_narr") <= t < T("b_narr", 1) else "open", tail=math.sin(t * 6))
@@ -543,7 +543,8 @@ def bell(tl, t):
         pface = -1
         if t >= T("b_window", 0.7):
             pface = 1 if t < T("b_run") else -1
-        actor(c, tl, t, "pip", pk, HOLE[1] + 24 + 20 * (1 - rise), 1.0, face=pface, proud=proud,
+        py = HOLE[1] + 24 + 20 * (1 - rise) + 110 * ease(tl.prog("b_window", t, 0.0, 0.7))
+        actor(c, tl, t, "pip", pk, py, 1.0, face=pface, proud=proud,
               eyes="happy" if t >= T("b_run", 0.5) else "open")
     # a gentle push-in while the bell is found to be squashed
     z = ease(tl.prog("b_squash", t, 0.0, 0.3)) * (1 - ease(tl.prog("b_pip", t, 0.0, 0.4)))
@@ -733,7 +734,7 @@ def flight(tl, t):
 SQW = 2640
 SQ_BASE = 520      # where the buildings meet the pavement
 SQ_Y = 610         # feet line in the square
-BALLOON_X = 190
+PLANE_X, PLANE_Y, PLANE_S = 2400, 566, 0.75
 STALL_X = 1280
 
 
@@ -847,20 +848,25 @@ def draw_pigeons(c, tl, t, cam, target=None, pull=0.0, fly=0.0, chase=None, extr
 def square(tl, t):
     T = tl.t
     s0, s1 = tl.scenes["square"]
-    cam = smooth(t, [(s0, 0), (T("q_narr", 0.15), 0), (T("q_lots", 0.2), 420), (T("q_late", 1), 460),
+    cam = smooth(t, [(s0, SQW - W), (T("q_arrive", 0.7), SQW - W), (T("q_lots", 0.3), 420), (T("q_late", 1), 460),
                      (T("q_sniff"), 700), (T("q_swarm", 0.1), 700), (T("q_run", 0.8), SQW - W)], 0.5)
     c = view(square_bg(), cam)
-    # balloon parked on the left
-    land = ease(tl.prog("q_arrive", t, 0.0, 0.35))
-    bxw = BALLOON_X
-    by = lerp(SQ_Y - 300, SQ_Y, land)
-    P.balloon(c, bxw - cam, by, 0.62, t, 0.0,
-              inside=cats_in_basket(tl, t, "wide", "happy", (1, 0)) if t < T("q_arrive", 0.45) else None)
+    # the mail plane moored at the waterfront
+    aboard = t < T("q_arrive", 0.3)
+    P.seaplane(c, PLANE_X - cam, PLANE_Y, PLANE_S, t, -1, prop=0.0,
+               inside=cats_in_plane(tl, t, "wide", "happy", (1, 0)) if aboard else None)
+    hx, hy = PLANE_X + 90 * PLANE_S - cam, PLANE_Y - 114 * PLANE_S
+    if T("q_arrive", 0.3) <= t < T("q_arrive", 0.55):
+        for who, dl, x1 in (("luna", 0.0, 2200), ("whiskers", 0.0, 2260)):
+            u = tl.prog("q_arrive", t, 0.3 + dl, 0.5 + dl)
+            if 0 < u < 1:
+                D.cat(c, lerp(hx, x1 - cam, u), lerp(hy, SQ_Y + 4, u) + arc_y(u, 70),
+                      P.LUNA_NOBELL if who == "luna" else D.WHISKERS, 0.8, -1, "leap", t=t)
     # whiskers' route
-    wk = [(T("q_arrive", 0.45), bxw + 40), (T("q_arrive", 0.9), 560), (T("q_lots", 1), 600),
+    wk = [(T("q_arrive", 0.55), 2260), (T("q_lots", 0.6), 600), (T("q_lots", 1), 600),
           (T("q_smell", 0.3), 600), (T("q_smell", 1), 1160), (T("q_shoo", 1), 1160),
           (T("q_swarm", 0.12), 1180), (T("q_run", 0.9), SQW + 200)]
-    lk = [(T("q_arrive", 0.5), bxw - 10), (T("q_arrive", 0.95), 440), (T("q_lots", 1), 470),
+    lk = [(T("q_arrive", 0.5), 2200), (T("q_lots", 0.5), 440), (T("q_lots", 1), 470),
           (T("q_smell", 0.5), 470), (T("q_sniff", 1), 940), (T("q_swarm", 0.3), 960), (T("q_run", 1), SQW + 100)]
     wx = smooth(t, wk)
     # the doughnut
@@ -877,7 +883,7 @@ def square(tl, t):
         extra = 0.0
     draw_pigeons(c, tl, t, cam, target=1190 if t >= T("q_roll") else None, pull=pull,
                  fly=fly if t >= T("q_shoo") else 0.0, chase=(wx - 40, SQ_Y), extra_fly=0 if t >= T("q_shoo", 0.8) else extra)
-    if t >= T("q_arrive", 0.45):
+    if t >= T("q_arrive", 0.5):
         lface = 1
         look = (1, 0)
         if T("q_late") <= t < T("q_late", 1):
@@ -1421,7 +1427,7 @@ def flood(tl, t):
         c.tint = None
         return c
     # the flooded square
-    cam = smooth(t, [(T("f_narr"), SQW - W), (T("f_across", 0.05), SQW - W), (T("f_across", 0.9), 0)], 0.6)
+    cam = smooth(t, [(T("f_narr"), 0), (T("f_across", 0.05), 0), (T("f_across", 0.9), SQW - W)], 0.6)
     c = view(square_bg(), cam)
     c = overlay(c, (255, 130, 90), 0.28)
     paste_layer(c, flood_layer(), cam)
@@ -1432,46 +1438,44 @@ def flood(tl, t):
         if -80 < sx < W + 80:
             c.ellipse(sx, FLOOD_Y - 10 + 64 - 64 * 0.8 - 6, 34 * 0.8, 8 * 0.8, (250, 250, 246), w=2.5)
             P.pigeon(c, sx - 8, FLOOD_Y - 14, 1.0, 1, t, peck=0)
-    # balloon waiting on the left, basket in the water
-    bal_y = FLOOD_Y + 14
-    lift = 0.0
-    if t >= T("f_lift"):
-        lift = ease(tl.prog("f_lift", t, 0.15, 1.0)) ** 1.3
+    # the mail plane waiting at the waterfront
+    FPX, FPY, FPS = 2330, FLOOD_Y + 22, 0.6
+    lift = ease(tl.prog("f_lift", t, 0.1, 1.0)) if t >= T("f_lift") else 0.0
     aboard = t >= T("f_ciao", 0.7)
-    flame = 1.0 if T("f_ciao", 0.7) < t < T("f_lift", 0.5) else 0.0
-    cats_in = None
-    if aboard:
-        lm = (0.9 * math.sin(t * 9) ** 2) if T("f_lift", 0.5) < t < T("f_lift", 0.8) else 0.0
-        cats_in = cats_in_basket(tl, t, "happy", "happy", (-1, 0), -1, -1)
-    P.balloon(c, BALLOON_X - cam, bal_y - 820 * lift, 0.62, t, flame, inside=cats_in)
-    # gondola route: in from the water on the right, across the square to the balloon
-    gk = [(T("f_narr"), SQW + 350), (T("f_flood", 0.5), 2250), (T("f_across", 0.05), 2250),
-          (T("f_across", 0.92), BALLOON_X + 330)]
+    cats_in = cats_in_plane(tl, t, "happy", "happy", (1, 0)) if aboard else None
+    px, py = FPX - cam + 1100 * lift ** 1.3, FPY - 520 * clamp((lift - 0.25) / 0.75) ** 1.5
+    P.seaplane(c, px, py, FPS, t, 1, prop=1.0 if t >= T("f_ciao", 0.6) else 0.0,
+               bank=-0.15 * clamp(lift * 3), inside=cats_in, wave=1.0 if T("f_grazie") <= t < T("f_lift") else 0.0)
+    if 0.02 < lift < 0.4:
+        splash(c, px - 80, FPY, (lift * 6) % 1.0, 0.5, seed=int(lift * 6))
+    # gondola route: in from a side canal on the left, right across the square to the plane
+    gk = [(T("f_narr"), -350), (T("f_flood", 0.5), 330), (T("f_across", 0.05), 330),
+          (T("f_across", 0.92), FPX - 400)]
     gxw = smooth(t, gk, 0.5)
     gx = gxw - cam
     gy = FLOOD_Y + 26
     moving = abs(smooth(t + 0.05, gk) - smooth(t - 0.05, gk)) > 2
-    P.gondola(c, gx, gy, 0.85, -1, t)
-    if moving and t >= T("f_across"):
-        splash(c, gx - 210, gy, (t * 1.5) % 1.0, 0.35, seed=int(t * 1.5))
+    P.gondola(c, gx, gy, 0.85, 1, t)
+    if moving:
+        splash(c, gx + 210, gy, (t * 1.5) % 1.0, 0.35, seed=int(t * 1.5))
     sy = gy - 36 * 0.85
     if not aboard:
         if t < T("f_ciao", 0.2):
             leyes = "wide" if t < T("f_gondola") else "happy"
-            kitty(c, tl, t, "luna", gx + 10 * 0.85, sy, 0.62, -1, "sit", eyes=leyes)
-            kitty(c, tl, t, "whiskers", gx - 70 * 0.85, sy, 0.66, -1, "sit",
+            kitty(c, tl, t, "luna", gx - 10 * 0.85, sy, 0.62, 1, "sit", eyes=leyes)
+            kitty(c, tl, t, "whiskers", gx + 70 * 0.85, sy, 0.66, 1, "sit",
                   eyes="wide" if T("f_never") <= t < T("f_gondola", 0.5) else "open")
         else:
             u = tl.prog("f_ciao", t, 0.2, 0.7)
-            bx = BALLOON_X - cam
-            D.cat(c, lerp(gx + 8, bx - 14, u), lerp(sy, bal_y - 60 * 0.62, u) + arc_y(u, 90), P.LUNA_NOBELL, 0.6, -1,
+            hx, hy = FPX - cam - 90 * FPS, FPY - 114 * FPS
+            D.cat(c, lerp(gx - 8, hx - 12, u), lerp(sy, hy, u) + arc_y(u, 90), P.LUNA_NOBELL, 0.6, 1,
                   "leap", t=t, seed=1.3)
-            D.cat(c, lerp(gx - 60, bx + 14, u), lerp(sy, bal_y - 60 * 0.62, u) + arc_y(u, 110), D.WHISKERS, 0.62, -1,
+            D.cat(c, lerp(gx + 60, hx + 12, u), lerp(sy, hy, u) + arc_y(u, 110), D.WHISKERS, 0.62, 1,
                   "leap", t=t)
     wave = 0.0
     if t >= T("f_ciao"):
         wave = 0.5 + 0.5 * math.sin(t * 7)
-    bepi_rowing(c, tl, t, gx, gy, 0.85, -1, speed=1.6 if moving else 0.6, sing=1.0 if moving and t >= T("f_across") else 0.0,
+    bepi_rowing(c, tl, t, gx, gy, 0.85, 1, speed=1.6 if moving else 0.6, sing=1.0 if moving and t >= T("f_across") else 0.0,
                 eyes="happy" if t >= T("f_gondola") else "open", wave=wave, rowing=moving)
     c.tint = None
     shade_bottom(c, tl, t, 0.35)
@@ -1506,8 +1510,9 @@ def night_bg(dawn):
 
 def home_window(tl, t):
     def extra(sub):
-        # the balloon resting in the meadow, its envelope sagging
-        P.balloon(sub, 220, 232, 0.2, t, 0, sign=False)
+        # the mail plane flying off on its morning round
+        u = tl.prog("h_sill", t, 0.0, 1.0) * 0.4 + tl.prog("h_pip", t) * 0.3 + tl.prog("h_listen", t) * 0.3
+        P.seaplane(sub, lerp(260, -80, u), lerp(150, 60, u), 0.17, t, -1, bank=0.12)
     return extra
 
 
@@ -1521,9 +1526,9 @@ def rainbow_spots(c, t, k, seed=4):
         y = rng.uniform(120, 500) + 12 * math.cos(t * 1.1 + i)
         if 750 < x < 1090 and 100 < y < 395:
             continue
-        r = rng.uniform(6, 12) * k
+        r = rng.uniform(14, 24) * k
         for j, col in enumerate(cols):
-            c.circle(x + j * r * 0.55, y, r * 0.5, mix((250, 228, 190), col, 0.6 * k), ol=None)
+            c.circle(x + j * r * 0.45, y, r * 0.45, mix((250, 228, 190), col, 0.75 * min(1, k * 1.5)), ol=None)
 
 
 def home(tl, t):
@@ -1536,13 +1541,13 @@ def home(tl, t):
         bx = lerp(-150, 980, v)
         by = lerp(300, 470, ease(v))
         c.tint = ((30, 36, 90), 0.4 * (1 - u))
-        P.balloon(c, bx, by, 0.4, t, 1.0 if (t * 0.5) % 1 < 0.15 else 0,
-                  inside=cats_in_basket(tl, t, "closed", "closed", (0, 0)))
+        P.seaplane(c, bx, by, 0.55, t, 1, bank=0.04 * math.sin(t),
+                   inside=cats_in_plane(tl, t, "closed", "closed", (0, 0)))
         c.tint = None
         if u < 0.5:
-            D.zzz(c, bx + 30, by - 110, t)
+            D.zzz(c, bx - 40, by - 120, t)
         return c
-    c = Canvas(room_bg().copy())
+    c = Canvas(MF.room(False).copy())
     draw_window(c, home_window(tl, t))
     k_ring = ring_amount(tl, t)
     rainbow_spots(c, t, max(0.25, k_ring) if t >= T("h_ring") else 0.25 * tl.prog("h_sill", t))
@@ -1576,7 +1581,7 @@ def home(tl, t):
     c = Canvas(c.img.resize((W * SS, H * SS), Image.BILINEAR, box=box))
     k = ease(tl.prog("h_end", t, 0.3, 0.55))
     if k > 0:
-        c.text(W / 2, 640, "The End", 30 + 40 * k, mix((120, 100, 90), (255, 250, 230), k), stroke=4 * k)
+        c.text(W / 2, 640, "The End", 30 + 40 * k, mix((250, 228, 190), (240, 170, 60), k), stroke=4 * k)
     return c
 
 
