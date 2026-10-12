@@ -72,7 +72,7 @@ MOODS = {
     "l_home":   dict(bpm=66, prog=[(65, MAJ), (57, MIN), (58, MAJ), (60, MAJ)], drums=False, mel=0.4, oct=77, vol=0.7),
 }
 MUSIC = {"title": "l_title", "sill": "l_morning", "ride": "l_road", "belem": "l_river", "tram": "l_tram",
-         "castle": "l_castle", "lost": "l_lost", "alfama": "l_sad", "festa": "l_festa", "home": "l_home"}
+         "castle": "l_castle", "lost": "l_lost", "alfama": "l_sad", "festa": "l_quiet", "home": "l_home"}
 MUSIC_CUES = [("r_night", 0.0, "l_night"), ("r_wake", 0.0, "l_dawn"),
               ("b_eat", 0.0, "l_tarts"), ("b_plan", 0.0, "l_river"),
               ("tr_hop", 0.4, "l_uhoh"), ("c_miss", 0.0, "l_sad"),
