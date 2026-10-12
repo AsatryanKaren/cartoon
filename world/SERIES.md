@@ -25,7 +25,7 @@ Facts must be correct and simple for ages 4–8. Use simple diagrams (arrows, la
 
 ## Season 1
 
-- [ ] 01 - Our Planet: the Earth is round, land and water, globe and map, north/south/east/west (guide: wise old turtle)
+- [x] 01 - Our Planet: the Earth is round, land and water, globe and map, north/south/east/west (guide: wise old turtle)
 - [ ] 02 - The Seven Continents: a flying tour, one famous animal or place each (guide: albatross)
 - [ ] 03 - The Five Oceans: the Pacific is the biggest, why the sea is salty, waves and tides (guide: whale)
 - [ ] 04 - Mountains and Volcanoes: how mountains grow, Everest the tallest, a volcano erupts (guide: snow leopard)
