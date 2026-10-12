@@ -1,6 +1,6 @@
 """Copenhagen props and new characters, drawn in the flat cartoon style.
 
-Characters: Ditte (a scruffy grey cygnet who becomes a white swan), Bodil (a
+Characters: Saga (a scruffy grey cygnet who becomes a white swan), Bodil (a
 jolly baker seal), the cheeky harbour ducks and the rabbit royal guards.
 Places: Nyhavn's gabled houses and wooden ships, Our Saviour's twisting spire,
 copper roofs, the Amalienborg palace, the Little Mermaid on her rock, Tivoli's
@@ -157,7 +157,7 @@ def book_open(c, x, y, w=620, h=380, page="trunk", t=0.0):
 
 def cygnet(c, x, y, s=1.0, face=1, t=0.0, mouth=0.0, eyes="open", white=0.0, wing=0.0, fly=False,
            swim=False, walk=0.0, seed=4.0, look=(0.0, 0.0), sad=False):
-    """Ditte. white: 0 scruffy grey cygnet .. 1 young white swan. ~120 tall at s=1.
+    """Saga. white: 0 scruffy grey cygnet .. 1 young white swan. ~120 tall at s=1.
     Origin = between the feet (or the waterline when swim). wing: 0 folded .. 1 raised; fly flaps."""
     if eyes == "open" and D.blink(t, seed):
         eyes = "closed"
@@ -166,12 +166,13 @@ def cygnet(c, x, y, s=1.0, face=1, t=0.0, mouth=0.0, eyes="open", white=0.0, win
     beak = mix((70, 70, 80), (246, 140, 50), white)
     c.push(x, y, s, flip=face < 0)
     if not swim and not fly:
+        foot = mix((80, 80, 90), (60, 60, 66), white)
         for k, fx in enumerate((-10, 12)):
             sw = math.sin(walk + k * math.pi) * 8 if walk else 0
             lift = -max(0.0, math.cos(walk + k * math.pi)) * 5 if walk else 0
-            c.stroke([(fx, -34), (fx + sw, -4 + lift)], (70, 70, 80), 5)
-            c.poly([(fx + sw - 9, lift), (fx + sw + 13, lift), (fx + sw + 2, -7 + lift)], (70, 70, 80), w=1.5)
-        c.push(0, -30)
+            c.stroke([(fx, -22), (fx + sw, -4 + lift)], foot, 6)
+            c.poly([(fx + sw - 10, lift), (fx + sw + 14, lift), (fx + sw + 2, -8 + lift)], foot, w=1.5)
+        c.push(0, -18)
     elif fly:
         c.push(0, -30)
         # tucked feet trailing behind
@@ -181,7 +182,7 @@ def cygnet(c, x, y, s=1.0, face=1, t=0.0, mouth=0.0, eyes="open", white=0.0, win
     # far wing when flying
     fl = math.sin(t * 9 + seed) if fly else 0.0
     if fly:
-        c.poly([(-6, -36), (-20, -70 - 50 * fl), (24, -84 - 50 * fl), (26, -40)], shade, w=2)
+        _wing(c, 6, -40, fl, mix(shade, OUT, 0.15), far=True)
     c.ellipse(-4, -26, 44, 24, body, w=2.5)
     if swim:
         c.rect(-48, -18, 44, 0, body, ol=None)
@@ -194,9 +195,7 @@ def cygnet(c, x, y, s=1.0, face=1, t=0.0, mouth=0.0, eyes="open", white=0.0, win
             c.poly([(fx - 4, fy), (fx + rng.uniform(-6, 6), fy - 10), (fx + 4, fy)], body, w=1.2)
     # near wing
     if fly:
-        c.poly([(-20, -30), (-36, -64 - 60 * fl), (10, -80 - 64 * fl), (24, -34)], shade, w=2)
-        for k in range(3):
-            c.line([(-14 + k * 12, -34), (-24 + k * 14, -60 - 50 * fl)], mix(shade, OUT, 0.25), 1.5)
+        _wing(c, -4, -34, fl, shade)
     else:
         wa = wing
         c.poly([(-36, -28), (-24, -40 - 30 * wa), (6, -48 - 50 * wa), (24, -34 - 14 * wa), (14, -18), (-20, -14)],
@@ -233,6 +232,26 @@ def cygnet(c, x, y, s=1.0, face=1, t=0.0, mouth=0.0, eyes="open", white=0.0, win
     c.pop()
     if not swim:
         c.pop()
+
+
+def _wing(c, sx, sy, fl, col, far=False):
+    """A feathered wing from the shoulder (sx, sy); fl -1..1 flaps it up and down."""
+    lift = 60 * fl + (8 if far else 0)
+    tipx, tipy = sx - 50, sy - 40 - lift
+    pts = [(sx + 18, sy), (sx + 6, sy - 24 - lift * 0.5), (tipx + 10, tipy - 6), (tipx, tipy)]
+    # trailing edge: scalloped primaries back toward the body
+    n = 5
+    for k in range(1, n + 1):
+        u = k / n
+        bx = lerp(tipx, sx - 26, u)
+        by = lerp(tipy, sy + 2, u)
+        pts.append((bx + 8, by + 10 - 2 * (k % 2)))
+        pts.append((bx + 2, by + 4))
+    c.poly(pts, col, w=2)
+    for k in range(3):
+        u = (k + 1) / 4
+        c.line([(lerp(sx + 4, tipx, u), lerp(sy - 10 - lift * 0.3, tipy, u)),
+                (lerp(sx - 10, tipx + 8, u) + 6, lerp(sy, tipy + 10, u) + 6)], mix(col, OUT, 0.3), 1.5)
 
 
 def duck(c, x, y, s=1.0, face=1, t=0.0, laugh=0.0, walk=0.0, seed=0.0, fall=0.0, swim=False):
@@ -579,11 +598,11 @@ def our_saviour_spire(c, x, base, s=1.0, col=(46, 44, 50), gold=BRASS, lw=2.5):
         u = k / 59
         wdt = 22 * (1 - u) + 2
         a = u * 4 * math.tau
-        spiral.append((math.sin(a) * (wdt + 4), -250 - H * u))
+        spiral.append((math.sin(a) * (wdt + 7), -250 - H * u))
     for i in range(len(spiral) - 1):
         a = (i / 59) * 4 * math.tau
-        if math.cos(a) > -0.2:
-            c.line([spiral[i], spiral[i + 1]], gold, 3.5 * (1 - i / 80), cap=False)
+        if math.cos(a) > -0.3:
+            c.line([spiral[i], spiral[i + 1]], gold, 6 * (1 - i / 75), cap=False)
     c.circle(0, -250 - H - 8, 7, gold, w=1.5)
     c.line([(0, -250 - H - 14), (0, -250 - H - 36)], col, 2)
     c.pop()
@@ -694,19 +713,27 @@ def sentry_box(c, x, base, s=1.0):
 def horse_statue(c, x, base, s=1.0, col=(100, 160, 140)):
     """Equestrian statue on a tall pedestal (the king in the middle of the palace square)."""
     c.push(x, base, s)
-    c.rect(-50, -140, 50, 0, (200, 196, 190), w=2.5)
-    c.rect(-60, -150, 60, -136, (220, 216, 210), w=2.5)
-    c.ellipse(0, -186, 46, 22, col, w=2.5)
-    c.stroke([(-34, -176), (-40, -152)], col, 9)
-    c.stroke([(-20, -176), (-24, -152)], col, 9)
-    c.stroke([(26, -178), (40, -160)], col, 9)
-    c.stroke([(34, -180), (52, -168)], col, 9)
-    c.stroke([(40, -196), (56, -226)], col, 16)
-    c.ellipse(64, -228, 16, 10, col, w=2.5)
-    c.stroke([(-44, -190), (-56, -168)], col, 8)
-    c.ellipse(0, -224, 14, 22, col, w=2.5)
-    c.circle(2, -254, 11, col, w=2.5)
-    c.poly([(-8, -262), (0, -276), (10, -262)], col, w=2)
+    c.rect(-56, -150, 56, 0, (200, 196, 190), w=2.5)
+    c.rect(-66, -162, 66, -146, (220, 216, 210), w=2.5)
+    c.rect(-62, -12, 62, 0, (220, 216, 210), w=2.5)
+    sh = mix(col, OUT, 0.25)
+    # far legs, tail, body, near legs, neck and head
+    c.stroke([(-30, -196), (-36, -164)], sh, 9)
+    c.stroke([(30, -196), (40, -166)], sh, 9)
+    c.stroke([(-46, -206), (-62, -176), (-58, -166)], col, 9)
+    c.ellipse(0, -204, 52, 22, col, w=2.5)
+    c.stroke([(-22, -196), (-26, -164)], col, 10)
+    c.stroke([(22, -196), (28, -180), (20, -164)], col, 10)
+    c.stroke([(38, -212), (56, -246)], col, 18)
+    c.poly([(48, -258), (80, -244), (82, -234), (54, -236)], col, w=2.5)
+    c.poly([(48, -258), (54, -270), (58, -256)], col, w=2)
+    c.line([(30, -214), (48, -252)], sh, 4)
+    # the rider, in a long cloak and a laurel wreath
+    c.poly([(-14, -226), (14, -226), (10, -270), (-8, -270)], col, w=2.5)
+    c.poly([(-10, -226), (-30, -206), (-6, -212)], sh, w=2)
+    c.stroke([(8, -258), (30, -248)], col, 7)
+    c.circle(2, -282, 11, col, w=2.5)
+    c.arc(2, -284, 12, 8, 180, 360, (200, 190, 100), 2)
     c.pop()
 
 
