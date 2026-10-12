@@ -16,10 +16,10 @@ again. When a new film is finished, tick it here and fill in its title and folde
 - [x] **London**: *Whiskers and the Stroke of Four* (`films/london`, `catcute/London/`)
 - [x] **Amsterdam**: *Whiskers and the Wobbly Bicycle* (`films/amsterdam`, `catcute/Amsterdam/`)
 - [x] **Venice**: *Whiskers and the Singing Glass* (`films/venice`, `catcute/Venice/`)
+- [x] **Norway**: *Whiskers and the Dancing Lights* (`films/norway`, `catcute/Norway/`)
 
 ## Ideas (not made yet)
 
-- [ ] **Norway**: fjords, Viking ships, northern lights, reindeer
 - [ ] **Athens**: Acropolis and Parthenon, olive trees, myths, blue sea
 - [ ] **Santorini**: white houses with blue domes, sunsets, donkeys on the steps
 - [ ] **Prague**: Charles Bridge, astronomical clock, castle, puppets
