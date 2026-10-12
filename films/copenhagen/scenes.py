@@ -398,7 +398,7 @@ def rain(tl, t):
         P.trunk(c, tx, ty, ts, glow=glow, t=t)
         if t >= T("r_pah", 0.78):
             eyes = "wide" if t >= T("r_click", 0.3) else "open"
-            kitty(c, tl, t, "whiskers", tx - 10, ty - 98 * ts, 0.8, 1 if t < T("r_float") else -1, "sit",
+            kitty(c, tl, t, "whiskers", tx - 10, ty - 98 * ts, 0.8, 1 if t < T("r_fly") else -1, "sit",
                   eyes=eyes, look=(0, 1) if t >= T("r_click", 0.3) else (1, 0))
     else:
         trunk_ride(c, tl, t, tx, ty, ts, riders, lid=lid, glow=glow,

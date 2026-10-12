@@ -98,7 +98,6 @@ SCRIPT = [
     S("whiskers", "Pah. Fairy tales aren't real. Click!", "rain", "r_pah",
       [("click", 0.92)]),
     A("rain", 1.1, "r_click", [("sparkle", 0.05), ("magic", 0.2)]),
-    S("whiskers", "Er, Luna? The trunk is floating.", "rain", "r_float"),
     S("luna", "Then let's fly! To Copenhagen!", "rain", "r_fly"),
     A("rain", 1.4, "r_go", [("thump", 0.12), ("thump", 0.28), ("creak", 0.45), ("whoosh", 0.7)]),
 
@@ -106,14 +105,14 @@ SCRIPT = [
     S("narrator", "Over the clouds and across the sea flew the trunk.",
       "flight", "f_narr", [("wind", 0.0)]),
     A("flight", 1.1, "f_fly", [("wind", 0.2)]),
-    S("whiskers", "I'm not scared. My fur is just very fluffy right now.", "flight", "f_fluffy"),
+    S("whiskers", "I'm not scared. My fur is just extra fluffy.", "flight", "f_fluffy"),
     A("flight", 1.0, "f_dawn", [("gulls", 0.5)]),
     S("pip", "Copper roofs and twisty spires! Copenhagen!", "flight", "f_look"),
     A("flight", 1.0, "f_land", [("whoosh", 0.3)]),
 
     # --------------------------------------------------------------- nyhavn
     A("nyhavn", 0.8, "n_bump", [("thump", 0.35), ("gulls", 0.6)]),
-    S("narrator", "They landed in the New Harbour, among painted houses and old ships.",
+    S("narrator", "They landed among the painted houses of the New Harbour.",
       "nyhavn", "n_narr", [("shipbell", 0.5)]),
     A("nyhavn", 1.0, "n_look", [("waves", 0.1), ("gulls", 0.5)]),
     S("narrator", "Two ducks were laughing at a scruffy grey bird.", "nyhavn", "n_ducks",
@@ -127,8 +126,6 @@ SCRIPT = [
     A("nyhavn", 0.9, "n_go", [("waves", 0.2)]),
 
     # --------------------------------------------------------------- bakery
-    S("narrator", "In Denmark, Danish pastries are called Vienna bread!", "bakery", "b_narr",
-      [("shipbell", 0.1)]),
     S("bodil", "Velkommen! Try my smørrebrød. Open sandwiches!", "bakery", "b_hello"),
     A("bakery", 1.0, "b_lid"),
     S("whiskers", "Excuse me. Somebody stole the lid.", "bakery", "b_stole"),
@@ -142,7 +139,7 @@ SCRIPT = [
     S("saga", "It's heading for the palace! Follow me!", "bakery", "b_follow"),
 
     # --------------------------------------------------------------- palace
-    S("narrator", "They ran to the palace, where the royal guards wear tall bearskin hats.",
+    S("narrator", "At the palace, the royal guards wear tall bearskin hats.",
       "palace", "p_narr", [("drum", 0.2)]),
     A("palace", 1.5, "p_swoop", [("drum", 0.0), ("whoosh", 0.35), ("plop", 0.62)]),
     S("whiskers", "How do I look? Very royal?", "palace", "p_royal"),
@@ -150,13 +147,13 @@ SCRIPT = [
     S("narrator", "By the sea sat the Little Mermaid, from another Andersen story.",
       "palace", "p_mer", [("waves", 0.2)]),
     S("saga", "She left the sea, but never quite fit in on land. Like me.", "palace", "p_fit"),
-    S("whiskers", "I don't fit in either. Too round, too sleepy. But Luna likes me anyway.",
+    S("whiskers", "I don't fit in either. Too round. But Luna likes me anyway.",
       "palace", "p_round"),
     S("pip", "There! It's flying to Tivoli!", "palace", "p_there"),
     A("palace", 0.8, "p_run"),
 
     # --------------------------------------------------------------- tivoli
-    S("narrator", "As night fell, the lanterns of Tivoli Gardens lit up, one by one.", "tivoli", "tv_narr",
+    S("narrator", "At nightfall, the lanterns of Tivoli Gardens lit up.", "tivoli", "tv_narr",
       [("sparkle", 0.3)]),
     A("tivoli", 1.2, "tv_lights", [("organ", 0.0)]),
     S("luna", "The trunk is stuck on the old roller coaster!", "tivoli", "tv_stuck"),
@@ -175,7 +172,7 @@ SCRIPT = [
     # ---------------------------------------------------------------- hygge
     S("narrator", "That night, Bodil made hot cocoa for everyone.", "hygge", "hy_narr",
       [("pour", 0.6)]),
-    S("bodil", "Candles, cocoa and friends. We call it hooga. Spelled H, Y, G, G, E!", "hygge", "hy_hygge"),
+    S("bodil", "Cosy together? We call it hooga. Spelled H, Y, G, G, E!", "hygge", "hy_hygge"),
     S("whiskers", "Hooga. My new favourite word.", "hygge", "hy_word"),
     S("saga", "Thank you for being my friends, even when I was scruffy.", "hygge", "hy_thanks"),
     S("luna", "We'll always be your friends. Grey, white, or polka-dot.", "hygge", "hy_always"),
