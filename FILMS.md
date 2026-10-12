@@ -13,10 +13,10 @@ again. When a new film is finished, tick it here and fill in its title and folde
 - [x] **Chamonix / Mont Blanc**: *Whiskers and the White Mountain* (`films/montblanc`, `catcute/Chamonix/`)
 - [x] **Paris**: *Whiskers and the City of Lights* (`films/paris`, `catcute/Paris/`)
 - [x] **Barcelona**: *Whiskers and the Mosaic Bowl* (`films/barcelona`, `catcute/Barcelona/`)
+- [x] **London**: *Whiskers and the Stroke of Four* (`films/london`, `catcute/London/`)
 
 ## Ideas (not made yet)
 
-- [ ] **London**: Big Ben, red buses, the Thames, Tower Bridge, Queen's Guards, fish and chips
 - [ ] **Venice**: gondolas, canals, St Mark's Square and its pigeons, carnival masks
 - [ ] **Amsterdam**: canals and boats, bicycles, tulips, windmills, cheese markets
 - [ ] **Norway**: fjords, Viking ships, northern lights, reindeer
