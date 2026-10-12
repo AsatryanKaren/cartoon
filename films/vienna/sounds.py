@@ -396,11 +396,12 @@ def cheer(rng):
 # Waltz lengths are matched to the action moments they play under (see the timing printed by
 # timeline.py): the lesson, the first (failed) dance, the second dance and the dance at home.
 EXTRA_SFX = {
-    "waltz_short": (make_waltz(13.0, bpm=168, fade_in=1.0, fade_out=3.0), 0.5),
-    "waltz_lesson": (make_waltz(15.0, bpm=150, lead="piano", fade_in=0.3, fade_out=1.5), 0.45),
-    "waltz_fail": (make_waltz(13.0, bpm=172, fade_in=0.2, fade_out=0.15), 0.6),
-    "waltz_big": (make_waltz(27.0, bpm=176, fade_in=0.2, fade_out=2.5, seed=2), 0.65),
-    "musicbox": (make_waltz(16.0, bpm=150, lead="musicbox", fade_in=0.2, fade_out=2.5), 0.4),
+    "waltz_short": (make_waltz(14.0, bpm=168, fade_in=1.0, fade_out=3.0), 0.5),
+    "waltz_lesson": (make_waltz(9.2, bpm=150, lead="piano", fade_in=0.3, fade_out=0.3), 0.45),
+    "waltz_fail": (make_waltz(9.25, bpm=172, fade_in=0.2, fade_out=0.12), 0.6),
+    "waltz_big": (make_waltz(14.8, bpm=176, fade_in=0.2, fade_out=1.6, seed=2), 0.65),
+    "waltz_end": (make_waltz(8.0, bpm=172, fade_in=0.2, fade_out=2.5, seed=3), 0.6),
+    "musicbox": (make_waltz(11.0, bpm=150, lead="musicbox", fade_in=0.2, fade_out=2.0), 0.4),
     "chime": (chime, 0.35), "crinkle": (crinkle, 0.45), "thump": (thump, 0.55), "engine": (engine, 0.45),
     "bass": (bass, 0.6), "honk": (honk, 0.35), "brakes": (brakes, 0.3), "bells": (bells, 0.45),
     "clop": (clop, 0.5), "neigh": (neigh, 0.45), "sniff": (sniff, 0.45), "piano": (piano_tune, 0.4),

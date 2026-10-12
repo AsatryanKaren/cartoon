@@ -173,6 +173,8 @@ def crew(c, tl, t, x, y, s=1.0, face=1, fly=0.0, who=("whiskers", "luna", "pip")
 
 def text(c, x, y, s, size, fill, anchor="mm", stroke=0, stroke_fill=OUT):
     """Canvas text whose size follows the current push() scale."""
+    if size * c.scale < 1:
+        return
     c.text(x, y, s, size * c.scale, fill, anchor=anchor, stroke=stroke * c.scale, stroke_fill=stroke_fill)
 
 

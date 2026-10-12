@@ -91,22 +91,21 @@ SCRIPT = [
     A("sill", 0.7, "s_open", [("crinkle", 0.5)]),
     S("narrator", "One morning, Whiskers' fish came wrapped in a newspaper from Vienna.", "sill", "s_narr",
       [("crinkle", 0.6)]),
-    S("luna", "Whiskers, look! A Grand Waltz Contest, tomorrow night, at the palace in Vienna!", "sill", "s_look"),
+    S("luna", "Whiskers, look! A Grand Waltz Contest, at the palace in Vienna!", "sill", "s_look"),
     S("whiskers", "Dancing? No, thank you. I have two left paws.", "sill", "s_nope"),
     S("luna", "First prize is the biggest chocolate cake in Vienna. A Sachertorte!", "sill", "s_prize"),
     A("sill", 0.5, "s_think"),
     S("whiskers", "Luna. I have always wanted to dance.", "sill", "s_dance"),
     A("sill", 0.9, "s_twirl", [("whoosh", 0.1), ("thump", 0.6)]),
-    S("pip", "Look! That bus is going to Vienna!", "sill", "s_bus", [("engine", 0.0)]),
-    S("narrator", "It belonged to a real Viennese orchestra, on its way home.", "sill", "s_narr2",
-      [("bass", 0.5)]),
+    S("pip", "Look! An orchestra bus, going home to Vienna!", "sill", "s_bus", [("engine", 0.0), ("bass", 0.9)]),
+    A("sill", 0.5, "s_narr2"),
     A("sill", 1.3, "s_sneak", [("whoosh", 0.05), ("thump", 0.35), ("whoosh", 0.45), ("thump", 0.7),
                                ("bass", 0.72)]),
     S("pip", "Bring me back a crumb of that cake!", "sill", "s_pip"),
     A("sill", 1.0, "s_drive", [("engine", 0.0), ("honk", 0.15)]),
 
     # ------------------------------------------------------------------ bus
-    S("narrator", "So the cats rode all the way to Vienna, inside a double bass case.", "bus", "b_narr",
+    S("narrator", "So the cats rode to Vienna, inside a double bass case.", "bus", "b_narr",
       [("engine", 0.0)]),
     A("bus", 1.6, "b_ride", [("engine", 0.0), ("bass", 0.3), ("engine", 0.5), ("bass", 0.75)]),
     S("whiskers", "Soft velvet, gentle humming... the best bed in the world.", "bus", "b_bed", [("purr", 0.2)]),
@@ -114,21 +113,20 @@ SCRIPT = [
     A("bus", 1.3, "b_arrive", [("engine", 0.0), ("brakes", 0.85)]),
 
     # ----------------------------------------------------------------- city
-    S("narrator", "Vienna! A city of palaces, music, and very fine cake.", "city", "c_narr",
+    S("narrator", "Vienna! City of music, palaces, and very fine cake.", "city", "c_narr",
       [("bells", 0.0)]),
     A("city", 1.0, "c_tumble", [("thump", 0.15), ("thump", 0.3), ("clop", 0.5), ("neigh", 0.85)]),
     S("ferdinand", "Good morning, little travellers! Ferdinand, at your service.", "city", "c_ferd"),
     S("luna", "Ferdinand, we've come for the Grand Waltz Contest!", "city", "c_luna"),
     S("ferdinand", "At Schönbrunn Palace, tonight! Hop in, I'll show you my city.", "city", "c_hop"),
     A("city", 1.8, "c_ride", [("clop", 0.0), ("clop", 0.25), ("clop", 0.5), ("clop", 0.75)]),
-    S("ferdinand", "That's the Opera. And when I was young, I danced at the famous Riding School!", "city",
+    S("ferdinand", "That's the Opera. When I was young, I danced at the Riding School!", "city",
       "c_opera", [("clop", 0.3)]),
-    S("whiskers", "A dancing horse? Then you can teach me! But first... I smell cake.", "city", "c_smell",
+    S("whiskers", "A dancing horse! You can teach me! But first... I smell cake.", "city", "c_smell",
       [("sniff", 0.75)]),
 
     # ----------------------------------------------------------------- cafe
-    S("narrator", "Vienna is famous for its coffee houses, and their cakes.", "cafe", "f_narr",
-      [("clink", 0.3), ("piano", 0.0)]),
+    A("cafe", 0.6, "f_narr", [("bell", 0.1), ("piano", 0.2)]),
     S("mitzi", "Welcome to Café Mitzi! Sachertorte? Apple strudel? Whipped cream?", "cafe", "f_mitzi"),
     S("whiskers", "Yes. Yes. And yes, please!", "cafe", "f_yes"),
     A("cafe", 1.5, "f_eat", [("munch", 0.1), ("clink", 0.3), ("munch", 0.45), ("clink", 0.65), ("munch", 0.8)]),
@@ -139,7 +137,7 @@ SCRIPT = [
     A("cafe", 0.5, "f_end"),
 
     # --------------------------------------------------------------- prater
-    S("narrator", "In the Prater park, under the giant Ferris wheel, Ferdinand gave a dancing lesson.",
+    S("narrator", "Under the giant Ferris wheel in the Prater, Ferdinand gave a dancing lesson.",
       "prater", "p_narr"),
     S("ferdinand", "The waltz is easy. One, two, three. One, two, three.", "prater", "p_123"),
     A("prater", 1.5, "p_demo", [("waltz_lesson", 0.0), ("clop", 0.2), ("clop", 0.45), ("clop", 0.7)]),
@@ -175,7 +173,7 @@ SCRIPT = [
     S("countess", "And the prize goes to... Whiskers and Luna!", "ball", "ba_prize", [("cheer", 0.85)]),
     A("ball", 0.8, "ba_cake", [("chime", 0.2)]),
     S("whiskers", "Cake? Later. Can we dance one more time?", "ball", "ba_more"),
-    A("ball", 1.3, "ba_end", [("waltz_short", 0.0)]),
+    A("ball", 1.3, "ba_end", [("waltz_end", 0.0)]),
 
     # ----------------------------------------------------------------- home
     A("home", 0.7, "h_open", [("engine", 0.0)]),

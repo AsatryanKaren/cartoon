@@ -473,7 +473,7 @@ def orloj_tower(c, x, base, s=1.0, snow=True):
     Local coordinates: x centred, base = ground. Key anchor points (local, unscaled):
       dial centre (0, -760), dial radius 150; calendar centre (0, -440), radius 110;
       apostle windows at (-46, -1020) and (46, -1020) (60 x 80); rooster at (0, -1110);
-      skeleton ledge at (215, -700); little door at (232, -880).
+      skeleton ledge at (215, -712); little door (205..275, -960..-850).
     """
     c.push(x, base, s)
     body = (176, 166, 158)
@@ -515,16 +515,18 @@ def orloj_tower(c, x, base, s=1.0, snow=True):
         c.ellipse(dx, -1070, 34, 26, (34, 30, 40), w=2.5)
         c.rect(dx - 32, -1072, dx + 32, -1060, (34, 30, 40), ol=None)
     # little stone ledges for the side figures
+    c.rect(-215 - 34, -712, -215 + 34, -696, STONE_D, w=2)
+    c.rect(215 - 40, -712, 215 + 110, -696, STONE_D, w=2)       # wide ledge: room for a cat beside the skeleton
     for dx in (-215, 215):
-        c.rect(dx - 34, -712, dx + 34, -696, STONE_D, w=2)
         c.rect(dx - 30, -500, dx + 30, -486, STONE_D, w=2)
     # the left side figures: Vanity (with a mirror) on the upper ledge, the Miser below
     _side_figure(c, -215, -712, 0)
     _side_figure(c, -215, -500, 1)
     _side_figure(c, 215, -500, 2)
     # little maintenance door beside the dial
-    c.rect(214, -930, 252, -850, (110, 74, 50), w=2, r=4)
-    c.circle(244, -888, 3, GOLD, w=1)
+    c.rect(205, -960, 275, -850, (110, 74, 50), w=2.5, r=6)
+    c.line([(240, -952), (240, -858)], (90, 58, 40), 2, cap=False)
+    c.circle(264, -904, 4, GOLD, w=1)
     # gothic entrance at street level
     c.rect(-70, -180, 70, 0, (54, 46, 54), w=2.5)
     c.ellipse(0, -180, 70, 60, (54, 46, 54), w=2.5)

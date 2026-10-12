@@ -98,7 +98,7 @@ HORSE = dict(body=(246, 244, 240), shade=(214, 212, 214), mane=(196, 198, 206), 
 
 
 def horse(c, x, y, s=1.0, face=1, t=0.0, mouth=0.0, walk=0.0, eyes="open", prance=0.0, bow=0.0, hat=True,
-          harness=True, seed=6.0, head_dy=0.0, rear=0.0):
+          harness=True, seed=6.0, head_dy=0.0, rear=0.0, head_only=False):
     """Ferdinand, the old white Lipizzaner. walk: leg phase. prance: 0..1 high-stepping dance.
     bow: 0..1 elegant bow (head down, one foreleg forward). rear: 0..1 up on the hind legs."""
     m = HORSE
@@ -106,7 +106,7 @@ def horse(c, x, y, s=1.0, face=1, t=0.0, mouth=0.0, walk=0.0, eyes="open", pranc
         eyes = "closed"
     c.push(x, y, s, flip=face < 0)
     # rearing: rotate-ish by lifting the front
-    leg_len = 118
+    leg_len = 96
     by = -leg_len - 40
     lift_front = 46 * rear
 
@@ -129,32 +129,40 @@ def horse(c, x, y, s=1.0, face=1, t=0.0, mouth=0.0, walk=0.0, eyes="open", pranc
         if front and rear > 0:
             knee = (lx + 30 * rear, top[1] + 36)
             foot = (lx + 22 * rear, top[1] + 64 - 10 * rear)
-        c.stroke([top, knee, foot], col, 17)
-        c.rect(foot[0] - 9, foot[1] - 12, foot[0] + 11, foot[1], m["hoof"], w=2, r=2)
+        if head_only:
+            return
+        c.stroke([top, knee, foot], col, 21)
+        c.rect(foot[0] - 11, foot[1] - 13, foot[0] + 13, foot[1], m["hoof"], w=2, r=2)
 
     sh = m["shade"]
     leg(-62, math.pi, sh, False)
     leg(66, 0, sh, True)
     # tail (long, flowing)
     tw = math.sin(t * 2.4 + seed) * 0.4
-    pts = [(-92 - 26 * u + 8 * math.sin(u * 4 + t * 3) * u, by - 22 + 120 * u ** 1.2 + 10 * tw * u)
+    pts = [(-92 - 26 * u + 8 * math.sin(u * 4 + t * 3) * u, by - 22 + 110 * u ** 1.2 + 10 * tw * u)
            for u in np.linspace(0, 1, 8)]
-    c.stroke(pts, m["mane"], 18)
-    c.line([(p[0] + 4, p[1]) for p in pts[2:]], m["mane_d"], 3)
+    if not head_only:
+        c.stroke(pts, m["mane"], 18)
+        c.line([(p[0] + 4, p[1]) for p in pts[2:]], m["mane_d"], 3)
     # body
     c.push(0, by, 1.0)
     ang = -0.32 * rear
     def R(px, py):
         return (px * math.cos(ang) - py * math.sin(ang), px * math.sin(ang) + py * math.cos(ang))
-    body_pts = [R(110 * math.cos(a), 52 * math.sin(a)) for a in np.linspace(0, math.tau, 40)]
-    c.poly(body_pts, m["body"], w=3)
-    c.poly([R(px, py) for px, py in ((-60, 30), (60, 30), (80, 40), (-70, 42))], mix(m["body"], sh, 0.4), ol=None)
+    body_pts = [R(106 * math.cos(a), 58 * math.sin(a)) for a in np.linspace(0, math.tau, 40)]
+    if head_only:
+        harness = False
+        body_pts = []
+    if body_pts:
+        c.poly(body_pts, m["body"], w=3)
+    if body_pts:
+        c.poly([R(px, py) for px, py in ((-60, 34), (60, 34), (80, 44), (-70, 46))], mix(m["body"], sh, 0.4), ol=None)
     # dapple spots (old greys keep a few)
-    for dx, dy, r in ((-50, -10, 7), (-20, 14, 5), (10, -18, 6), (-74, 12, 5)):
+    for dx, dy, r in (((-50, -10, 7), (-20, 14, 5), (10, -18, 6), (-74, 12, 5)) if body_pts else ()):
         px, py = R(dx, dy)
         c.circle(px, py, r, mix(m["body"], sh, 0.5), ol=None)
-    if harness:
-        a, b = R(56, -50), R(64, 40)
+    if harness and body_pts:
+        a, b = R(56, -56), R(64, 46)
         c.line([a, b], (150, 40, 40), 9)
         c.line([a, b], (210, 70, 60), 5)
         mid = R(60, -4)
@@ -162,6 +170,7 @@ def horse(c, x, y, s=1.0, face=1, t=0.0, mouth=0.0, walk=0.0, eyes="open", pranc
     c.pop()
     leg(-40, 0, m["body"], False)
     leg(88, math.pi, m["body"], True)
+    harness = harness or head_only
     # neck + head
     nod = math.sin(walk * 2) * 3 if walk else 0
     hx, hy = 150 + 20 * rear, by - 92 + nod + head_dy + 54 * bow - 60 * rear
@@ -177,7 +186,7 @@ def horse(c, x, y, s=1.0, face=1, t=0.0, mouth=0.0, walk=0.0, eyes="open", pranc
         mx, my = lerp(nb[0] - 38, hx - 30, u), lerp(nb[1] - 18, hy - 22, u)
         c.ellipse(mx - 6, my + 4, 15, 12, m["mane"], w=2)
     # head: long face
-    c.push(hx, hy, 1.0)
+    c.push(hx, hy, 1.22)
     ha = 0.5 + 0.5 * bow
     def Hh(px, py):
         return (px * math.cos(ha) - py * math.sin(ha), px * math.sin(ha) + py * math.cos(ha))
@@ -366,49 +375,47 @@ def fiaker(c, x, y, s=1.0, t=0.0, wheel_ang=0.0, seat=None):
     c.pop()
 
 
+CASE_OUTLINE = [(-150, -24), (-150, -40), (-30, -44), (-6, -56), (20, -48), (70, -62)] + \
+    [(70 + 72 * math.cos(a), -30 - 34 * math.sin(a)) for a in np.linspace(math.pi / 2, -math.pi / 2, 12)] + \
+    [(70, 4), (20, -10), (-6, -2), (-30, -14), (-150, -14)]
+CASE = (150, 92, 56)
+CASE_D = (104, 60, 36)
+VELVET = (176, 48, 70)
+
+
 def bass_case(c, x, y, s=1.0, lid=0.0, inside=None, ang=0.0):
-    """Double bass case lying on its back (scroll to the left), lid hinged at the back.
-    inside(c) draws what's in it (local coords, case floor at y=-18)."""
+    """Double bass case lying on its back (scroll to the left); lid hinged at the back.
+    inside(c) draws what's in it (local coords, case floor around y=-20)."""
     c.push(x, y, s)
-    shape = []
-    # outline of a double bass: big lower bout right, neck to the left
-    for a in np.linspace(-math.pi / 2, math.pi / 2, 16):
-        shape.append((70 + 70 * math.cos(a), -30 + 30 * math.sin(a) * 0.9))
-    shape = [(px, py) for px, py in shape]
-    outline = [(-150, -24), (-150, -40), (-30, -44), (-6, -56), (20, -48), (70, -60)] + \
-              [(70 + 72 * math.cos(a), -30 - 34 * math.sin(a)) for a in np.linspace(math.pi / 2, -math.pi / 2, 12)] + \
-              [(70, 4), (20, -8), (-6, -2), (-30, -14), (-150, -14)]
-    case = (110, 60, 40)
-    case_d = (80, 40, 28)
-    velvet = (170, 30, 60)
     if lid > 0.05:
-        # open: velvet interior visible
-        c.poly(outline, case_d, w=3)
-        inner = [((px - 0) * 0.92, py * 0.9 - 4) for px, py in outline]
-        c.poly(inner, velvet, ol=None)
+        c.poly(CASE_OUTLINE, CASE, w=3)
+        cx, cy = 0, -30
+        inner = [(cx + (px - cx) * 0.86, cy + (py - cy) * 0.62) for px, py in CASE_OUTLINE]
+        c.poly(inner, VELVET, ol=CASE_D, w=2)
         if inside:
             inside(c)
-        # lid standing up behind (drawn as a thin slanted shape above)
+        # front lip
+        lip = [(px, py) for px, py in CASE_OUTLINE if py > -34] 
+        front = [(-150, -24), (-30, -18), (-6, -8), (20, -16), (70, -4), (120, -10), (142, -30)]
+        c.poly(front + [(142, -22), (124, 0), (70, 4), (20, -10), (-6, -2), (-30, -14), (-150, -14)], CASE, w=2.5)
     else:
-        c.poly(outline, case, w=3)
-        c.line([(-140, -30), (130, -30)], case_d, 2.5, cap=False)
+        c.poly(CASE_OUTLINE, CASE, w=3)
+        c.line([(-140, -30), (130, -30)], CASE_D, 2.5, cap=False)
         for hx in (-60, 40, 110):
             c.rect(hx - 5, -36, hx + 5, -24, GOLD, w=1.5)
     c.pop()
 
 
 def bass_lid(c, x, y, s=1.0, lid=0.0):
-    """The lid of the bass case, hinged along the back edge, drawn behind the case."""
+    """The open lid of the bass case, standing up behind it."""
     if lid <= 0.05:
         return
     c.push(x, y, s)
-    k = lid
-    outline = [(-150, -24), (-150, -40), (-30, -44), (-6, -56), (20, -48), (70, -60)] + \
-              [(70 + 72 * math.cos(a), -30 - 34 * math.sin(a)) for a in np.linspace(math.pi / 2, -math.pi / 2, 12)] + \
-              [(70, 4), (20, -8), (-6, -2), (-30, -14), (-150, -14)]
-    pts = [(px, -40 + (py + 30) * (1 - k) * 0.6 - k * (py + 30) * 1.4 - 10 * k) for px, py in outline]
-    c.poly(pts, (124, 70, 46), w=3)
-    c.poly([(px * 0.9, py * 0.95 - 2) for px, py in pts], (150, 40, 70), ol=None)
+    k = clamp(lid)
+    pts = [(px, -46 + 0.45 * k * (py - 4)) for px, py in CASE_OUTLINE]
+    c.poly(pts, CASE, w=3)
+    cx, cy = 0, -46 + 0.45 * k * (-34)
+    c.poly([(cx + (px - cx) * 0.86, cy + (py - cy) * 0.7) for px, py in pts], VELVET, ol=CASE_D, w=2)
     c.pop()
 
 
