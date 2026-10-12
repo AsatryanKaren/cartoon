@@ -396,8 +396,8 @@ def cheer(rng):
 # Waltz lengths are matched to the action moments they play under (see the timing printed by
 # timeline.py): the lesson, the first (failed) dance, the second dance and the dance at home.
 EXTRA_SFX = {
-    "waltz_short": (make_waltz(14.0, bpm=168, fade_in=1.0, fade_out=3.0), 0.5),
-    "waltz_lesson": (make_waltz(9.2, bpm=150, lead="piano", fade_in=0.3, fade_out=0.3), 0.45),
+    "waltz_short": (make_waltz(14.0, bpm=168, fade_in=1.0, fade_out=3.0), 0.68),
+    "waltz_lesson": (make_waltz(9.2, bpm=150, lead="piano", fade_in=0.3, fade_out=0.3), 0.62),
     "waltz_fail": (make_waltz(9.25, bpm=172, fade_in=0.2, fade_out=0.12), 0.6),
     "waltz_big": (make_waltz(14.8, bpm=176, fade_in=0.2, fade_out=1.6, seed=2), 0.65),
     "waltz_end": (make_waltz(8.0, bpm=172, fade_in=0.2, fade_out=2.5, seed=3), 0.6),
@@ -407,5 +407,5 @@ EXTRA_SFX = {
     "clop": (clop, 0.5), "neigh": (neigh, 0.45), "sniff": (sniff, 0.45), "piano": (piano_tune, 0.4),
     "munch": (munch, 0.5), "squirt": (squirt, 0.45), "splat": (splat, 0.6), "bell": (bell, 0.4),
     "yowl": (yowl, 0.55), "boing": (boing, 0.45), "creak": (creak, 0.35), "scrape": (scrape, 0.5),
-    "crash": (crash, 0.55), "laugh": (laugh, 0.5), "cheer": (cheer, 0.5),
+    "crash": (crash, 0.55), "laugh": (laugh, 0.85), "cheer": (cheer, 0.5),
 }

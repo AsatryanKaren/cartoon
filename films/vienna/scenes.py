@@ -1108,8 +1108,9 @@ def prater(tl, t):
     else:
         count = T("p_123") <= t < T("p_123", 1)
         laugh = T("p_trip", 0.8) <= t < T("p_laugh")
-        ferdinand(c, tl, t, 680 if t < T("p_trip") else 560, 610, 0.85, -1 if t < T("p_whoops") else 1, prance=0.6 if count else 0.0,
-                  walk=t * 9 if count else 0.0, eyes="wide" if T("p_trip") <= t < T("p_trip", 0.8) else "open",
+        mv = tl.prog("p_trip", t, 0.75, 1.0)
+        ferdinand(c, tl, t, lerp(680, 560, ease(mv)), 610, 0.85, -1 if t < T("p_whoops") else 1, prance=0.6 if count else 0.0,
+                  walk=t * 9 if count or 0 < mv < 1 else 0.0, eyes="wide" if T("p_trip") <= t < T("p_trip", 0.8) else "open",
                   bow=0.3 if T("p_laugh") <= t else 0)
     # --- the cats
     if t < T("p_demo", 0.55):
@@ -1214,8 +1215,18 @@ def palace_bg():
                 for j in range(4):
                     fx = lerp(x0, x1, (j + 0.5) / 4) + sx * 15
                     c.circle(fx, y0 + 25, 9, [(240, 90, 110), (250, 210, 90), (200, 130, 230)][(j + k) % 3], w=1.5)
-        for x in (60, 160, 1120, 1220):
+        for x in (1120, 1220):
             P.hedge_cone(c, x, 520, 1.0)
+        # the hedge maze entrance (left)
+        c.rect(-20, 470, 300, 590, (50, 100, 56), w=3)
+        c.rect(-20, 470, 300, 500, (90, 160, 90), w=3)
+        for x in range(0, 300, 24):
+            c.circle(x + 10, 478 + (x % 3) * 4, 7, (110, 180, 100), ol=None)
+        c.rect(110, 506, 180, 590, (60, 46, 40), w=2.5)
+        c.ellipse(145, 506, 35, 22, (60, 46, 40), ol=None)
+        c.rect(98, 430, 192, 462, (120, 90, 60), w=2.5, r=4)
+        c.text(145, 446, "MAZE", 16, (255, 240, 200))
+        c.line([(145, 462), (145, 470)], OUT, 3)
         P.fountain(c, 640, 560, 0.6, 0.0, water=False)
         return c.img
     return cached("palace_bg", make)
@@ -1383,7 +1394,7 @@ def palace(tl, t):
             else:
                 point = T("pa_short") <= t
                 kat(c, tl, t, "luna", 220, 690, 0.8, 1 if not point else -1, "stand", eyes="open")
-                kat(c, tl, t, "whiskers", 330 + (0 if not point else -40 * ease(tl.prog("pa_short", t, 0.5, 1))), 690, 0.8,
+                kat(c, tl, t, "whiskers", 330 + (0 if not point else -150 * ease(tl.prog("pa_short", t, 0.4, 1))), 690, 0.8,
                     -1 if point else 1, "stand" if not point else "walk", walk=t * 8 if point else 0,
                     eyes="happy" if point else "open")
         return finish(c, tl, t)
