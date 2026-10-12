@@ -133,7 +133,8 @@ def ocean_highlight(c, v, name, k=1.0, t=0.0):
         return
     mx0, my0 = v.cx + (sx0 / SS - W / 2) / v.z, v.cy + (sy0 / SS - H / 2) / v.z
     mx1, my1 = v.cx + (sx1 / SS - W / 2) / v.z, v.cy + (sy1 / SS - H / 2) / v.z
-    piece = mask.resize((sx1 - sx0, sy1 - sy0), Image.BILINEAR, box=(mx0 * SS, my0 * SS, mx1 * SS, my1 * SS))
+    box = (max(0.0, mx0 * SS), max(0.0, my0 * SS), min(mask.size[0], mx1 * SS), min(mask.size[1], my1 * SS))
+    piece = mask.resize((sx1 - sx0, sy1 - sy0), Image.BILINEAR, box=box)
     a = clamp(k) * (0.5 + 0.1 * math.sin(t * 4 + i))
     piece = piece.point(lambda q: int(q * a))
     c.img.paste(OCOL[name], (sx0, sy0, sx1, sy1), piece)
@@ -454,8 +455,8 @@ def salt_diagram(ic, t, k1, k2):
                 continue
             p = sp[int(u * (len(sp) - 1))]
             ic.rect(p[0] - 4, p[1] - 4, p[0] + 4, p[1] + 4, SALT, w=1.5)
-        K.text(ic, 130, gy - 210 + 4, "salt in rocks", 22, (70, 60, 70), stroke=2, stroke_fill=(255, 255, 255))
-        K.text(ic, 300, gy + 36, "river", 24, (30, 90, 170), stroke=2, stroke_fill=(255, 255, 255))
+        K.label(ic, 150, gy - 70, "salt in rocks", 24, k=clamp(k1 * 4), col=(90, 70, 70))
+        K.text(ic, 330, gy + 34, "river", 28, (30, 90, 170), stroke=3, stroke_fill=(255, 255, 255))
     # salt collecting in the sea
     rng = np.random.default_rng(4)
     n = int(18 * clamp(k1 * 1.3 + k2))
@@ -463,7 +464,7 @@ def salt_diagram(ic, t, k1, k2):
         sx, sy = rng.uniform(w * 0.6, w - 20), rng.uniform(gy + 12, h - 12)
         ic.rect(sx - 4, sy - 4, sx + 4, sy + 4, SALT, w=1.5)
     if k1 > 0.3:
-        K.text(ic, w * 0.8, h - 26, "salty sea", 26, (255, 255, 255), stroke=3, stroke_fill=SEA_D)
+        K.text(ic, w * 0.8, h - 26, "salty sea", 30, (255, 255, 255), stroke=3, stroke_fill=SEA_D)
     # sun lifts the water up; the salt stays
     if k2 > 0.01:
         sx, sy = w - 70, 56
@@ -478,9 +479,9 @@ def salt_diagram(ic, t, k1, k2):
                     w=1.5)
         D.cloud(ic, w * 0.74, 60, 0.45 * clamp(k2 * 2))
         if k2 > 0.4:
-            K.label(ic, w * 0.56, 128, "water goes up", 22, k=clamp((k2 - 0.4) * 3), col=(30, 90, 170))
+            K.label(ic, w * 0.55, 120, "water goes up", 26, k=clamp((k2 - 0.4) * 3), col=(30, 90, 170))
         if k2 > 0.7:
-            K.label(ic, w * 0.82, gy - 26, "salt stays!", 24, k=clamp((k2 - 0.7) * 4), col=(200, 50, 60))
+            K.label(ic, w * 0.82, gy - 30, "salt stays!", 28, k=clamp((k2 - 0.7) * 4), col=(200, 50, 60))
 
 
 def wind_diagram(ic, t, k):
@@ -488,7 +489,7 @@ def wind_diagram(ic, t, k):
     w, h = ic.img.size[0] / SS, ic.img.size[1] / SS
     ic.img.paste(D.gradient(int(w * SS), int(h * SS), [(0, (160, 210, 250)), (1, (226, 242, 255))]), (0, 0))
     wy = h * 0.62
-    amp = 4 + 26 * ease(k)
+    amp = 4 + 46 * ease(k)
     pts = [(x, wy - amp * max(0, math.sin(x * 0.045 - t * 3)) ** 1.5 * clamp(x / (w * 0.4) + 0.1))
            for x in np.linspace(0, w, 80)]
     ic.poly(pts + [(w, h), (0, h)], SEA, w=3)
@@ -496,19 +497,19 @@ def wind_diagram(ic, t, k):
         ic.arc(x + (t * 30) % 90, wy + 30, 14, 5, 200, 340, (200, 230, 255), 3)
     # puffing wind cloud with a face
     cx, cy = 70, 64
-    D.cloud(ic, cx, cy, 0.5)
-    ic.circle(cx + 6, cy - 4, 3, OUT, ol=None)
-    ic.circle(cx + 24, cy - 4, 3, OUT, ol=None)
-    ic.circle(cx + 36, cy + 8, 6, D.MOUTH, w=2)
+    D.cloud(ic, cx, cy, 0.75)
+    ic.circle(cx + 10, cy - 4, 4, OUT, ol=None)
+    ic.circle(cx + 34, cy - 4, 4, OUT, ol=None)
+    ic.circle(cx + 52, cy + 12, 9, D.MOUTH, w=2)
     # wind arrows
     for i in range(3):
         u = (t * 0.8 + i / 3) % 1
         x0 = 120 + u * (w - 260)
         y0 = 70 + i * 34 + 20 * u
-        K.arrow(ic, x0, y0, x0 + 110, y0 + 14, (255, 255, 255), 6, 1.0, head=16)
-    K.text(ic, w / 2 + 40, 40, "wind", 30, (60, 90, 140), stroke=2, stroke_fill=(255, 255, 255))
+        K.arrow(ic, x0, y0, x0 + 110, y0 + 14, (255, 255, 255), 9, 1.0, head=20)
+    K.text(ic, w / 2 + 40, 40, "wind", 34, (60, 90, 140), stroke=2, stroke_fill=(255, 255, 255))
     if k > 0.5:
-        K.label(ic, w * 0.72, wy - 70, "waves!", 26, k=clamp((k - 0.5) * 3), col=(30, 90, 170))
+        K.label(ic, w * 0.72, wy - 90, "waves!", 30, k=clamp((k - 0.5) * 3), col=(30, 90, 170))
 
 
 def trench_diagram(ic, t, k):
@@ -532,8 +533,8 @@ def trench_diagram(ic, t, k):
     ic.poly([(tx - 16, my - mh * 0.8), (tx, my - mh), (tx + 20, my - mh * 0.85), (tx + 8, my - mh * 0.8),
              (tx - 4, my - mh * 0.86)], (250, 250, 255), w=2)
     if k > 0.9:
-        K.label(ic, tx + 170, my - mh - 6, "tallest mountain", 22, tip=(tx + 14, my - mh), k=clamp((k - 0.9) * 10))
-        K.label(ic, tx - 160, h - 40, "deepest sea", 22, tip=(tx - 34, h - 22), k=clamp((k - 0.9) * 10),
+        K.label(ic, tx + 170, my - mh - 6, "tallest mountain", 26, tip=(tx + 14, my - mh), k=clamp((k - 0.9) * 10))
+        K.label(ic, tx - 160, h - 40, "deepest sea", 26, tip=(tx - 34, h - 22), k=clamp((k - 0.9) * 10),
                 col=(30, 60, 140))
         # the peak is still under water
         for kk in range(4):
@@ -576,11 +577,11 @@ def icon_five(c, x, y, r, t=0.0):
 
 
 def icon_pacific(c, x, y, r, t=0.0):
-    ocean_globe(c, x, y, r * 0.95, FACE["pacific"][0] - t * 10, 5, {"pacific": 1.0}, t)
+    ocean_globe(c, x, y, r * 0.95, FACE["pacific"][0] + 12 * math.sin(t * 0.8), 5, {"pacific": 1.0}, t)
 
 
 def icon_atlantic(c, x, y, r, t=0.0):
-    ocean_globe(c, x, y, r * 0.95, FACE["atlantic"][0] - t * 10, 10, {"atlantic": 1.0}, t)
+    ocean_globe(c, x, y, r * 0.95, FACE["atlantic"][0] + 12 * math.sin(t * 0.8), 10, {"atlantic": 1.0}, t)
 
 
 def icon_salt(c, x, y, r, t=0.0):
