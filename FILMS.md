@@ -24,10 +24,10 @@ again. When a new film is finished, tick it here and fill in its title and folde
 - [x] **Munich**: *Whiskers and the Swan Castle* (`films/munich`, `catcute/Munich/`)
 - [x] **Berlin**: *Whiskers and the Painted Wall* (`films/berlin`, `catcute/Berlin/`)
 - [x] **Dublin**: *Whiskers and the Rainbow's End* (`films/dublin`, `catcute/Dublin/`)
+- [x] **Edinburgh**: *Whiskers and the Loch Ness Secret* (`films/edinburgh`, `catcute/Edinburgh/`)
 
 ## Ideas (not made yet)
 
 - [ ] **Lisbon**: yellow trams on steep hills, tiled houses, Belém tower, custard tarts
-- [ ] **Edinburgh**: castle on a rock, bagpipes, tartan, Loch Ness monster
 - [ ] **Copenhagen**: colourful Nyhavn harbour, the Little Mermaid, Tivoli Gardens
 - [ ] **Zermatt / Matterhorn**: the Matterhorn, chocolate, cuckoo clocks
