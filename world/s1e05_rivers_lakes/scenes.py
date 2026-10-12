@@ -264,13 +264,13 @@ def map_scene(tl, t):
                 * (1 - tl.prog("m_nile", t, 0.0, 0.1)))
     if hl == "nile":
         x, y = v.xy(32, 16)
-        K.label(c, x + 250, y - 40, "The Nile: very, very long!", 30, tip=(x + 14, y), k=tl.prog("m_nile", t, 0.4, 0.6))
+        K.label(c, x + 340, y + 110, "The Nile: very, very long!", 30, tip=(x + 70, y + 40), k=tl.prog("m_nile", t, 0.4, 0.6))
         K.map_label(c, v, 20, 6, "Africa", 30, k=tl.prog("m_nile", t, 0.3, 0.5))
         # a little ruler showing its length
         a, b = v.xy(33, -1), v.xy(31, 31.5)
         rk2 = tl.prog("m_nileact", t, 0.0, 0.7)
         if rk2 > 0:
-            xx = max(a[0], b[0]) + 60
+            xx = max(a[0], b[0]) + 45
             K.arrow(c, xx, a[1], xx, lerp(a[1], b[1], rk2), (255, 236, 110), 7, 1.0, head=18)
             K.arrow(c, xx, lerp(a[1], b[1], rk2), xx, a[1], (255, 236, 110), 7, 1.0, head=18)
     if hl == "amazon":
@@ -446,7 +446,7 @@ def peak(tl, t):
     kr = tl.prog("p_river", t, 0.45, 0.65) * (1 - tl.prog("p_jump", t, 0.0, 0.3))
     rx, ry, _ = P.path_at("r1", 0.2)
     rx, ry = sxy(rx, ry)
-    K.label(c, rx + 120, ry + 140, "...into a river!", 34, tip=(rx + 10, ry + 30), k=kr, col=(30, 90, 170))
+    K.label(c, rx - 40, ry - 150, "...into a river!", 34, tip=(rx, ry - 30), k=kr, col=(30, 90, 170))
     km = tl.prog("p_melt", t, 0.45, 0.65) * (1 - tl.prog("p_streams", t, 0.0, 0.2))
     mx, my = sxy(600, 336)
     K.label(c, mx + 120, my + 150, "Melting snow", 30, tip=(mx, my + 10), k=km)
@@ -481,7 +481,7 @@ def river(tl, t):
     face = -1 if backwards else 1
     # Ollie: slides in from behind, passes, then swims along in front
     ok = tl.prog("v_hello", t, 0.0, 1.0)
-    ou = lerp(u - 0.2, u + 0.1, ease(ok)) if t < T("v_name") else u + 0.1
+    ou = lerp(u - 0.25, u + 0.22, ease(ok)) if t < T("v_name") else u + 0.22
     if t < T("v_hello"):
         ou = u - 0.3
     ox, oy, _ = P.path_at("r1", clamp(ou))
@@ -492,7 +492,7 @@ def river(tl, t):
                 "back" if on_back else "swim", look=(-1, 0) if T("v_name") <= t < T("v_snack") else (0, 0))
         P.water_front(c, ox, oy + 10, 170, t, depth=10)
     # Drip bobs next to the cushion
-    dx, dy, _ = P.path_at("r1", u + 0.045 * face)
+    dx, dy, _ = P.path_at("r1", clamp(u + 0.115 * face))
     drip_on(c, tl, t, dx, dy + 6, 1.15, eyes="happy" if T("v_laugh") <= t < T("v_on") else "open",
             look=(-1, 0) if backwards else (1, 0))
     # the friends
@@ -605,8 +605,16 @@ def lake(tl, t):
         eyes = {"whiskers": "closed" if t < T("l_fresh") else "wide"}
     if T("l_last") <= t < T("l_last", 1):
         eyes = {"whiskers": "closed"} if t > T("l_last", 0.75) else {}
-    face = -1 if sip else 1
-    floating_crew(c, tl, t, x, y, CREW_S2, face, eyes=eyes, extra=extra)
+    if sip:
+        s_ = CREW_S2
+        K.crew(c, tl, t, x, y + 12 * s_, s_, 1, who=("luna", "pip"), look={"luna": (-1, 0.3), "pip": (-1, 0.3)})
+        kat(c, tl, t, "whiskers", x - 100 * s_, y + 12 * s_ - 40 * s_, 0.62 * s_, -1, "crouch",
+            eyes=eyes["whiskers"], mouth=extra["whiskers"]["mouth"])
+        P.water_front(c, x, y + 4, 250 * s_, t, depth=12)
+        if t < T("l_fresh"):
+            P.ripples(c, x - 190 * s_, y + 8, t, 3, 30, 6, speed=1.4)
+    else:
+        floating_crew(c, tl, t, x, y, CREW_S2, 1, eyes=eyes, extra=extra)
     dx = x + 170 if not sip else x + 160
     drip_on(c, tl, t, dx, y + 4, 1.15)
     c.pop()
@@ -671,7 +679,7 @@ def sea(tl, t):
     dx = lerp(x + 150, DRIP_SEA[0], ak)
     dy = DRIP_SEA[1]
     ck = ease(tl.prog("e_rise", t, 0.6, 1.0) * 0.5 + tl.prog("e_vapour", t, 0.0, 0.6) * 0.5)
-    cloud_x = NEW_CLOUD[0] - 900 * ease(tl.prog("e_rain", t, 0.1, 1.0))
+    cloud_x = NEW_CLOUD[0] - 520 * ease(tl.prog("e_rain", t, 0.1, 1.0)) * (1 - ease(tl.prog("e_roundact", t, 0.0, 1.0)))
     if rk < 1:
         jump = abs(math.sin(t * 7)) * 30 if T("e_made") <= t < T("e_made", 1) else 0
         yy = lerp(dy, NEW_CLOUD[1] + 30, rk) - jump
@@ -690,7 +698,7 @@ def sea(tl, t):
             "e_cycle", t, 0.0, 0.2)), eyes="closed" if T("e_bye") <= t else "open")
         if rk >= 1:
             # Drip peeks out of the bottom of his new cloud
-            P.drip(c, cloud_x + 10, NEW_CLOUD[1] + 60 * ck, 0.9 * ck, t, tl.mouth("drip", t), eyes="happy"
+            P.drip(c, cloud_x + 10, NEW_CLOUD[1] + 95 * ck, 0.9 * ck, t, tl.mouth("drip", t), eyes="happy"
                    if t >= T("e_byeact") else "open", wave=1.0 if t >= T("e_bye") else 0.0)
     c.pop()
     # labels and the water cycle diagram

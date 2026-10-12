@@ -140,7 +140,6 @@ SCRIPT = [
     A("night", 1.8, "n_antact", [("ding", 0.4)]),
     S("whiskers", "Then my water bowl is a desert. Nobody filled it.", "night", "n_bowl"),
     A("night", 0.9, "n_laugh"),
-    S("fizz", "Goodbye, friends! Come back soon!", "night", "n_bye"),
     A("night", 1.6, "n_off", [("sparkle", 0.1), ("whoosh", 0.4)]),
 
     # -------------------------------------------------------------- remember
