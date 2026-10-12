@@ -27,7 +27,7 @@ again. When a new film is finished, tick it here and fill in its title and folde
 - [x] **Edinburgh**: *Whiskers and the Loch Ness Secret* (`films/edinburgh`, `catcute/Edinburgh/`)
 - [x] **Lisbon**: *Whiskers and the Yellow Tram* (`films/lisbon`, `catcute/Lisbon/`)
 - [x] **Copenhagen**: *Whiskers and the Flying Trunk* (`films/copenhagen`, `catcute/Copenhagen/`)
+- [x] **Zermatt**: *Whiskers and the Chocolate Mountain* (`films/zermatt`, `catcute/Zermatt/`)
 
 ## Ideas (not made yet)
 
-- [ ] **Zermatt / Matterhorn**: the Matterhorn, chocolate, cuckoo clocks
