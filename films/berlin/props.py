@@ -1026,6 +1026,8 @@ def mural(c, kind, x0, x1, top, base, t=0.0, seed=0):
 def clip_draw(c, x0, y0, x1, y1, fn):
     """Run fn(canvas) clipped to the box (needs an unscaled canvas)."""
     w, h = int(math.ceil(x1 - x0)), int(math.ceil(y1 - y0))
+    if w <= 0 or h <= 0:
+        return
     tmp = D.Canvas(size=(w, h))
     tmp.push(-x0, -y0)
     fn(tmp)
