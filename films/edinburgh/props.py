@@ -925,13 +925,12 @@ def nessie(c, x, y, s=1.0, face=1, t=0.0, mouth=0.0, eyes="open", rise=1.0, shy=
         hk = clamp((rise - 0.2) / 0.5)
         for k, (hx, hr) in enumerate(((-140, 56), (-270, 44))):
             hh = hr * 0.8 * hk
-            c.ellipse(hx, 0, hr, hh, body, w=2.5)
+            c.poly([(hx + math.cos(a) * hr, -math.sin(a) * hh) for a in np.linspace(0, math.pi, 16)], body, w=2.5)
             for sx in (-0.4, 0, 0.4):
                 c.circle(hx + sx * hr, -hh * 0.55, 5, dark, ol=None)
         c.stroke([(-330, -4), (-360, -16 * hk), (-374, -6 * hk)], body, 12)
-        if water:
-            c.rect(-400, 0, -80, 60, water, ol=None)
-        c.line([(-400, 0), (-90, 0)], OUT if not water else mix(water, (255, 255, 255), 0.3), 2)
+        for hx, hr in ((-140, 56), (-270, 44)):
+            c.line([(hx - hr - 10, 1), (hx + hr + 10, 1)], (170, 190, 230), 2)
     # neck: a gentle S, height scales with rise
     hgt = 290 * rise
     pts = []

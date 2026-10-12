@@ -1036,7 +1036,7 @@ def loch_frame(tl, t, night):
     return Canvas(_cache[key].copy())
 
 
-NX, NY = 830, 520
+NX, NY = 900, 580
 
 
 def loch(tl, t):
@@ -1055,7 +1055,7 @@ def loch(tl, t):
         P.ripple(c, NX, NY + 4, t, 120, (200, 220, 250))
         if rise > 0.02:
             shy = 0.6 if t < T("l_hello") else (0.3 if t < T("l_grab") else 1.0)
-            P.nessie(c, NX, NY, 0.55, -1, t, mouth=tl.mouth("nessie", t), rise=rise, shy=shy,
+            P.nessie(c, NX, NY, 0.8, -1, t, mouth=tl.mouth("nessie", t), rise=rise, shy=shy,
                      look=(-1, 0.4) if t >= T("l_grab") else (-1, 0), tint=((40, 50, 110), 0.25),
                      water=(42, 50, 96), humps=True)
             # waterline over the neck base
@@ -1099,7 +1099,7 @@ def nessie_scene(tl, t):
     eyes = "open"
     if not sad:
         eyes = "happy" if tl.mouth("nessie", t) < 0.1 and t < T("n_yes") else "open"
-    P.nessie(c, NX, NY, 0.55, -1, t, mouth=tl.mouth("nessie", t), rise=rise, shy=0.9 if sad else 0.0,
+    P.nessie(c, NX, NY, 0.8, -1, t, mouth=tl.mouth("nessie", t), rise=rise, shy=0.9 if sad else 0.0,
              look=(-1, 0.8) if sad else (-1, 0), lower=low, eyes=eyes, tint=((40, 50, 110), 0.25), blush=0.9,
              water=(42, 50, 96))
     c.rect(NX - 50, NY, NX + 50, NY + 16, (20, 24, 56), ol=None)
@@ -1153,8 +1153,8 @@ def ride(tl, t):
     c = Canvas(ride_bg().copy())
     u = tl.prog("n_ride", t, 0.0, 1.0) * 0.4 + tl.prog("n_riding", t, 0.0, 1.0) * 0.15 + \
         tl.prog("n_know", t, 0.0, 1.0) * 0.15 + tl.prog("n_end", t, 0.0, 1.0) * 0.3
-    x = lerp(380, 1100, u)
-    y = 600
+    x = lerp(480, 1180, u)
+    y = 610
     # wake
     for k in range(5):
         wx = x - 380 - k * 70
@@ -1163,18 +1163,17 @@ def ride(tl, t):
         P.goose_vee(c, lerp(600, 1300, tl.prog("n_end", t, 0.3, 1.0)), 150, t, n=7, s=0.22,
                     tint=((10, 10, 30), 0.85))
     tint = ((40, 50, 110), 0.25)
-    P.nessie(c, x, y, 0.62, 1, t, mouth=tl.mouth("nessie", t), rise=1.0, shy=0.0, eyes="happy", tint=tint,
+    P.nessie(c, x, y, 0.8, 1, t, mouth=tl.mouth("nessie", t), rise=1.0, shy=0.0, eyes="happy", tint=tint,
              water=(28, 34, 80))
     c.tint = ((30, 36, 90), 0.3)
     bob = math.sin(t * 1.6) * 3
-    kat(c, tl, t, "luna", x - 140 * 0.62, y - 40 * 0.62 + bob, 0.55, 1, "sit", look=(1, -0.3),
+    kat(c, tl, t, "luna", x - 140 * 0.8, y - 42 * 0.8 + bob, 0.6, 1, "sit", look=(1, -0.3),
         eyes="happy" if tl.mouth("luna", t) < 0.1 else "open")
-    kat(c, tl, t, "whiskers", x - 270 * 0.62, y - 30 * 0.62 + bob, 0.55, 1, "sit", look=(1, -0.3),
+    kat(c, tl, t, "whiskers", x - 270 * 0.8, y - 33 * 0.8 + bob, 0.6, 1, "sit", look=(1, -0.3),
         eyes="happy" if tl.mouth("whiskers", t) < 0.1 else "open")
     c.tint = None
     # water line in front of the humps
-    c.rect(x - 420, y + 1, x - 40, y + 30, (34, 40, 90), ol=None)
-    c.line([(x - 420, y), (x - 40, y)], (150, 170, 220), 2)
+
     return finish(c, tl, t, 0.2)
 
 
@@ -1259,8 +1258,8 @@ def home(tl, t):
         P.photo(c, 640, 260, k, t, blink_eye=T("o_look", 0.45) <= t < T("o_look", 0.6))
     kend = ease(tl.prog("o_end", t, 0.25, 0.55))
     if kend > 0:
-        c.text(W / 2, 640, "The End", 30 + 44 * kend, mix((226, 206, 176), (255, 250, 236), kend), stroke=4 * kend,
-               stroke_fill=(30, 70, 70))
+        c.text(W / 2, 640, "The End", 30 + 44 * kend, mix((226, 206, 176), (30, 90, 90), kend), stroke=4 * kend,
+               stroke_fill=(255, 250, 236))
     return finish(c, tl, t, 0.3)
 
 
