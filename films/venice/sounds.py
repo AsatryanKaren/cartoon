@@ -76,6 +76,18 @@ def sfx_burner(rng):
     return x * flick * env_adsr(len(t), 0.05, 0.4) * 0.45
 
 
+def sfx_engine(rng):
+    """Little propeller plane: a buzzing engine drone that swells and fades."""
+    d = 3.0
+    t = _t(d)
+    f = 62 + 6 * np.sin(TAU * 0.5 * t)
+    ph = TAU * np.cumsum(f) / SR
+    x = sum((1.0 / h) * np.sin(h * ph) for h in range(1, 9))
+    x *= 0.7 + 0.3 * (np.sin(TAU * 31 * t) > 0)
+    x = band(x, 50, 2500) + 0.2 * band(rng.standard_normal(len(t)), 300, 3000)
+    return x * env_adsr(len(t), 0.5, 1.0) * 0.35
+
+
 def sfx_wind(rng):
     """High-altitude wind, slow swells."""
     d = 3.5
@@ -240,6 +252,7 @@ EXTRA_SFX = {
     "click": (sfx_click, 0.6),
     "burner": (sfx_burner, 0.5),
     "wind": (sfx_wind, 0.45),
+    "engine": (sfx_engine, 0.45),
     "thump": (sfx_thump, 0.6),
     "coo": (sfx_coo, 0.55),
     "flutter": (sfx_flutter, 0.55),

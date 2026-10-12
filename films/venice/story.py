@@ -1,15 +1,16 @@
 """Film: "Whiskers and the Singing Glass" -- the two cats travel to Venice.
 
 Whiskers rolls off the windowsill in his sleep and squashes Luna's little
-silver bell flat -- and doesn't own up ("a big, heavy mouse did it").  A radio
-show tells of Murano, where glass sings like a bell, so guilty Whiskers (who
-never wants to go anywhere) insists they fly to Venice at once, in the basket
-of a striped balloon.  In St Mark's Square a sugary carnival doughnut sets off
-a pigeon stampede and Whiskers ends up in a canal (again!).  Bepi, a singing
-egret gondolier, fishes him out and rows them under the Rialto Bridge to
-Nonna Vetra's glass furnace on Murano, where Whiskers finally says sorry and
-helps blow a new bell.  High water floods the square at sunset -- so the
-gondola sails right across it to the balloon.
+golden bell flat -- and doesn't own up ("a big, heavy mouse did it"). The bell
+came from Venice, where (Grandma said) the glassmakers of Murano make glass that
+sings, so guilty Whiskers (who never wants to go anywhere) insists they go at
+once -- hidden among the letters of a little yellow mail seaplane that lands on
+the pond. In St Mark's Square a sugary carnival doughnut sets off a pigeon
+stampede and Whiskers ends up in a canal (again!). Bepi, a singing egret
+gondolier, fishes him out and rows them under the Rialto Bridge to Nonna
+Vetra's glass furnace on Murano, where Whiskers finally says sorry and helps
+blow a new bell. High water floods the square at sunset -- so the gondola
+sails right across it to the waiting seaplane.
 """
 from common import *  # noqa: F401,F403
 from common import CAST, SUBTITLE_COLORS, Voice, Say, Act
@@ -23,13 +24,11 @@ CAST = {
     **CAST,
     "bepi": Voice("im_nicola", 0.95, -3, ["Luca"], 176, "it+m3", 40, 160),
     "vetra": Voice("if_sara", 0.9, -2, ["Alice"], 166, "it+f4", 48, 150),
-    "radio": Voice("bm_lewis", 1.0, 0, ["Daniel"], 180, "en-gb+m2", 45, 165),
 }
 SUBTITLE_COLORS = {
     **SUBTITLE_COLORS,
     "bepi": (175, 235, 255),
     "vetra": (255, 225, 150),
-    "radio": (210, 240, 190),
 }
 
 MAJ, MIN = (0, 4, 7), (0, 3, 7)
@@ -79,31 +78,31 @@ SCRIPT = [
     S("luna", "It's squashed flat. It doesn't ring anymore.", "bell", "b_squash", [("clunk", 0.75)]),
     S("whiskers", "Probably a mouse did it. A big, heavy mouse.", "bell", "b_mouse"),
     S("pip", "Hey! I heard that!", "bell", "b_pip"),
-    A("bell", 0.7, "b_sad", [("click", 0.5)]),
-    S("radio", "Venice! Where the glassmakers of Murano make glass that sings like a bell.",
-      "bell", "b_radio"),
+    A("bell", 0.7, "b_sad"),
+    S("luna", "Grandma's bell came from Venice. She said that on Murano, they make glass that sings like a bell.",
+      "bell", "b_radio", [("chime", 0.6)]),
     S("whiskers", "Then we go to Venice. Right now.", "bell", "b_go"),
     S("luna", "You? Whiskers, you never want to go anywhere!", "bell", "b_you"),
     S("whiskers", "I... suddenly love travelling.", "bell", "b_love"),
-    A("bell", 0.8, "b_window", [("burner", 0.3)]),
-    S("pip", "Look! A balloon to Venice! Bring me a present!", "bell", "b_ball"),
+    A("bell", 0.8, "b_window", [("engine", 0.0), ("splash", 0.7)]),
+    S("pip", "Look! The mail plane to Venice! Bring me a present!", "bell", "b_ball"),
     A("bell", 1.2, "b_run", [("whoosh", 0.2), ("whoosh", 0.45)]),
 
     # -------------------------------------------------------------- balloon
-    A("balloon", 1.4, "v_lift", [("burner", 0.1), ("burner", 0.6)]),
-    S("narrator", "So two cats hid in a striped balloon, and floated over the mountains.",
+    A("balloon", 1.4, "v_lift", [("whoosh", 0.2), ("engine", 0.45), ("splash", 0.8)]),
+    S("narrator", "So two cats hid among the letters in the little mail plane, and flew over the mountains.",
       "balloon", "v_narr"),
-    A("balloon", 1.4, "v_alps", [("wind", 0.0), ("burner", 0.6)]),
+    A("balloon", 1.4, "v_alps", [("engine", 0.0), ("wind", 0.3)]),
     S("whiskers", "Don't look down. Don't look down.", "balloon", "v_down"),
     S("luna", "Whiskers, look down! There it is!", "balloon", "v_look"),
-    A("balloon", 1.6, "v_venice", [("gull", 0.3), ("gull", 0.7)]),
+    A("balloon", 1.6, "v_venice", [("engine", 0.1), ("gull", 0.3), ("gull", 0.7)]),
     S("whiskers", "Wait. The whole city is sitting in the water?", "balloon", "v_water"),
     S("narrator", "Venice has canals for streets, and boats for buses.", "balloon", "v_canals"),
-    A("balloon", 1.4, "v_land", [("burner", 0.2), ("thump", 0.92)]),
+    A("balloon", 1.4, "v_land", [("engine", 0.1), ("splash", 0.85)]),
 
     # --------------------------------------------------------------- square
-    A("square", 1.0, "q_arrive", [("coo", 0.3), ("flutter", 0.5)]),
-    S("narrator", "They landed in Saint Mark's Square, by the golden church and the tall bell tower.",
+    A("square", 1.0, "q_arrive", [("lap", 0.0), ("coo", 0.5), ("flutter", 0.7)]),
+    S("narrator", "They landed by Saint Mark's Square, with its golden church and tall bell tower.",
       "square", "q_narr", [("coo", 0.8)]),
     S("narrator", "Lots and lots of pigeons.", "square", "q_lots", [("coo", 0.2), ("coo", 0.6)]),
     S("luna", "We fly home when the big bell rings at sunset!",
@@ -166,12 +165,12 @@ SCRIPT = [
     S("bepi", "In Venice, where there is water, there is a gondola!", "flood", "f_gondola"),
     A("flood", 1.8, "f_across", [("song", 0.0), ("splash", 0.3), ("lap", 0.5), ("bong", 0.7)]),
     S("luna", "Grazie, Bepi!", "flood", "f_grazie"),
-    S("bepi", "Ciao, little cats!", "flood", "f_ciao", [("burner", 0.8)]),
-    A("flood", 1.4, "f_lift", [("burner", 0.2), ("glassbell", 0.6)]),
+    S("bepi", "Ciao, little cats!", "flood", "f_ciao", [("engine", 0.8)]),
+    A("flood", 1.4, "f_lift", [("engine", 0.1), ("splash", 0.3), ("glassbell", 0.6)]),
 
     # ----------------------------------------------------------------- home
-    A("home", 1.4, "h_fly", [("wind", 0.1)]),
-    S("narrator", "The balloon carried them home through the night.",
+    A("home", 1.4, "h_fly", [("engine", 0.1), ("wind", 0.3)]),
+    S("narrator", "The little plane carried them home through the night.",
       "home", "h_narr"),
     A("home", 1.0, "h_sill", [("chime", 0.2)]),
     S("pip", "Did you find the singing glass?", "home", "h_pip"),

@@ -1254,11 +1254,11 @@ def murano(tl, t):
     # --- positions
     lk = [(s0, -150), (T("m_arrive", 0.8), 250), (T("m_truth"), 250), (T("m_truth", 0.6), 320), (T("m_help"), 320),
           (T("m_help", 0.6), 250)]
-    wk = [(s0, -300), (T("m_arrive", 0.9), 400), (T("m_help", 0.3), 400), (T("m_help", 0.9), 560)]
-    vk = [(s0, 760), (T("m_arrive", 0.7), 760), (T("m_welcome"), 700), (T("m_help"), 700), (T("m_help", 0.6), 760),
-          (T("m_gently"), 760), (T("m_shape", 0.1), 760)]
+    wk = [(s0, -300), (T("m_arrive", 0.9), 400), (T("m_help", 0.3), 400), (T("m_help", 0.9), 430)]
+    vk = [(s0, 760), (T("m_arrive", 0.7), 760), (T("m_welcome"), 700), (T("m_help"), 700), (T("m_help", 0.6), 1040),
+          (T("m_shape"), 1040), (T("m_shape", 0.1), 760)]
     if t >= T("m_ring"):
-        wk = wk + [(T("m_ring"), 560), (T("m_ring", 0.6), 440)]
+        wk = wk + [(T("m_ring"), 430), (T("m_ring", 0.6), 440)]
     if t >= T("m_quick", 0.3):
         lk = lk + [(T("m_quick", 0.3), 250), (s1, 1300)]
         wk = wk + [(T("m_quick", 0.4), 440), (s1, 1300)]
@@ -1289,7 +1289,7 @@ def murano(tl, t):
             glob_r = 166 + 6 * math.sin(t * 9)
         if t >= T("m_shape"):
             glob_r = lerp(166, 30, ease(tl.prog("m_shape", t, 0.0, 0.15)))
-        hot = 1 - 0.6 * ease(u)
+        hot = 1 - 0.92 * ease(u)
         tipx = mx + 150 + glob_r * 0.9
         blowpipe(c, mx + 4, my + 2, tipx, my + 2, glob_r, hot)
     elif T("m_shape", 0.15) <= t < T("m_there", 0.5):
@@ -1368,13 +1368,13 @@ FLOOD_Y = 588      # water level in the square
 def flood_layer():
     def make():
         c = rgba(SQW, H)
-        water_band(c, 0, SQW, FLOOD_Y, H, (226, 160, 140), (110, 100, 150))
+        water_band(c, 0, SQW, FLOOD_Y, H, (150, 140, 190), (70, 80, 140))
         # reflections of the buildings
         for x0, x1, col in ((-10, 330, (240, 226, 200)), (430, 1030, (236, 200, 120)), (1060, 1160, (200, 110, 86)),
                             (1230, 1680, (240, 196, 186))):
             for k in range(8):
                 y = FLOOD_Y + 8 + k * 16
-                c.rect(x0 + 10 + 6 * k, y, x1 - 10 - 6 * k, y + 4, mix(col, (226, 160, 140), 0.4 + 0.07 * k), ol=None)
+                c.rect(x0 + 10 + 6 * k, y, x1 - 10 - 6 * k, y + 4, mix(col, (150, 140, 190), 0.45 + 0.07 * k), ol=None)
         return c.img
     return cached("flood", make)
 
@@ -1403,7 +1403,7 @@ def flood(tl, t):
     # the flooded square
     cam = smooth(t, [(T("f_narr"), SQW - W), (T("f_across", 0.05), SQW - W), (T("f_across", 0.9), 0)], 0.6)
     c = view(square_bg(), cam)
-    c = overlay(c, (255, 140, 90), 0.2)
+    c = overlay(c, (255, 130, 90), 0.28)
     paste_layer(c, flood_layer(), cam)
     ripples(c, t, FLOOD_Y + 6, H, 40, seed=12, col=(255, 210, 180))
     # tables poking out of the water, pigeons perched on them
