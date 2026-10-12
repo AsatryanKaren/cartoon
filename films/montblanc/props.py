@@ -99,8 +99,9 @@ def snow_mound(c, x, y, rx, ry, col=SNOW, shade=SNOW_SH, ol=OUT):
            for a in np.linspace(0, math.pi, 24)]
     c.poly([(x + rx + 16, y + 6)] + pts + [(x - rx - 16, y + 6)], col, ol=None)
     c.line([(x + rx + 16, y + 4)] + pts + [(x - rx - 16, y + 4)], ol, 2.5)
-    c.poly([(x + rx * 0.9, y)] + [(x + rx * 0.9 * math.cos(a), y - ry * 0.55 * math.sin(a))
-                                   for a in np.linspace(0, math.pi / 2, 8)] + [(x, y)], shade, ol=None)
+    outer = [(x + rx * 0.92 * math.cos(a), y - ry * 0.92 * math.sin(a)) for a in np.linspace(0.05, 1.3, 10)]
+    inner = [(x + rx * 0.2 + rx * 0.62 * math.cos(a), y - ry * 0.55 * math.sin(a)) for a in np.linspace(1.3, 0.05, 10)]
+    c.poly(outer + inner, shade, ol=None)
     c.rect(x - rx - 18, y + 1, x + rx + 18, y + 8, col, ol=None)
 
 
@@ -329,8 +330,7 @@ def cable_cabin(c, x, y, s=1.0, swing=0.0, inside=None):
         inside(c, R)
     # window frame bars over passengers
     c.poly([R(-128, 196), R(128, 196), R(134, 214), R(-134, 214)], (226, 44, 56), ol=None)
-    for bx in (-40, 40):
-        c.line([R(bx, 86), R(bx * 1.03, 196)], (226, 44, 56), 6)
+    c.line([R(0, 86), R(0, 196)], (226, 44, 56), 6)
     c.poly(win, None, w=3)
     c.poly([R(-138, 214), R(138, 214), R(140, 250), R(-140, 250)], (190, 36, 48), w=3)
     c.line([R(-110, 92), R(-70, 92)], (240, 248, 255), 3)

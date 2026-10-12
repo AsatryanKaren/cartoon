@@ -569,7 +569,7 @@ def cablecar(tl, t):
             eyes="closed" if not peek else ("happy" if t >= T("cc_pretty", 0.6) else "wide"),
             look=(1, 0.6), tail=0.0)
         lx, ly = R(62, 214)
-        kat(cc, tl, t, "luna", lx, ly, 0.76, -1 if talking_l else 1, "stand",
+        kat(cc, tl, t, "luna", lx + 10, ly, 0.76, -1 if talking_l else 1, "sit",
             eyes="happy" if T("cc_pretty", 0.5) <= t else "open", look=(1, 0.5) if not talking_l else (1, 0))
     swing = 0.035 * math.sin(t * 1.4) + (0.08 * math.sin((t - T("cc_arrive", 0.8)) * 9) *
                                          math.exp(-(t - T("cc_arrive", 0.8)) * 2) if t > T("cc_arrive", 0.8) else 0)
@@ -675,8 +675,8 @@ def snow(tl, t):
         wob = 3 * math.sin(t * 16) if tl.talking("whiskers", t) else 0
         if t < T("sn_pop", 0.75):
             wave = math.sin(t * 6)
-            pts = [(DX - 10 + 8 * math.sin(u * 3 + t * 5) * u + 30 * wave * u * u, SG - 60 - 70 * u) for u in np.linspace(0, 1, 8)]
-            c.stroke(pts, D.WHISKERS["body"], 12)
+            pts = [(DX - 10 + 10 * math.sin(u * 3 + t * 5) * u + 40 * wave * u * u, SG - 70 - 100 * u) for u in np.linspace(0, 1, 8)]
+            c.stroke(pts, D.WHISKERS["body"], 15)
             for k in (2, 5):
                 c.line([pts[k], (pts[k][0] + 9, pts[k][1] - 5)], D.WHISKERS["dark"], 4)
     snow_drift(c, DX, SG, wob)
@@ -825,7 +825,7 @@ def storm(tl, t):
     # Bruno emerges from the white with his lantern
     if t >= T("st_bark"):
         bx = smooth(t, bk)
-        near = clamp((2200 - bx) / 500)
+        near = clamp((2200 - bx) / 500) if t < T("st_carry") else 0.85
         c.tint = (FOG, 0.85 * (1 - near))
         face = -1 if t < T("st_carry") else 1
         mv = abs(speed(t, bk)) > 15
@@ -857,8 +857,8 @@ def storm(tl, t):
 
 # ================================================================== chalet
 
-TABLE_Y = 470
-POT = (790, 470)
+TABLE_Y = 520
+POT = (800, 520)
 
 
 def chalet_bg():
@@ -902,8 +902,8 @@ def chalet_bg():
         # rug and table
         c.ellipse(250, 630, 230, 46, (190, 60, 60))
         c.ellipse(250, 630, 190, 34, (220, 100, 80), ol=None)
-        c.rect(590, 470, 610, 650, (110, 70, 44))
-        c.rect(970, 470, 990, 650, (110, 70, 44))
+        c.rect(590, 520, 610, 700, (110, 70, 44))
+        c.rect(970, 520, 990, 700, (110, 70, 44))
         # hanging lamp
         c.line([(790, 0), (790, 70)], OUT, 3)
         c.poly([(750, 100), (790, 66), (830, 100)], (60, 90, 70))
@@ -925,7 +925,7 @@ def table_front(c):
 
 
 def fire(c, t, x=220, y=556):
-    c.glow(x, y - 40, 150, 90, (255, 170, 80), (60, 30, 24), steps=8)
+    c.glow(x, y - 66, 100, 64, (255, 170, 80), (40, 26, 22), steps=8)
     c.rect(x - 70, y - 20, x + 70, y - 6, (100, 60, 40), w=2, r=5)
     for k in range(5):
         fx = x - 56 + k * 28
@@ -955,61 +955,62 @@ def chalet(tl, t):
     c.line([(1030, 250), (1230, 250)], (110, 66, 40), 6, cap=False)
     asleep = t >= T("ch_zzz")
     if asleep:
-        P.bruno(c, 470, 650, 0.8, -1, t, sit=True, eyes="closed")
-        kat(c, tl, t, "luna", 170, 640, 0.85, 1, "sleep", mouth=0)
-        kat(c, tl, t, "whiskers", 300, 650, 0.85, 1, "sleep", mouth=0)
-        P.margot(c, 400, 640, 0.9, -1, t, eyes="closed")
-        c.rect(556, TABLE_Y, 1024, TABLE_Y + 66, None, ol=None)
         table_front(c)
-        fondue_pot(c, POT[0], POT[1], 0.9, t, steam=False)
-        D.zzz(c, 330, 560, t)
-        P.overlay(c, (30, 24, 60), 0.3)
-        c.glow(220, 520, 200, 120, (255, 170, 90), (80, 50, 60), steps=6)
+        fondue_pot(c, POT[0], POT[1] + 4, 1.05, t, steam=False)
+        P.overlay(c, (30, 24, 60), 0.38)
         fire(c, t)
+        c.tint = ((60, 40, 60), 0.2)
+        P.bruno(c, 520, 692, 0.85, -1, t, sit=True, eyes="closed")
+        kat(c, tl, t, "luna", 150, 664, 0.9, 1, "sleep", mouth=0)
+        kat(c, tl, t, "whiskers", 300, 672, 0.9, 1, "sleep", mouth=0)
+        P.margot(c, 420, 668, 0.95, -1, t, eyes="closed")
+        c.tint = None
+        D.zzz(c, 330, 580, t)
         return finish(c, tl, t)
     # Bruno by the fire
-    P.bruno(c, 430, 650, 0.75, 1, t, sit=True, mouth=tl.mouth("bruno", t),
+    P.bruno(c, 420, 692, 0.85, 1, t, sit=True, mouth=tl.mouth("bruno", t),
             eyes="happy" if T("ch_win") <= t < T("ch_munch", 1) else "open")
     # Whiskers and the great cheese pull
     dip = tl.prog("ch_dip", t)
     pull = clamp(tl.prog("ch_dip", t, 0.3, 1.0) * 0.6 + tl.prog("ch_win", t) * 0.4)
     snapped = t >= T("ch_munch", 0.1)
-    ws = 0.95
+    ws = 1.15
+    WY = 566
     if T("ch_dip", 0.3) <= t < T("ch_munch", 0.1):
         wx = lerp(650, 600, ease(pull))
-        kat(c, tl, t, "whiskers", wx, 505, ws, 1, "stand", scarf=True, eyes="wide" if pull > 0.5 else "open",
+        kat(c, tl, t, "whiskers", wx, WY, ws, 1, "stand", scarf=True, eyes="wide" if pull > 0.5 else "open",
             look=(1, -0.8), squash=1.0)
-        paw = (wx + 40, 505 - 64)
+        paw = (wx + 46, WY - 74)
     else:
         sit_x = 650
         mouth = laughing(t, 0.7) * 0.6 if T("ch_munch", 0.2) <= t < T("ch_sorry") else tl.mouth("whiskers", t)
-        kat(c, tl, t, "whiskers", sit_x, 505, ws, 1, "sit", scarf=True, mouth=mouth,
+        kat(c, tl, t, "whiskers", sit_x, WY, ws, 1, "sit", scarf=True, mouth=mouth,
             eyes="happy" if (T("ch_munch", 0.2) <= t < T("ch_sorry") or T("ch_bell", 0.5) <= t) else "open",
             look=(1, 0) if t < T("ch_sorry") else (1, 0))
-        paw = (sit_x + 34, 505 - 50)
+        paw = (sit_x + 40, WY - 58)
     # fork and cheese
-    pot_top = (POT[0] - 6, POT[1] - 86 * 0.9)
+    pot_top = (POT[0] - 6, POT[1] - 86 * 1.05)
     if t < T("ch_dip", 0.3):
         tip = (lerp(paw[0] + 50, pot_top[0], ease(dip / 0.3)), lerp(paw[1] - 20, pot_top[1] + 4, ease(dip / 0.3)))
     elif not snapped:
-        tip = (lerp(pot_top[0] - 20, 760, ease(pull)), lerp(pot_top[1] - 10, 170, ease(pull)))
+        tip = (lerp(pot_top[0] - 20, 760, ease(pull)), lerp(pot_top[1] - 10, 190, ease(pull)))
     else:
         u = clamp((t - T("ch_munch", 0.1)) / 0.35)
-        tip = (lerp(760, paw[0] + 40, u), lerp(170, paw[1] - 40, u))
+        tip = (lerp(760, paw[0] + 40, u), lerp(190, paw[1] - 40, u))
     c.tint = None
     # the fondue pot sits on the table (drawn before the table front so its stand hides behind the cloth)
     if T("ch_dip", 0.25) <= t < T("ch_munch", 0.1):
         cheese_string(c, pot_top, tip, lerp(10, 3, pull))
     # Luna across the table
     sad = T("ch_sorry") <= t < T("ch_bell", 0.5)
-    kat(c, tl, t, "luna", 930, 505, 0.95, -1, "sit", eyes="closed" if sad else (
+    kat(c, tl, t, "luna", 975, WY, 1.15, -1, "sit", eyes="closed" if sad else (
         "happy" if T("ch_win") <= t < T("ch_munch", 1) or t >= T("ch_bell", 0.5) else "open"),
         head_dy=6 if sad else 0, mouth=laughing(t) * 0.7 if T("ch_win", 0.6) <= t < T("ch_munch", 1) else tl.mouth("luna", t))
     table_front(c)
-    fondue_pot(c, POT[0], POT[1] + 4, 0.9, t)
+    fondue_pot(c, POT[0], POT[1] + 4, 1.05, t)
     # Margot on the table, hopping with laughter
     hop = abs(math.sin(t * 9)) * 8 if T("ch_munch") <= t < T("ch_munch", 1) else 0
-    P.margot(c, 870, TABLE_Y + 2, 0.95, -1, t, mouth=tl.mouth("margot", t), hop=hop,
+    P.margot(c, 895, TABLE_Y + 2, 1.15, -1, t, mouth=tl.mouth("margot", t), hop=hop,
              eyes="happy" if T("ch_munch") <= t < T("ch_munch", 1) else "open",
              wave=1.0 if T("ch_win") <= t < T("ch_win", 1) else 0.0)
     if T("ch_dip", 0.25) <= t:
@@ -1017,7 +1018,7 @@ def chalet(tl, t):
         c.circle(tip[0], tip[1], 9, (255, 214, 90) if not snapped or t < T("ch_munch", 0.4) else (230, 190, 120),
                  w=2)
     if snapped and t < T("ch_munch", 1):
-        c.ellipse(paw[0] - 2, paw[1] - 62, 18, 9, (255, 214, 90), w=2)       # cheese on his nose
+        c.ellipse(paw[0] + 4, paw[1] - 70, 20, 10, (255, 214, 90), w=2)       # cheese on his nose
     return finish(c, tl, t)
 
 
@@ -1025,12 +1026,12 @@ def chalet(tl, t):
 
 def ridge_y(x):
     if x < 0:
-        return 730 - 0.6 * x
-    if x < 560:
-        return 730 - 330 * (x / 560) ** 0.85
-    if x < 940:
-        return 400 - 8 * math.sin((x - 560) / 380 * math.pi)
-    return 400 + 230 * ((x - 940) / 340) ** 1.2
+        return 760 - 0.7 * x
+    if x < 520:
+        return 760 - 380 * (x / 520) ** 0.85
+    if x < 880:
+        return 380 - 8 * math.sin((x - 520) / 360 * math.pi)
+    return 380 + 260 * ((x - 880) / 220) ** 1.3
 
 
 def summit_layers(dawn):
@@ -1057,11 +1058,24 @@ def summit_layers(dawn):
             P.soft_cloud(fg, x, y, rng.uniform(0.8, 1.6), col=cl, shade=cl_sh)
         pts = [(x, ridge_y(x)) for x in range(0, W + 20, 20)]
         fg.poly(pts + [(W, H), (0, H)], snow, w=3)
-        fg.poly([(940, 400)] + [(x, ridge_y(x)) for x in range(940, W + 20, 20)] + [(W, H), (1000, H)], shade, ol=None)
-        fg.poly([(0, 730), (300, 610), (560, 470), (600, H), (0, H)], mix(snow, shade, 0.4), ol=None)
+        fg.poly([(880, 380)] + [(x, ridge_y(x)) for x in range(880, W + 20, 20)] + [(W, H), (900, H)], shade, ol=None)
+        fg.poly([(0, 760), (260, 600), (500, 400), (560, H), (0, H)], mix(snow, shade, 0.35), ol=None)
+        for k in range(10):
+            P.soft_cloud(fg, 1000 + 70 * k + rng.uniform(-30, 30), 640 + rng.uniform(0, 70), 1.1, col=cl, shade=cl_sh)
+        rockc = far["rock"]
+        for x0, dy, w_ in ((120, 60, 50), (300, 90, 70), (420, 150, 40), (980, 70, 60), (1120, 40, 80), (220, 170, 60)):
+            y0 = ridge_y(x0) + dy
+            fg.poly([(x0 - w_, y0 + 14), (x0 - w_ * 0.3, y0 - 18), (x0 + w_ * 0.4, y0 - 10), (x0 + w_, y0 + 14)],
+                    rockc, w=2.5)
+            fg.poly([(x0 - w_ * 0.5, y0 - 8), (x0 - w_ * 0.3, y0 - 18), (x0 + w_ * 0.4, y0 - 10), (x0 + w_ * 0.2, y0 - 4)],
+                    snow, ol=None)
+        for k in range(9):
+            x0 = 40 + 110 * k
+            y0 = ridge_y(x0) + 60 + 40 * (k % 3)
+            fg.line([(x0, y0), (x0 + 90, y0 - 28 if x0 < 520 else y0 + 10)], shade, 3)
         # summit marker
-        fg.line([(800, 392), (800, 300)], (90, 70, 60), 5)
-        fg.poly([(800, 302), (860, 316), (800, 332)], (220, 50, 60), w=2)
+        fg.line([(700, 374), (700, 284)], (90, 70, 60), 5)
+        fg.poly([(700, 286), (760, 300), (700, 316)], (220, 50, 60), w=2)
         return sk.img, fg.img
     return cached(("summit", dawn), make)
 
@@ -1094,19 +1108,19 @@ def summit(tl, t):
     (sk0, fg0), (sk1, fg1) = summit_layers(False), summit_layers(True)
     sky = sk0 if k <= 0 else sk1 if k >= 1 else Image.blend(sk0, sk1, k)
     c = Canvas(sky.copy())
-    sy = lerp(600, 300, ease(tl.prog("su_sunrise", t, 0.05, 1.0)))
+    sy = lerp(660, 290, ease(tl.prog("su_sunrise", t, 0.05, 1.0)))
     if t >= T("su_sunrise"):
-        P.sun(c, 1060, sy, 46, t, rays=k > 0.5, sky=mix((110, 106, 160), (255, 214, 160), k))
+        P.sun(c, 1090, sy, 46, t, rays=k > 0.5, sky=mix((110, 106, 160), (255, 214, 160), k))
     fg = fg0 if k <= 0 else fg1 if k >= 1 else Image.blend(fg0, fg1, k)
     c.img.paste(fg, (0, 0), fg)
     # the rope team climbs the ridge
-    lead = smooth(t, [(s0, -60), (T("su_narr", 1), 560), (T("su_top", 0.8), 900)], 0.4)
-    order = [("bruno", 0, 0.5), ("luna", 105, 0.6), ("whiskers", 190, 0.6), ("margot", 260, 0.62)]
+    lead = smooth(t, [(s0, -60), (T("su_narr", 1), 520), (T("su_top", 0.8), 830)], 0.4)
+    order = [("bruno", 0, 0.62), ("luna", 115, 0.72), ("whiskers", 210, 0.72), ("margot", 290, 0.75)]
     if t >= T("su_top", 0.8):
-        spots = {"bruno": 900, "luna": 780, "whiskers": 690, "margot": 620}
+        spots = {"bruno": 830, "luna": 715, "whiskers": 620, "margot": 540}
     else:
         spots = {who: lead - off for who, off, _ in order}
-    moving = abs(speed(t, [(s0, -60), (T("su_narr", 1), 560), (T("su_top", 0.8), 900)])) > 10
+    moving = abs(speed(t, [(s0, -60), (T("su_narr", 1), 520), (T("su_top", 0.8), 830)])) > 10
     c.tint = (mix((40, 50, 110), (255, 170, 120), k), lerp(0.4, 0.12, k))
     anchors = []
     for who, off, s in order:
@@ -1137,7 +1151,7 @@ def summit_close(tl, t):
     T = tl.t
     sk, fg = summit_close_bg()
     c = Canvas(sk.copy())
-    P.sun(c, 1010, 330, 60, t, sky=(255, 214, 160))
+    P.sun(c, 1010, 330, 60, t, sky=(249, 184, 166), halo=(255, 226, 172))
     c.img.paste(fg, (0, 0), fg)
     lean = ease(tl.prog("su_hold", t, 0.0, 0.4))
     turn = t >= T("su_thanks") - 0.2
@@ -1208,7 +1222,7 @@ def sled(tl, t):
     sy = sled_y(sx)
     focus = sx if t < T("sl_crash") else lerp(sx, DRIFT_X - 80, ease(tl.prog("sl_crash", t, 0, 0.5)))
     camx = focus - 520
-    camy = sled_y(focus) - 430
+    camy = sled_y(focus) - lerp(430, 590, 1 - sled_dy(focus) / SLOPE)
     sky = sled_sky()
     ox = int(clamp(camx * 0.12, 0, W - 1))
     oy = int(clamp(camy * 0.1, 0, 219))
@@ -1235,7 +1249,7 @@ def sled(tl, t):
         ang = math.atan(sled_dy(sx))
         bump = abs(math.sin(sx / 90)) * 8 if t > t_go else 0
         ca, sa = math.cos(ang), math.sin(ang)
-        bs = 0.8
+        bs = 1.1
         # snow spray from the runners
         if t > t_go:
             rng = np.random.default_rng(3)
@@ -1248,56 +1262,56 @@ def sled(tl, t):
             px = sx + (lx * ca + 30 * sa) * bs
             py = sy + (lx * sa - 30 * ca) * bs - bump
             if who == "bruno":
-                P.bruno(c, px, py + 30, 0.42, 1, t, sit=True, mouth=tl.mouth("bruno", t),
+                P.bruno(c, px, py + 40, 0.58, 1, t, sit=True, mouth=tl.mouth("bruno", t),
                         eyes="happy" if t > t_go else "open")
             elif who == "margot":
-                P.margot(c, px, py, 0.62, 1, t, eyes="happy" if t > t_go else "open", mouth=tl.mouth("margot", t))
+                P.margot(c, px, py, 0.85, 1, t, eyes="happy" if t > t_go else "open", mouth=tl.mouth("margot", t))
             else:
                 wide = who == "whiskers" and t_go < t < T("sl_ride", 0.45)
-                kat(c, tl, t, who, px, py, 0.55, 1, "sit", scarf=True,
+                kat(c, tl, t, who, px, py, 0.76, 1, "sit", scarf=True,
                     eyes="wide" if wide else ("happy" if t > t_go else "open"),
                     mouth=0.7 if wide else tl.mouth(who, t), head_dy=-4 if wide else 0)
         P.sled(c, sx, sy - bump, bs, ang)
-        P.snow_mound(c, DRIFT_X, dy0 - 30, 210, 90)
+        P.snow_mound(c, DRIFT_X, dy0 + 2, 250, 130)
     else:
         dt = t - T("sl_crash", 0.12)
         ub = tl.prog("sl_crash", t, 0.12, 0.4)
-        P.sled(c, DRIFT_X - 230, dy0, 0.8, 0.0)
+        P.sled(c, DRIFT_X - 300, dy0, 1.1, 0.0)
         out = t >= T("sl_bye") - 0.3
         if ub < 1:
             # everyone flies into the drift
             for k, (who, lx) in enumerate(riders):
-                x0, x1 = DRIFT_X - 230 + lx * 0.8, DRIFT_X - 120 + 70 * k
+                x0, x1 = DRIFT_X - 300 + lx * 1.1, DRIFT_X - 140 + 80 * k
                 px = lerp(x0, x1, ub)
                 py = lerp(dy0 - 30, dy0 - 80, ub) - 260 * ub * (1 - ub) * (1 + 0.3 * k)
                 if who in ("whiskers", "luna"):
-                    kat(c, tl, t, who, px, py, 0.55, 1, "leap", eyes="wide", mouth=0.6, scarf=True)
+                    kat(c, tl, t, who, px, py, 0.76, 1, "leap", eyes="wide", mouth=0.6, scarf=True)
                 elif who == "margot":
-                    P.margot(c, px, py, 0.62, 1, t, eyes="wide")
+                    P.margot(c, px, py, 0.85, 1, t, eyes="wide")
                 else:
-                    P.bruno(c, px, py, 0.42, 1, t, eyes="wide", mouth=0.5)
+                    P.bruno(c, px, py, 0.58, 1, t, eyes="wide", mouth=0.5)
         if not out:
             if ub >= 1:
-                P.bruno(c, DRIFT_X + 90, dy0 - 90, 0.5, -1, t, sit=True, eyes="happy", mouth=tl.mouth("bruno", t))
-        P.snow_mound(c, DRIFT_X, dy0 - 30, 210, 90)
+                P.bruno(c, DRIFT_X + 110, dy0 - 100, 0.62, -1, t, sit=True, eyes="happy", mouth=tl.mouth("bruno", t))
+        P.snow_mound(c, DRIFT_X, dy0 + 2, 250, 130)
         if ub >= 1 and not out:
             pop = lambda f: ease(clamp((t - T("sl_crash", f)) / 0.25))
-            kat(c, tl, t, "luna", DRIFT_X - 120, dy0 - 70 - 30 * pop(0.5), 0.75, 1, "swim", eyes="happy",
+            kat(c, tl, t, "luna", DRIFT_X - 140, dy0 - 80 - 30 * pop(0.5), 0.95, 1, "swim", eyes="happy",
                 mouth=laughing(t) * 0.8)
-            kat(c, tl, t, "whiskers", DRIFT_X - 10, dy0 - 90 - 30 * pop(0.6), 0.75, 1, "swim", eyes="happy",
+            kat(c, tl, t, "whiskers", DRIFT_X - 20, dy0 - 105 - 30 * pop(0.6), 0.95, 1, "swim", eyes="happy",
                 mouth=tl.mouth("whiskers", t) or laughing(t, 1.2) * 0.8)
-            P.margot(c, DRIFT_X + 60, dy0 - 100 - 30 * pop(0.75), 0.9, -1, t, eyes="happy")
+            P.margot(c, DRIFT_X + 70, dy0 - 110 - 30 * pop(0.75), 1.1, -1, t, eyes="happy")
         poof(c, DRIFT_X - 100, dy0 - 80, dt - (T("sl_crash", 0.4) - T("sl_crash", 0.12)))
         poof(c, DRIFT_X, dy0 - 100, dt - (T("sl_crash", 0.42) - T("sl_crash", 0.12)))
         if out:
             # goodbyes: Margot waves from the top of the drift, Bruno beside it; the cats head for the village
-            P.bruno(c, DRIFT_X + 150, dy0 + 2, 0.55, -1, t, sit=True, mouth=tl.mouth("bruno", t), eyes="happy")
-            P.margot(c, DRIFT_X + 10, dy0 - 118, 1.0, -1 if t < T("sl_end") else 1, t, mouth=tl.mouth("margot", t),
+            P.bruno(c, DRIFT_X + 330, dy0 + 2, 0.7, -1, t, sit=True, mouth=tl.mouth("bruno", t), eyes="happy")
+            P.margot(c, DRIFT_X + 10, dy0 - 124, 1.2, -1 if t < T("sl_end") else 1, t, mouth=tl.mouth("margot", t),
                      wave=1.0, eyes="happy")
-            wk = [(T("sl_bye") - 0.3, DRIFT_X - 250), (T("sl_end", 0.1), DRIFT_X - 250), (s1 + 0.5, DRIFT_X + 700)]
-            lk = [(T("sl_bye") - 0.3, DRIFT_X - 330), (T("sl_end", 0.05), DRIFT_X - 330), (s1 + 0.5, DRIFT_X + 640)]
-            actor(c, tl, t, "luna", lk, dy0 + 4, 0.7, face=1, eyes="happy")
-            actor(c, tl, t, "whiskers", wk, dy0 + 4, 0.7, face=1, scarf=True,
+            wk = [(T("sl_bye") - 0.3, DRIFT_X - 200), (T("sl_end", 0.1), DRIFT_X - 200), (s1 + 0.5, DRIFT_X + 800)]
+            lk = [(T("sl_bye") - 0.3, DRIFT_X - 330), (T("sl_end", 0.05), DRIFT_X - 330), (s1 + 0.5, DRIFT_X + 700)]
+            actor(c, tl, t, "luna", lk, dy0 + 4, 0.9, face=1, eyes="happy")
+            actor(c, tl, t, "whiskers", wk, dy0 + 4, 0.9, face=1, scarf=True,
                   eyes="happy" if not tl.talking("whiskers", t) else "open")
     for x, s, front in pines:
         if front and camx - 100 < x < camx + W + 100:
@@ -1320,71 +1334,68 @@ def home_bg():
         c = Canvas(bg=wall)
         for x in range(0, W, 64):
             c.rect(x + 28, 0, x + 36, H, mix(wall, (255, 255, 255), 0.25), ol=None)
-        win = Canvas(D.gradient(1000 * SS, 440 * SS, [(0, (16, 22, 60)), (0.7, (50, 56, 112)), (1, (70, 70, 130))]),
-                     size=(1000, 440))
-        D.stars(win, 14, 50, 1000, 160)
-        D.moon(win, 820, 80, 30, sky=(30, 36, 80))
-        for x, w, h in ((40, 220, 170), (300, 180, 220), (520, 260, 150), (800, 200, 200)):
-            win.rect(x, 440 - h, x + w, 440, (60, 56, 90), ol=None)
-            win.poly([(x - 14, 440 - h), (x + w / 2, 440 - h - 60), (x + w + 14, 440 - h)], P.SNOW, ol=None)
+        win = Canvas(D.gradient(1000 * SS, 480 * SS, [(0, (16, 22, 60)), (0.7, (50, 56, 112)), (1, (70, 70, 130))]),
+                     size=(1000, 480))
+        D.stars(win, 14, 50, 1000, 180)
+        D.moon(win, 820, 90, 32, sky=(30, 36, 80))
+        for x, w, h in ((40, 220, 180), (300, 180, 230), (520, 260, 160), (800, 200, 210)):
+            win.rect(x, 480 - h, x + w, 480, (60, 56, 90), ol=None)
+            win.poly([(x - 14, 480 - h), (x + w / 2, 480 - h - 60), (x + w + 14, 480 - h)], P.SNOW, ol=None)
             for wx in range(int(x) + 26, int(x + w) - 30, 60):
-                win.rect(wx, 440 - h + 40, wx + 26, 440 - h + 74, (255, 214, 120), ol=None)
-        win.rect(0, 420, 1000, 440, P.SNOW, ol=None)
-        c.img.paste(win.img, (140 * SS, 40 * SS))
-        c.rect(120, 22, 1160, 482, None, w=0.1, ol=None)
-        # curtains
+                win.rect(wx, 480 - h + 40, wx + 26, 480 - h + 74, (255, 214, 120), ol=None)
+        win.rect(0, 460, 1000, 480, P.SNOW, ol=None)
+        c.img.paste(win.img, (140 * SS, 60 * SS))
         for x0, x1 in ((50, 170), (1110, 1230)):
-            c.rect(x0, 0, x1, 600, (70, 110, 170), r=10)
+            c.rect(x0, 0, x1, 640, (70, 110, 170), r=10)
             for xx in range(int(x0) + 20, int(x1), 30):
-                c.line([(xx, 10), (xx, 590)], (56, 92, 150), 3, cap=False)
+                c.line([(xx, 10), (xx, 630)], (56, 92, 150), 3, cap=False)
         c.rect(30, 0, 1250, 16, (150, 100, 60))
-        c.rect(0, 500, W, H, mix(wall, (0, 0, 0), 0.06), ol=None)
-        # postcard on the sill and a snow globe
-        card = P.postcard_img(420, 280).resize((168 * SS, 112 * SS))
-        c.rect(946, 360, 1124, 478, (255, 252, 240), w=2.5)
-        c.img.paste(card, (951 * SS, 364 * SS))
-        c.rect(250, 456, 330, 478, (130, 86, 54), w=2.5, r=4)
-        c.circle(290, 420, 40, (200, 226, 250), w=2.5)
-        P.mont_blanc(c, 290, 446, 0.07, ol=None)
-        c.circle(276, 404, 9, (240, 248, 255), ol=None)
+        c.rect(0, 560, W, H, mix(wall, (0, 0, 0), 0.06), ol=None)
         return c.img
     return cached("home", make)
 
 
 def home_frame(c):
-    c.rect(130, 32, 1150, 474, None, w=10)
-    c.line([(640, 40), (640, 470)], (240, 236, 230), 10, cap=False)
-    c.line([(140, 250), (1140, 250)], (240, 236, 230), 10, cap=False)
-    c.rect(130, 32, 1150, 474, None, ol=(240, 236, 230), w=6)
-    c.rect(100, 470, 1180, 500, (250, 246, 236), r=5)
+    c.rect(130, 52, 1150, 544, None, w=10)
+    c.line([(640, 60), (640, 540)], (240, 236, 230), 10, cap=False)
+    c.line([(140, 300), (1140, 300)], (240, 236, 230), 10, cap=False)
+    c.rect(130, 52, 1150, 544, None, ol=(240, 236, 230), w=6)
+    c.rect(100, 540, 1180, 572, (250, 246, 236), r=5)
+    # postcard on the sill and a snow globe
+    card = cached("home_card", lambda: P.postcard_img(420, 280).resize((168 * SS, 112 * SS)))
+    c.rect(946, 422, 1124, 543, (255, 252, 240), w=2.5)
+    c.img.paste(card, (951 * SS, 427 * SS))
+    c.rect(250, 520, 330, 543, (130, 86, 54), w=2.5, r=4)
+    c.circle(290, 484, 40, (200, 226, 250), w=2.5)
+    P.mont_blanc(c, 290, 510, 0.07, ol=None)
+    c.circle(276, 468, 9, (240, 248, 255), ol=None)
 
 
 def home(tl, t):
     T = tl.t
     c = Canvas(home_bg().copy())
-    P.snowfall(c, t, n=90, seed=15, speed=45, drift=15, size=(1.5, 4), region=(140, 40, 1140, 470))
+    P.snowfall(c, t, n=90, seed=15, speed=45, drift=15, size=(1.5, 4), region=(140, 60, 1140, 540))
     home_frame(c)
     curl = t >= T("h_curl")
-    c.tint = ((40, 40, 100), 0.12)
+    Y = 546
+    c.tint = ((40, 40, 100), 0.1)
     if not curl:
         look_out = T("h_snow") <= t < T("h_socks", 0.2)
-        kat(c, tl, t, "luna", 470, 476, 1.0, 1, "sit", eyes="happy" if T("h_socks", 0.4) <= t else "open",
+        kat(c, tl, t, "luna", 450, Y, 1.25, 1, "sit", eyes="happy" if T("h_socks", 0.4) <= t else "open",
             mouth=laughing(t) * 0.6 if T("h_socks", 0.9) <= t else tl.mouth("luna", t))
-        D.mouse(c, 625, 478, 1.5, 1, t, mouth=tl.mouth("pip", t), proud=T("h_pip") <= t < T("h_pip", 1),
+        D.mouse(c, 625, Y + 2, 1.9, 1, t, mouth=tl.mouth("pip", t), proud=T("h_pip") <= t < T("h_pip", 1),
                 eyes="happy" if T("h_socks", 0.4) <= t else "open")
-        kat(c, tl, t, "whiskers", 800, 476, 1.0, -1, "sit", look=(0.3, -1) if look_out else (1, 0.3),
+        kat(c, tl, t, "whiskers", 830, Y, 1.25, -1, "sit", look=(-0.3, -1) if look_out else (1, 0.3),
             eyes="happy" if T("h_together", 0.6) <= t < T("h_snow") else "open")
-        if look_out:
-            P.whiskers_scarf(c, 800, 476, 1.0, -1, "sit", t)
     else:
-        kat(c, tl, t, "luna", 520, 478, 0.95, 1, "sleep", mouth=0)
-        D.mouse(c, 640, 478, 1.2, -1, t, eyes="closed")
-        kat(c, tl, t, "whiskers", 770, 478, 0.95, -1, "sleep", mouth=0)
-        D.zzz(c, 800, 380, t)
+        kat(c, tl, t, "luna", 500, Y + 2, 1.15, 1, "sleep", mouth=0)
+        D.mouse(c, 655, Y + 2, 1.5, -1, t, eyes="closed")
+        kat(c, tl, t, "whiskers", 800, Y + 2, 1.15, -1, "sleep", mouth=0)
+        D.zzz(c, 820, 430, t)
     c.tint = None
     k = ease(tl.prog("h_end", t, 0.15, 0.45))
     if k > 0:
-        c.text(W / 2, 600, "The End", 30 + 44 * k, mix((236, 214, 178), (255, 250, 236), k), stroke=4 * k,
+        c.text(W / 2, 640, "The End", 30 + 44 * k, mix((236, 214, 178), (255, 250, 236), k), stroke=4 * k,
                stroke_fill=(70, 50, 60))
     return finish(c, tl, t)
 
