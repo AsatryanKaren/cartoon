@@ -649,9 +649,9 @@ def cats_in_basket(tl, t, wh_eyes="open", lu_eyes="open", look=(1, 0), wface=1, 
     return fn
 
 
-def balloon(tl, t):
+def flight(tl, t):
     T = tl.t
-    s0, s1 = tl.scenes["balloon"]
+    s0, s1 = tl.scenes["flight"]
     if t < T("v_narr"):
         # take-off from the meadow
         c = Canvas(meadow_bg().copy())
@@ -1560,7 +1560,7 @@ def home(tl, t):
     return c
 
 
-SCENE_FUNCS = {"title": title, "bell": bell, "balloon": balloon, "square": square, "canal": canal,
+SCENE_FUNCS = {"title": title, "bell": bell, "flight": flight, "square": square, "canal": canal,
                "murano": murano, "flood": flood, "home": home}
 
 CONTINUOUS = set()

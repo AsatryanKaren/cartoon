@@ -18,7 +18,7 @@ from films.venice.sounds import EXTRA_SFX  # noqa: F401
 
 TITLE = "Whiskers and the Singing Glass"
 PLACE = "Venice"            # folder in the catcute library
-SCENES = ["title", "bell", "balloon", "square", "canal", "murano", "flood", "home"]
+SCENES = ["title", "bell", "flight", "square", "canal", "murano", "flood", "home"]
 
 CAST = {
     **CAST,
@@ -50,7 +50,7 @@ MOODS = {
     "v_triumph": dict(bpm=110, prog=[(62, MAJ), (67, MAJ), (69, MAJ), (62, MAJ)], drums=True, mel=0.7, oct=78, vol=0.85),
     "v_night": dict(bpm=62, prog=[(65, MAJ), (58, MAJ), (65, MAJ), (60, MAJ)], drums=False, mel=0.3, oct=77, vol=0.6),
 }
-MUSIC = {"title": "v_title", "bell": "v_morning", "balloon": "v_sky", "square": "v_square", "canal": "v_barca",
+MUSIC = {"title": "v_title", "bell": "v_morning", "flight": "v_sky", "square": "v_square", "canal": "v_barca",
          "murano": "v_furnace", "flood": "v_hurry", "home": "v_night"}
 MUSIC_CUES = [("b_pop", 0.5, "v_guilty"), ("b_radio", 0.0, "v_radio"), ("b_window", 0.0, "v_morning"),
               ("q_shoo", 0.6, "v_chase"), ("c_hook", 0.0, "v_barca"),
@@ -73,13 +73,13 @@ SCRIPT = [
     A("bell", 1.8, "b_pop", [("jingle", 0.08), ("ting", 0.2), ("whoosh", 0.62), ("crunch", 0.78)]),
     S("whiskers", "Oof. There's something under my bottom.", "bell", "b_oof"),
     A("bell", 0.9, "b_look"),
-    S("luna", "Whiskers! My bell fell off! Have you seen it?", "bell", "b_seen"),
+    S("luna", "Whiskers! Have you seen my bell?", "bell", "b_seen"),
     S("whiskers", "Your bell? Um... it was like that already.", "bell", "b_like"),
     S("luna", "It's squashed flat. It doesn't ring anymore.", "bell", "b_squash", [("clunk", 0.75)]),
     S("whiskers", "Probably a mouse did it. A big, heavy mouse.", "bell", "b_mouse"),
     S("pip", "Hey! I heard that!", "bell", "b_pip"),
     A("bell", 0.7, "b_sad"),
-    S("luna", "Grandma's bell came from Venice. She said that on Murano, they make glass that sings like a bell.",
+    S("luna", "Grandma brought it from Venice. She said the glass there sings like a bell.",
       "bell", "b_radio", [("chime", 0.6)]),
     S("whiskers", "Then we go to Venice. Right now.", "bell", "b_go"),
     S("luna", "You? Whiskers, you never want to go anywhere!", "bell", "b_you"),
@@ -89,16 +89,16 @@ SCRIPT = [
     A("bell", 1.2, "b_run", [("whoosh", 0.2), ("whoosh", 0.45)]),
 
     # -------------------------------------------------------------- balloon
-    A("balloon", 1.4, "v_lift", [("whoosh", 0.2), ("engine", 0.45), ("splash", 0.8)]),
+    A("flight", 1.4, "v_lift", [("whoosh", 0.2), ("engine", 0.45), ("splash", 0.8)]),
     S("narrator", "So two cats hid among the letters in the little mail plane, and flew over the mountains.",
-      "balloon", "v_narr"),
-    A("balloon", 1.4, "v_alps", [("engine", 0.0), ("wind", 0.3)]),
-    S("whiskers", "Don't look down. Don't look down.", "balloon", "v_down"),
-    S("luna", "Whiskers, look down! There it is!", "balloon", "v_look"),
-    A("balloon", 1.6, "v_venice", [("engine", 0.1), ("gull", 0.3), ("gull", 0.7)]),
-    S("whiskers", "Wait. The whole city is sitting in the water?", "balloon", "v_water"),
-    S("narrator", "Venice has canals for streets, and boats for buses.", "balloon", "v_canals"),
-    A("balloon", 1.4, "v_land", [("engine", 0.1), ("splash", 0.85)]),
+      "flight", "v_narr"),
+    A("flight", 1.4, "v_alps", [("engine", 0.0), ("wind", 0.3)]),
+    S("whiskers", "Don't look down. Don't look down.", "flight", "v_down"),
+    S("luna", "Whiskers, look down! There it is!", "flight", "v_look"),
+    A("flight", 1.6, "v_venice", [("engine", 0.1), ("gull", 0.3), ("gull", 0.7)]),
+    S("whiskers", "Wait. The whole city is sitting in the water?", "flight", "v_water"),
+    S("narrator", "Venice has canals for streets, and boats for buses.", "flight", "v_canals"),
+    A("flight", 1.4, "v_land", [("engine", 0.1), ("splash", 0.85)]),
 
     # --------------------------------------------------------------- square
     A("square", 1.0, "q_arrive", [("lap", 0.0), ("coo", 0.5), ("flutter", 0.7)]),
@@ -108,7 +108,7 @@ SCRIPT = [
     S("luna", "We fly home when the big bell rings at sunset!",
       "square", "q_late"),
     A("square", 0.8, "q_smell"),
-    S("whiskers", "Sniff, sniff. Is that... a doughnut?", "square", "q_sniff"),
+    S("whiskers", "Sniff, sniff. A doughnut?", "square", "q_sniff"),
     S("narrator", "A sugary doughnut rolled to his paws. But the pigeons saw it too.",
       "square", "q_roll", [("coo", 0.7)]),
     S("whiskers", "Shoo! This doughnut is for cats!", "square", "q_shoo", [("flutter", 0.85)]),

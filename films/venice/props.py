@@ -762,3 +762,79 @@ def murano_isle(c, x, y, s=1.0):
     c.rect(-192, -100, -174, -90, (60, 60, 70), w=1.5)
     c.rect(-60, -80, -48, -40, (150, 90, 70), w=1.5)
     c.pop()
+
+
+PLANE = (250, 204, 60)
+PLANE_D = (214, 160, 40)
+
+
+def duck_pilot(c, x, y, s=1.0, t=0.0, wave=0.0):
+    """The silent mail pilot: a duck in a leather helmet and goggles (head + shoulders)."""
+    c.push(x, y, s)
+    c.ellipse(0, 6, 20, 14, (110, 80, 60), w=2)
+    c.circle(0, -14, 16, (250, 250, 245), w=2.5)
+    c.poly([(12, -14), (34, -10), (32, -4), (12, -6)], (250, 160, 50), w=2)
+    c.poly([(-16, -16), (-10, -32), (10, -32), (14, -20), (0, -24)], (130, 86, 56), w=2)
+    c.circle(4, -20, 6, (180, 220, 240), w=2)
+    c.line([(-14, -20), (-2, -20)], (60, 50, 50), 3, cap=False)
+    c.line([(-12, -26), (-24, -20 + 4 * math.sin(t * 9))], (220, 60, 60), 4)
+    if wave > 0:
+        c.poly([(10, 2), (30, -10 - 30 * wave), (38, -6 - 30 * wave), (18, 8)], (250, 250, 245), w=2)
+    c.pop()
+
+
+def seaplane(c, x, y, s=1.0, t=0.0, face=1, prop=1.0, inside=None, floats=True, pilot=True, wave=0.0, bank=0.0):
+    """A little yellow mail seaplane; (x, y) = bottom of the floats (waterline). ~380 long, ~200 tall."""
+    c.push(x, y, s, flip=face < 0)
+    ca, sa = math.cos(bank), math.sin(bank)
+
+    def R(px, py):
+        return (px * ca - py * sa, px * sa + py * ca)
+
+    def poly(pts, fill, **kw):
+        c.poly([R(px, py) for px, py in pts], fill, **kw)
+    # tail
+    poly([(-170, -96), (-206, -176), (-182, -178), (-140, -110)], PLANE, w=2.5)
+    poly([(-196, -156), (-204, -174), (-184, -176), (-180, -158)], RED, ol=None)
+    poly([(-190, -104), (-150, -106), (-150, -96), (-196, -96)], PLANE_D, w=2)
+    # floats and struts
+    if floats:
+        for sx in (-40, 70):
+            c.line([R(sx, -12), R(sx + 10, -70)], (90, 90, 100), 4)
+        poly([(-110, -18), (120, -18), (150, -10), (130, 0), (-100, 0), (-116, -8)], (240, 240, 236), w=2.5)
+        c.line([R(-100, -9), R(130, -9)], RED, 2, cap=False)
+    # fuselage
+    body = [(-176, -104), (-120, -122), (60, -132), (120, -126), (146, -110), (146, -82), (110, -66), (-40, -68),
+            (-150, -88)]
+    poly(body, PLANE, w=3)
+    poly([(-150, -88), (-40, -68), (110, -66), (146, -82), (146, -76), (110, -60), (-40, -62)], PLANE_D, ol=None)
+    # open cargo hatch (cats ride here) and the front cockpit window
+    hatch = [(-134, -116), (-46, -126), (-46, -112), (-134, -104)]
+    poly(hatch, (70, 50, 40), w=2)
+    poly([(30, -150), (84, -150), (98, -128), (24, -128)], (170, 220, 240), w=2.5)
+    if pilot:
+        px, py = R(56, -128)
+        duck_pilot(c, px, py, 0.8, t, wave)
+    if inside:
+        c.push(*R(-90, -114))
+        inside(c)
+        c.pop()
+        poly([(-140, -112), (-42, -122), (-42, -96), (-140, -92)], PLANE, w=2.5)
+        c.line([R(-140, -112), R(-42, -122)], PLANE_D, 3, cap=False)
+    # lettering and the wing on top
+    tx, ty = R(-60, -86)
+    c.text(tx, ty, "POSTA", 15, RED)
+    c.line([R(10, -132), R(26, -168)], (90, 90, 100), 3)
+    c.line([R(110, -128), R(96, -168)], (90, 90, 100), 3)
+    poly([(-20, -176), (160, -176), (170, -170), (160, -162), (-20, -162), (-28, -168)], RED, w=2.5)
+    # nose and propeller
+    poly([(146, -112), (164, -104), (164, -84), (146, -80)], (150, 150, 160), w=2)
+    cx, cy = R(168, -94)
+    if prop > 0.3:
+        c.ellipse(cx, cy, 6, 46, (220, 220, 230), ol=None)
+        k = math.sin(t * 40)
+        c.line([(cx, cy - 44 * k), (cx, cy + 44 * k)], (80, 80, 90), 4)
+    else:
+        c.line([(cx, cy - 40), (cx, cy + 40)], (80, 80, 90), 5)
+    c.circle(cx, cy, 6, RED, w=2)
+    c.pop()
