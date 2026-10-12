@@ -70,7 +70,7 @@ SCRIPT = [
     # ------------------------------------------------------------------- map
     A("map", 1.4, "m_fly", [("whoosh", 0.1), ("sparkle", 0.5)]),
     S("narrator", "Up into space they flew!", "map", "m_narr", [("spin", 0.5)]),
-    A("map", 2.4, "m_flat", [("whoosh", 0.1), ("sparkle", 0.6)]),
+    A("map", 1.8, "m_flat", [("whoosh", 0.1), ("sparkle", 0.6)]),
     S("luna", "See the yellow patches? Those are deserts, all over the world.",
       "map", "m_yellow", [("ding", 0.45), ("ding", 0.6), ("ding", 0.75)]),
     A("map", 1.4, "m_zoom", [("whoosh", 0.1)]),
@@ -81,7 +81,7 @@ SCRIPT = [
     S("whiskers", "So it's the world's biggest litter box.", "map", "m_litter"),
     S("luna", "Whiskers!", "map", "m_luna"),
     A("map", 0.9, "m_laugh"),
-    A("map", 3.0, "m_path", [("whoosh", 0.05), ("whoosh", 0.7)]),
+    A("map", 2.5, "m_path", [("whoosh", 0.05), ("whoosh", 0.7)]),
 
     # ----------------------------------------------------------------- dunes
     A("dunes", 1.6, "d_land", [("sandpuff", 0.5)]),
@@ -117,7 +117,7 @@ SCRIPT = [
     S("pip", "Wow! Your ears are huge!", "oasis", "o_huge"),
     S("fizz", "My big ears let heat out, to keep me cool. And they hear everything!",
       "oasis", "o_cool"),
-    A("oasis", 2.0, "o_ears", [("ding", 0.2), ("scritch", 0.6)]),
+    A("oasis", 1.6, "o_ears", [("ding", 0.2), ("scritch", 0.6)]),
     S("whiskers", "Mine too. I can hear a tin of tuna open from three rooms away.", "oasis", "o_tuna"),
     A("oasis", 0.9, "o_laugh"),
     S("fizz", "But at night, the desert gets cold!", "oasis", "o_cold"),

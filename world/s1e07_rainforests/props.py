@@ -558,8 +558,8 @@ LAYERS = [("Emergent", (140, 200, 246)), ("Canopy", (96, 176, 84)), ("Understore
 
 def level_of(world_y):
     """0 = forest floor ... 3 = emergent layer, for a height in the forest."""
-    return K.track(world_y, [(ROOF - 150, 3.0), (ROOF + 300, 2.0), ((CAN_BOT + UND_BOT) / 2, 1.0),
-                             (GROUND - 100, 0.0)])
+    return K.track(world_y, [(ROOF - 200, 3.0), ((ROOF + CAN_BOT) / 2, 2.0), ((CAN_BOT + UND_BOT) / 2, 1.0),
+                             ((UND_BOT + GROUND) / 2, 0.0)])
 
 
 def gauge(c, x, y, k, level, t=0.0):
@@ -591,6 +591,7 @@ def gauge(c, x, y, k, level, t=0.0):
 
 def icon_rain(c, x, y, r, t=0.0):
     """Warm and rainy: a cloud with rain and a sun peeking out."""
+    c.circle(x, y, r * 0.98, (150, 206, 246), ol=None)
     c.circle(x + r * 0.45, y - r * 0.4, r * 0.32, (255, 210, 70), w=2)
     for dx, dy, rr in ((-0.35, -0.1, 0.3), (0.05, -0.25, 0.38), (0.4, -0.05, 0.28), (0.0, 0.05, 0.3)):
         c.circle(x + dx * r, y + dy * r, rr * r, (236, 242, 250), ol=None)

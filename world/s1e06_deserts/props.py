@@ -94,7 +94,7 @@ def camel(c, x, y, s=1.0, face=1, t=0.0, mouth=0.0, eyes="open", look=(0.0, 0.0)
             c.ellipse(lx, -10, 44, 14, CAMEL)
             c.circle(lx + 30, -10, 9, CAMEL_D, w=2)
     # neck + head
-    hx, hy = 212, lerp(-318, -196, lie) + bob
+    hx, hy = 212, lerp(-318, -236, lie) + bob
     nb = (96, by - 14)
     neck = [nb, (138, by - 24), (172, (by - 24 + hy) / 2 - 10), (hx - 22, hy + 6)]
     c.stroke(neck, CAMEL, 40)
@@ -124,9 +124,9 @@ def _camel_leg(c, hx, top, walk, ph, col):
     lift = max(0.0, math.cos(walk + ph)) * 10 if walk else 0.0
     foot = (hx + sw * 18, -lift)
     knee = (hx + sw * 8 + 4, lerp(top, foot[1], 0.5))
-    c.stroke([(hx, top), knee, foot], col, 17)
-    c.circle(knee[0], knee[1], 10, mix(col, (0, 0, 0), 0.08), w=2)
-    c.ellipse(foot[0] + 4, foot[1] - 4, 15, 7, mix(col, (0, 0, 0), 0.12), w=2.5)
+    c.stroke([(hx, top), knee, foot], col, 21)
+    c.circle(knee[0], knee[1], 12, mix(col, (0, 0, 0), 0.08), w=2)
+    c.ellipse(foot[0] + 4, foot[1] - 4, 17, 8, mix(col, (0, 0, 0), 0.12), w=2.5)
 
 
 def camel_spots(x, y, s, face, lie=0.0, walk=0.0):
@@ -142,7 +142,7 @@ def camel_hump(x, y, s, face, lie=0.0):
 
 
 def camel_head(x, y, s, face, lie=0.0):
-    return x + face * 230 * s, y + (lerp(-318, -196, lie) + 6) * s
+    return x + face * 230 * s, y + (lerp(-318, -236, lie) + 6) * s
 
 
 # ============================================================================== Fizz
@@ -182,7 +182,7 @@ def fennec(c, x, y, s=1.0, face=1, t=0.0, mouth=0.0, eyes="open", look=(0.0, 0.0
     # ears: huge, they wiggle
     hx, hy = 16, -92
     wg = math.sin(t * 7) * 6 * wiggle + math.sin(t * 1.3 + seed) * 2
-    for (bx0, tipx, tipy, bx1), dk in (((-10, -26, -196, 12), 1), ((14, 44, -200, 42), 0)):
+    for (bx0, tipx, tipy, bx1), dk in (((-16, -30, -196, 14), 1), ((10, 48, -200, 46), 0)):
         tip = (tipx + wg * (1 if dk else -1), tipy)
         base = [(bx0, hy - 14), tip, (bx1, hy - 12)]
         c.poly(base, FOX if not dk else FOX_D)
@@ -260,7 +260,8 @@ def dune_shape(c, x0, x1, base, px, py, lit=SAND, shade=SAND_D, ripples=True, rn
     the slope right of the crest is in shadow."""
     left = [(lerp(x0, px, u), base - (base - py) * math.sin(u * math.pi / 2) ** 1.6) for u in np.linspace(0, 1, 18)]
     right = [(lerp(px, x1, u), base - (base - py) * (1 - u) ** 1.3) for u in np.linspace(0, 1, 18)]
-    c.poly([(x0, base + 400)] + left + right[1:] + [(x1, base + 400)], lit, w=3)
+    c.poly([(x0, base + 400)] + left + right[1:] + [(x1, base + 400)], lit, ol=None)
+    c.line(left, OUT, 3)
     # shadow side: from the crest, a curved line down the face
     sh = [(px, py)] + [(lerp(px, x1, u) - 30 * math.sin(u * math.pi) * 0.0, base - (base - py) * (1 - u) ** 1.3)
                       for u in np.linspace(0, 1, 18)][1:]
@@ -308,18 +309,19 @@ def layer(draw_fn, tint=None):
     return c.img, Image.fromarray((mask * 255).astype(np.uint8), "L")
 
 
-def heat_shimmer(c, y, t, x0=0, x1=W, col=(255, 250, 230), n=7):
+def heat_shimmer(c, y, t, x0=0, x1=W, col=(250, 240, 214), n=3):
     for k in range(n):
         yy = y + k * 9
         ph = t * 3 + k * 1.3
         pts = [(x, yy + 3 * math.sin(x / 40 + ph)) for x in np.linspace(x0 + 40 * (k % 3), x1, 50)]
         segs = len(pts) // 5
         for j in range(0, len(pts) - segs, segs * 2):
-            c.line(pts[j:j + segs], col, 2)
+            c.line(pts[j:j + segs], col, 1.5)
 
 
-def sun(c, x, y, r=46, t=0.0, col=(255, 230, 110), rays=True):
-    c.glow(x, y, r * 3.2, r * 2.6, mix(col, (255, 255, 255), 0.5), (255, 246, 214), steps=8) if rays else None
+def sun(c, x, y, r=46, t=0.0, col=(255, 230, 110), rays=True, sky=None):
+    if sky is not None:
+        c.glow(x, y, r * 2.6, r * 2.6, mix(col, (255, 255, 255), 0.5), sky, steps=10)
     if rays:
         for i in range(12):
             a = i / 12 * math.tau + t * 0.3
@@ -580,32 +582,44 @@ def ant_diagram(ic, t, k):
     """Antarctica: the biggest desert of all (cold!) next to the Sahara, the biggest HOT desert."""
     w, h = ic.img.size[0] / SS, ic.img.size[1] / SS
     ic.img.paste(K.space_bg().crop((0, 0, int(w * SS), int(h * SS))), (0, 0))
-    gx, gy, r = 150, h / 2 - 10, 104
+    gx, gy, r = 150, h / 2 - 10, 100
     K.globe(ic, gx, gy, r, lon=20 + t * 6, lat=-64, glow=0.3)
     # a rare snowflake drifting down
     u = (t * 0.25) % 1
     snowflake(ic, gx - 30 + 10 * math.sin(t * 2), gy - r - 10 + u * 90, 9, (255, 255, 255), 3)
     K.text(ic, gx, h - 18, "Antarctica", 26, (255, 255, 255), stroke=3)
-    x2 = 300
+    x2 = 290
     K.text(ic, x2, 52, "Biggest desert", 28, (255, 255, 255), anchor="lm", stroke=3)
     K.text(ic, x2, 86, "of all: COLD!", 28, (150, 210, 255), anchor="lm", stroke=3)
     if k > 0:
         kk = K.pop(k)
-        ic.push(x2 + 54, 176, kk)
-        ic.circle(0, 0, 46, (255, 236, 180), w=3)
-        sun(ic, 14, -18, 12, t, rays=False)
-        dune_shape(ic, -46, 46, 34, -4, 6, ripples=False)
+        ic.push(x2 + 38, 186, kk)
+        ic.circle(0, 0, 38, (255, 236, 180), w=3)
+        sun(ic, 12, -14, 10, t, rays=False)
+        mini_dune(ic, 0, 0, 36)
+        ic.circle(0, 0, 38, None, ol=OUT, w=3)
         ic.pop()
-        K.text(ic, x2 + 112, 164, "Sahara: biggest", 24, (255, 220, 120), anchor="lm", stroke=3)
-        K.text(ic, x2 + 112, 192, "HOT desert", 24, (255, 220, 120), anchor="lm", stroke=3)
+        K.text(ic, x2 + 90, 172, "Sahara: biggest", 24, (255, 220, 120), anchor="lm", stroke=3)
+        K.text(ic, x2 + 90, 200, "HOT desert", 24, (255, 220, 120), anchor="lm", stroke=3)
 
 
 # ============================================================================== icons
 
+def mini_dune(c, x, y, r, col=SAND, top=0.1, base=0.45):
+    """A sand hill filling the bottom of a circle of radius r at (x, y)."""
+    xs = np.linspace(-r, r, 41)
+    hill = [y + r * base - r * (base - top) * math.exp(-((u + 0.15 * r) / (0.45 * r)) ** 2) for u in xs]
+    arc = [y + math.sqrt(max(0.0, r * r - u * u)) for u in xs]
+    keep = [i for i in range(len(xs)) if hill[i] < arc[i]]
+    pts = [(x + xs[i], hill[i]) for i in keep] + [(x + xs[i], arc[i]) for i in keep[::-1]]
+    c.poly(pts, col, ol=None)
+    c.line([(x + xs[i], hill[i]) for i in keep], OUT, 2.5)
+
+
 def icon_rain(c, x, y, r, t=0.0):
     """Very little rain: a dune under a small cloud with one drop."""
-    c.circle(x, y, r * 0.95, (252, 236, 196), w=3)
-    dune_shape(c, x - r * 0.9, x + r * 0.9, y + r * 0.62, x - r * 0.1, y + r * 0.15, ripples=False)
+    c.circle(x, y, r * 0.95, (200, 228, 250), w=3)
+    mini_dune(c, x, y, r * 0.93)
     c.circle(x, y, r * 0.95, None, ol=OUT, w=3)
     cloud(c, x - r * 0.05, y - r * 0.45, r / 110)
     drop(c, x + r * 0.05, y - r * 0.05, r * 0.13)
