@@ -178,7 +178,8 @@ SCRIPT = [
     S("avo", "We have a word for that. Saudade. Missing someone you love.", "alfama",
       "a_saudade"),
     S("tiago", "So let's play a fado, loud enough to reach the castle!", "alfama", "a_fado"),
-    A("alfama", 2.2, "a_song", [("fado", 0.0)]),
+    A("alfama", 1.2, "a_song", [("fado", 0.0)]),
+    A("alfama", 1.0, "a_song2", [("bell_jingle", 0.7)]),
     S("pavao", "Avó Lurdes' fado! Follow the music, Luna!", "alfama", "a_follow"),
     A("alfama", 1.0, "a_run", [("bell_jingle", 0.05), ("steps", 0.2), ("bell_jingle", 0.5), ("steps", 0.6)]),
     S("luna", "Whiskers!", "alfama", "a_luna", [("bell_jingle", 0.0)]),
@@ -203,5 +204,5 @@ SCRIPT = [
     S("pip", "You're back! Did you bring me a story?", "home", "h_pip"),
     S("whiskers", "A story, and a sardine. And Pip? I missed you.", "home", "h_miss"),
     S("narrator", "Because missing someone means they live in your heart. In Lisbon, they call it saudade.", "home", "h_moral"),
-    A("home", 1.9, "h_end", [("guitar_flourish", 0.1), ("purr", 0.4)]),
+    A("home", 1.5, "h_end", [("guitar_flourish", 0.1), ("purr", 0.4)]),
 ]

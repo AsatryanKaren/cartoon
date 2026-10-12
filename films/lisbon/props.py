@@ -336,39 +336,42 @@ def wheel(c, x, y, r, ang, tyre=(40, 40, 46), hub=(210, 210, 216)):
 
 
 def scooter(c, x, y, s=1.0, t=0.0, wheel_ang=0.0, rider=None, side=None, sidecar=True, lights=False, bump=0.0):
-    """The yellow scooter with its round sidecar. rider(c) draws the driver sitting on the seat at (−40, −108);
-    side(c) draws passengers in the sidecar (feet at about (20, −30)); the tub front is drawn after."""
+    """The yellow scooter with its round sidecar on the far side. rider(c) draws the driver sitting on the
+    seat (about (-56, -110)); side(c) draws passengers in the sidecar (feet at about (130..190, -60)),
+    between the tub's back and its rim."""
     c.push(x, y + bump, s)
-    # far wheels
+    if sidecar:
+        c.push(40, -26, 0.96)
+        wheel(c, 150, -14, 20, wheel_ang)
+        c.line([(-20, -30), (150, -30)], (90, 90, 100), 6)
+        tub = [(10, -44), (14, -90), (60, -104), (190, -104), (250, -80), (272, -56), (250, -30), (30, -26)]
+        c.poly(tub, YELLOW_D, w=3)
+        c.ellipse(150, -100, 90, 12, (110, 80, 40), ol=None)
+        if side:
+            side(c)
+        c.poly([(14, -60), (16, -92), (60, -100), (190, -100), (250, -78), (272, -56), (250, -30), (30, -26)],
+               YELLOW, w=3)
+        c.line([(30, -88), (240, -78)], (255, 236, 150), 3, cap=False)
+        c.poly([(220, -98), (240, -136), (254, -132), (250, -88)], (200, 230, 245), w=2)   # windscreen
+        c.pop()
+    # wheels
     wheel(c, -78, -24, 24, wheel_ang)
     wheel(c, 92, -24, 24, wheel_ang)
     # scooter body
     c.poly([(-120, -40), (-118, -86), (-90, -110), (-30, -112), (0, -96), (8, -44), (60, -44), (78, -150),
             (96, -150), (104, -60), (110, -36), (-110, -30)], YELLOW, w=3)
-    c.ellipse(-60, -70, 64, 40, YELLOW, ol=None)
-    c.arc(-60, -70, 64, 40, 190, 300, YELLOW_D, 4)
+    c.ellipse(-60, -70, 56, 34, YELLOW, ol=None)
+    c.arc(-60, -70, 56, 34, 190, 300, YELLOW_D, 4)
+    c.line([(-110, -40), (100, -40)], (255, 236, 150), 3, cap=False)
     c.rect(-90, -122, -10, -108, (120, 70, 50), w=2.5, r=6)          # seat
+    if rider:
+        rider(c)
     c.line([(76, -150), (60, -182)], (90, 90, 100), 6)               # steering
     c.line([(44, -186), (84, -178)], (60, 60, 70), 7)                # handlebar
     c.circle(92, -166, 11, (255, 250, 200) if not lights else (255, 240, 150), w=2.5)
     if lights:
-        c.poly([(100, -166), (240, -200), (240, -130)], (255, 240, 160), ol=None)
+        c.poly([(100, -166), (260, -206), (260, -126)], (255, 240, 160), ol=None)
     c.rect(-128, -76, -116, -60, (220, 60, 50), w=2)                 # rear light
-    if rider:
-        rider(c)
-    if sidecar:
-        # sidecar arm and wheel (nearer the viewer, a little lower)
-        c.push(10, 10, 1.0)
-        if side:
-            side(c)
-        # tub
-        tub = [(-110, -40), (-108, -78), (-60, -92), (40, -92), (110, -70), (140, -48), (120, -20), (-100, -16)]
-        c.poly(tub, YELLOW, w=3)
-        c.line([(-100, -78), (100, -76)], YELLOW_D, 4, cap=False)
-        c.poly([(70, -88), (96, -128), (110, -124), (100, -80)], (200, 230, 245), w=2)   # windscreen
-        c.line([(-90, -50), (110, -48)], (255, 236, 150), 3, cap=False)
-        wheel(c, 20, -12, 22, wheel_ang)
-        c.pop()
     c.pop()
 
 
@@ -408,13 +411,13 @@ def tram(c, x, y, s=1.0, t=0.0, inside=None, wheel_ang=0.0, lit=False, number="2
     c.rect(-L + 30, -278, L - 30, -256, (180, 180, 186), w=2.5, r=8)   # roof
     # destination box + number
     c.rect(L - 70, -252, L - 8, -214, (30, 30, 36), w=2, r=3)
-    c.text(L - 39, -233, number, 24, (255, 220, 90))
+    c.text(L - 39, -233, number, 24 * c.scale, (255, 220, 90))
     c.rect(-L + 8, -252, -L + 120, -214, (30, 30, 36), w=2, r=3)
-    c.text(-L + 64, -233, "Graça", 18, (255, 240, 200))
+    c.text(-L + 64, -233, "Graça", 18 * c.scale, (255, 240, 200))
     # headlight + bumper
     c.circle(L - 8, -84, 9, (255, 250, 210), w=2)
     c.rect(-L - 6, -46, L + 6, -36, (60, 60, 66), w=2, r=3)
-    c.text(0, -88, "CARRIS", 16, (90, 70, 20))
+    c.text(0, -88, "CARRIS", 16 * c.scale, (90, 70, 20))
     c.pop()
 
 
@@ -851,18 +854,22 @@ def house(c, x, base, w, h, wall, roof=TERRACOTTA, tiles=None, floors=None, lit=
 
 
 def roofs(c, x0, x1, y0, y1, seed=0, density=1.0, walls=((250, 246, 236), (246, 226, 180), (240, 200, 170),
-                                                        (220, 230, 236), (250, 222, 140)), scale=1.0, tint=None):
+                                                        (220, 230, 236), (250, 222, 140)), scale=1.0, tint=None,
+          top_fn=None, row=30):
     """A hillside of little white and pastel houses with red roofs (for views from above)."""
     rng = np.random.default_rng(seed)
-    rows = int((y1 - y0) / (22 * scale)) + 1
+    rows = int((y1 - y0) / (row * scale)) + 1
     for j in range(rows):
-        yy = y0 + j * 22 * scale
+        yy = y0 + j * row * scale
         xx = x0 - rng.uniform(0, 40) * scale
         while xx < x1:
             w = rng.uniform(34, 70) * scale
             h = rng.uniform(26, 44) * scale
             wall = walls[rng.integers(len(walls))]
             roof = mix(TERRACOTTA, (230, 130, 90), rng.uniform(0, 0.5))
+            if top_fn is not None and yy - h < top_fn(xx + w / 2):
+                xx += w + rng.uniform(-6, 4) * scale
+                continue
             c.rect(xx, yy - h, xx + w, yy + 12 * scale, wall, w=1.5)
             if rng.random() < 0.7:
                 c.poly([(xx - 3, yy - h), (xx + w * 0.5, yy - h - 14 * scale), (xx + w + 3, yy - h)], roof, w=1.5)
@@ -941,9 +948,9 @@ def firework(c, x, y, t, t0, col, r=90, dur=1.6):
     for j in range(14):
         a = j * math.tau / 14
         px, py = x + math.cos(a) * rr, y + math.sin(a) * rr + 30 * k * k
-        cc = mix((40, 30, 70), col, fade)
-        c.line([(x + math.cos(a) * rr * 0.6, y + math.sin(a) * rr * 0.6 + 30 * k * k), (px, py)], cc, 3, cap=False)
-        c.circle(px, py, 4 * fade + 1, mix((40, 30, 70), (255, 255, 230), fade), ol=None)
+        cc = mix((40, 30, 70), col, fade ** 0.5)
+        c.line([(x + math.cos(a) * rr * 0.55, y + math.sin(a) * rr * 0.55 + 30 * k * k), (px, py)], cc, 5, cap=False)
+        c.circle(px, py, 6 * fade + 2, mix((40, 30, 70), (255, 255, 230), fade), ol=None)
 
 
 def gift_tile(c, x, y, s=1.0):

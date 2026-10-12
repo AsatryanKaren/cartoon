@@ -72,22 +72,22 @@ A = Act
 
 SCRIPT = [
     # ---------------------------------------------------------------- title
-    A("title", 1.6, "t_open", [("chime", 0.25)]),
+    A("title", 1.3, "t_open", [("chime", 0.25)]),
     S("narrator", "Whiskers and the Rainbow's End.", "title", "t_name"),
-    A("title", 1.4, "t_hold", [("whistle", 0.0)]),
+    A("title", 1.0, "t_hold", [("whistle", 0.0)]),
 
     # --------------------------------------------------------------- bottle
     A("bottle", 1.0, "b_open", [("rain", 0.0)]),
-    S("narrator", "It had rained all week, and the garden pond was full to the brim.", "bottle", "b_narr",
+    S("narrator", "It had rained all week, and the pond was brimming over.", "bottle", "b_narr",
       [("rain", 0.2)]),
     S("whiskers", "Rain, rain, rain. Even my naps are getting soggy.", "bottle", "b_soggy", [("rain", 0.3)]),
     A("bottle", 0.9, "b_spot", [("tink", 0.4)]),
     S("luna", "Whiskers, look! Something shiny is floating in the pond!", "bottle", "b_look"),
-    S("whiskers", "A fish! A shiny glass fish! Leave this to me.", "bottle", "b_fish"),
+    S("whiskers", "A shiny glass fish! Leave this to me.", "bottle", "b_fish"),
     A("bottle", 2.0, "b_dive", [("whoosh", 0.25), ("splash", 0.45)]),
     S("whiskers", "Got it! Hmm. A very crunchy fish.", "bottle", "b_got"),
     A("bottle", 0.8, "b_cork", [("pop", 0.3), ("paper", 0.55)]),
-    S("luna", "It's a map! Of Ireland! Follow the rainbow, to the treasure at the rainbow's end.",
+    S("luna", "A map of Ireland! Follow the rainbow, to the treasure at its end.",
       "bottle", "b_map"),
     S("luna", "In the old stories, a pot of gold waits there.", "bottle", "b_gold"),
     S("whiskers", "A pot of goldfish? Luna, why are we still standing here?", "bottle", "b_goldfish",
@@ -95,7 +95,7 @@ SCRIPT = [
     A("bottle", 0.7, "b_go"),
 
     # ---------------------------------------------------------------- ferry
-    S("narrator", "So the two cats sailed across the Irish Sea, on a big green ferry bound for Dublin.",
+    S("narrator", "So the cats sailed across the Irish Sea, on a big green ferry to Dublin.",
       "ferry", "f_narr", [("horn", 0.05), ("waves", 0.3)]),
     A("ferry", 2.0, "f_sail", [("gulls", 0.2), ("waves", 0.4)]),
     S("whiskers", "Is the sea supposed to go up and down this much?", "ferry", "f_wobble"),
@@ -104,21 +104,19 @@ SCRIPT = [
 
     # --------------------------------------------------------------- dublin
     A("dublin", 1.2, "d_doors"),
-    S("narrator", "Dublin was full of doors. Red ones, blue ones, yellow ones. Every colour of the rainbow.",
+    S("narrator", "Dublin was full of doors, in every colour of the rainbow.",
       "dublin", "d_narr"),
     S("luna", "The map says: begin at the bridge that once cost half a penny.", "dublin", "d_map"),
     A("dublin", 1.6, "d_walk", [("busk", 0.15)]),
-    S("fergal", "That'll be the Ha'penny Bridge, little cats! Over the River Liffey.", "dublin", "d_fergal"),
+    S("fergal", "That's the Ha'penny Bridge, little cats, over the River Liffey!", "dublin", "d_fergal"),
     S("whiskers", "We haven't got a penny. We haven't even got half.", "dublin", "d_penny"),
-    S("fergal", "Ha! It's free these days. I'm Fergal. And that map leads west, to the Cliffs of Moher.",
+    S("fergal", "Ha! It's free now. I'm Fergal. That map leads west, to the Cliffs of Moher. I'll take you!",
       "dublin", "d_west"),
-    S("fergal", "I'm driving out that way tomorrow. But tonight, there's music!", "dublin", "d_music",
-      [("fiddle", 0.9)]),
-    A("dublin", 0.7, "d_end"),
+    A("dublin", 0.7, "d_end", [("fiddle", 0.1)]),
 
     # ------------------------------------------------------------------ pub
     A("pub", 1.2, "p_open", [("jig", 0.0)]),
-    S("narrator", "In a cosy little pub, fiddles and tin whistles played jigs and reels.", "pub", "p_narr"),
+    S("narrator", "In a cosy pub, fiddles and tin whistles played jigs and reels.", "pub", "p_narr"),
     A("pub", 1.4, "p_tune", [("taps", 0.2), ("taps", 0.6)]),
     S("whiskers", "Is that bread? Warm bread? With butter?", "pub", "p_bread"),
     S("fergal", "Soda bread, fresh from the oven. Help yourself!", "pub", "p_soda"),
@@ -129,13 +127,13 @@ SCRIPT = [
     A("pub", 1.2, "p_laugh", [("cheer", 0.05)]),
 
     # ----------------------------------------------------------------- road
-    S("narrator", "Next morning, Fergal's little painted caravan rolled west, over the green hills.",
+    S("narrator", "Next morning, Fergal's painted caravan rolled west over the green hills.",
       "road", "r_narr", [("clop", 0.0)]),
     A("road", 1.8, "r_ride", [("clop", 0.0), ("baa", 0.5)]),
-    S("fergal", "See that round tower? Long ago, monks kept their books up there, safe and dry.",
+    S("fergal", "See that round tower? Long ago, monks kept their books safe up there.",
       "road", "r_tower", [("clop", 0.1)]),
     A("road", 0.9, "r_rain", [("rain", 0.0)]),
-    S("whiskers", "More rain? This whole country is one big puddle!", "road", "r_puddle", [("rain", 0.2)]),
+    S("whiskers", "More rain? This country is one big puddle!", "road", "r_puddle", [("rain", 0.2)]),
     S("fergal", "Ah, but no rain, no rainbows.", "road", "r_norain"),
     A("road", 1.8, "r_rainbow", [("chime", 0.25)]),
     S("luna", "There it is! And look, it ends at the cliffs!", "road", "r_ends"),
@@ -145,24 +143,24 @@ SCRIPT = [
 
     # --------------------------------------------------------------- cliffs
     A("cliffs", 1.3, "c_open", [("wind", 0.0), ("waves", 0.3)]),
-    S("narrator", "At last they reached the Cliffs of Moher, high above the wild Atlantic Ocean.",
+    S("narrator", "At last, the Cliffs of Moher, high above the wild Atlantic.",
       "cliffs", "c_narr", [("gulls", 0.6)]),
     S("luna", "The rainbow ends right there, on that ledge!", "cliffs", "c_ledge"),
     S("whiskers", "My goldfish! Here I come!", "cliffs", "c_come"),
     A("cliffs", 0.8, "c_run", [("whoosh", 0.3)]),
-    S("bridie", "Help! Oh, please help! My little lamb Dot is stuck!", "cliffs", "c_help", [("baa", 0.95)]),
+    S("bridie", "Help! Please! My little lamb Dot is stuck!", "cliffs", "c_help", [("baa", 0.95)]),
     A("cliffs", 1.0, "c_see", [("baa", 0.4)]),
-    S("luna", "Whiskers, the rainbow is fading. If we stop now, we'll lose the treasure.", "cliffs", "c_fading"),
+    S("luna", "Whiskers, the rainbow's fading! We'll lose the treasure!", "cliffs", "c_fading"),
     A("cliffs", 0.9, "c_think"),
-    S("whiskers", "Forget the treasure. Hold on, little one! Cats are good at climbing!", "cliffs", "c_forget"),
+    S("whiskers", "Forget the treasure. Hold on, little one! I'm coming!", "cliffs", "c_forget"),
     A("cliffs", 3.0, "c_rescue", [("scrabble", 0.15), ("pebbles", 0.35), ("scrabble", 0.55), ("baa", 0.8)]),
     S("bridie", "Dot! Oh, thank you, thank you, brave cats!", "cliffs", "c_thanks"),
-    S("whiskers", "Here, little one. A lucky clover. You need it more than me.", "cliffs", "c_give"),
+    S("whiskers", "Here, little one. A lucky clover, just for you.", "cliffs", "c_give"),
     A("cliffs", 1.4, "c_gone", [("wind", 0.1)]),
     S("whiskers", "Oh. The rainbow's gone. No treasure.", "cliffs", "c_sad"),
-    S("bridie", "Ah, but that rainbow ended right where somebody needed you. That's the real luck.",
+    S("bridie", "That rainbow ended right where somebody needed you. That's real luck.",
       "cliffs", "c_luck"),
-    S("bridie", "Now, come home with me. I've a pot of something golden on the stove.", "cliffs", "c_pot"),
+    S("bridie", "Come home with me. I've a pot of something golden on the stove.", "cliffs", "c_pot"),
     A("cliffs", 0.8, "c_end"),
 
     # --------------------------------------------------------------- supper
@@ -175,11 +173,11 @@ SCRIPT = [
 
     # ----------------------------------------------------------------- home
     A("home", 1.0, "h_open"),
-    S("narrator", "Back home, the rain had stopped at last, and a rainbow shone over the garden.",
+    S("narrator", "Back home, the rain had stopped, and a rainbow shone over the garden.",
       "home", "h_narr"),
     S("pip", "So? Did you find the pot of gold?", "home", "h_pip"),
     S("whiskers", "Better, Pip. We found out what luck is for.", "home", "h_better"),
-    S("luna", "Let's send our own map. Maybe someone else will follow a rainbow, too.", "home", "h_send"),
+    S("luna", "Let's send our own map. Someone else might follow a rainbow too.", "home", "h_send"),
     A("home", 1.8, "h_float", [("splash", 0.3), ("tink", 0.5)]),
     S("narrator", "Because luck isn't something you keep. It's something you give away.", "home", "h_moral"),
     A("home", 2.6, "h_end", [("purr", 0.2)]),

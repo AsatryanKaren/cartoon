@@ -486,19 +486,20 @@ def hapenny_bridge(c, x0, x1, deck, s=1.0, col=(246, 246, 242), shade=(196, 200,
             c.circle(px, py + 12 * s + (ay - py - 12 * s) / 2, r, None, ol=col, w=2.4 * s)
     c.line(arch, col, 7 * s, cap=False)
     c.line(arch, shade, 2.5 * s, cap=False)
-    # three lamp arches over the walkway
+    # three ornamental lamp standards over the walkway (the arches seen edge-on)
     if lamps:
         for u in (0.22, 0.5, 0.78):
             px, py = lerp(x0, x1, u), deck(u)
             hgt = 120 * s
-            c.arc(px, py - rail_h - 6 * s, 40 * s, hgt - rail_h, 180, 360, col, 4 * s)
-            c.line([(px - 40 * s, py - rail_h), (px - 40 * s, py - rail_h - 6 * s)], col, 4 * s, cap=False)
-            c.line([(px + 40 * s, py - rail_h), (px + 40 * s, py - rail_h - 6 * s)], col, 4 * s, cap=False)
-            ly = py - hgt - 6 * s
+            c.rect(px - 4 * s, py - hgt, px + 4 * s, py, col, ol=OUT, w=1.5)
+            for side in (-1, 1):
+                c.arc(px + side * 12 * s, py - hgt + 24 * s, 12 * s, 14 * s, 180 if side < 0 else 270,
+                      270 if side < 0 else 360, col, 3 * s)
+            ly = py - hgt - 4 * s
             if lit > 0:
                 c.circle(px, ly - 8 * s, 18 * s, mix((255, 240, 180), (255, 255, 255), 0.3), ol=None)
-            c.rect(px - 7 * s, ly - 18 * s, px + 7 * s, ly, mix((250, 240, 200), (255, 220, 120), lit), w=2)
-            c.poly([(px - 9 * s, ly - 18 * s), (px, ly - 26 * s), (px + 9 * s, ly - 18 * s)], (60, 60, 66), w=1.5)
+            c.rect(px - 8 * s, ly - 20 * s, px + 8 * s, ly, mix((250, 240, 200), (255, 220, 120), lit), w=2)
+            c.poly([(px - 10 * s, ly - 20 * s), (px, ly - 30 * s), (px + 10 * s, ly - 20 * s)], (60, 60, 66), w=1.5)
 
 
 def quay_building(c, x, base, w, h, col, roof=(90, 96, 110), seed=0, lit=0.0):

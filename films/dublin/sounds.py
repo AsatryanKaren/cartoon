@@ -372,7 +372,7 @@ def bubble(rng):
 
 
 EXTRA_SFX = {
-    "jig": (make_jig(30.0), 0.5),
+    "jig": (make_jig(49.4), 0.42),
     "busk": (make_jig(9.0, lead="fiddle", drum=False, bpm=112, seed=3), 0.45),
     "fiddle": (fiddle_flourish, 0.5),
     "whistle": (whistle_air, 0.45),

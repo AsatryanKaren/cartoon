@@ -294,11 +294,11 @@ def bottle(tl, t):
     else:
         u = tl.prog("b_got", t, 0.2, 0.6)
         if u < 1:
-            x = lerp(360, 600, ease(u))
+            x = lerp(360, 500, ease(u))
             y = lerp(SILL_Y, 670, ease(u)) + arc_y(u, 60)
             kitty(c, tl, t, "luna", x, y, 0.8, 1, "leap" if u < 0.9 else "stand")
         else:
-            gx = 600 if t < T("b_go", 0.2) else lerp(600, 1500, ease(tl.prog("b_go", t, 0.2, 1.0)))
+            gx = 500 if t < T("b_go", 0.2) else lerp(500, 1500, ease(tl.prog("b_go", t, 0.2, 1.0)))
             kitty(c, tl, t, "luna", gx, 670, 0.8, 1, "walk" if t >= T("b_go", 0.2) else "stand",
                   walk=gx / 12, eyes="happy" if T("b_gold") <= t < T("b_goldfish") else "open")
     # Whiskers: sulking on the sill, leaps at the 'fish', swims, climbs out with the bottle
@@ -328,7 +328,7 @@ def bottle(tl, t):
             P.bottle(c, cx + 60 + 34, cy - 18, 0.6, -20)
     else:
         u = tl.prog("b_dive", t, 0.8, 1.0)
-        x = lerp(cx - 40, 740, ease(u))
+        x = lerp(cx - 40, 790, ease(u))
         y = lerp(cy + 10, 670, ease(u))
         wet = 1 - 0.6 * tl.prog("b_goldfish", t)
         face = 1 if t < T("b_got", 0.3) else -1
@@ -342,13 +342,13 @@ def bottle(tl, t):
         if t >= T("b_go", 0.2):
             pass
     if t >= T("b_go", 0.25):
-        gx = lerp(740, 1600, ease(tl.prog("b_go", t, 0.25, 1.0)))
+        gx = lerp(790, 1600, ease(tl.prog("b_go", t, 0.25, 1.0)))
         kitty(c, tl, t, "whiskers", gx, 672, 0.8, 1, "walk", walk=gx / 12)
     # cork pops
     if T("b_cork", 0.3) <= t < T("b_cork", 0.8):
         u = tl.prog("b_cork", t, 0.3, 0.8)
-        c.poly([(700 + 80 * u, 600 - 160 * u + 200 * u * u), (712 + 80 * u, 600 - 160 * u + 200 * u * u),
-                (712 + 80 * u, 612 - 160 * u + 200 * u * u)], (190, 140, 90), w=1.5)
+        c.poly([(750 + 80 * u, 600 - 160 * u + 200 * u * u), (762 + 80 * u, 600 - 160 * u + 200 * u * u),
+                (762 + 80 * u, 612 - 160 * u + 200 * u * u)], (190, 140, 90), w=1.5)
     # rain: heavy at first, softer later
     P.rain_streaks(c, t, 1.0 - 0.6 * tl.prog("b_map", t), seed=3, n=140)
     # the map
@@ -584,9 +584,9 @@ def dublin(tl, t):
     # Fergal busking in the middle of the bridge
     fx = 2560
     talking = tl.talking("fergal", t)
-    play = 0.0 if talking or t >= T("d_fergal") and t < T("d_music", 0.8) else 1.0
+    play = 0.0 if talking or t >= T("d_fergal") and t < T("d_west", 0.9) else 1.0
     P.fergal(c, fx, deck_y(fx), 0.9, -1, t, mouth=tl.mouth("fergal", t), play=play,
-             eyes="happy" if t >= T("d_music") else "open")
+             eyes="happy" if t >= T("d_west", 0.5) else "open")
     c.ellipse(fx - 90, deck_y(fx - 90) - 4, 22, 7, (110, 100, 90), w=2)          # cap for coins
     if play:
         P.notes(c, fx - 30, deck_y(fx) - 220, t, 1.2)
@@ -831,19 +831,19 @@ def road(tl, t):
               eyes="wide" if T("r_puddle") <= t < T("r_norain") else "open")
     elif t < j1:
         u = tl.prog("r_spot", t, 0.0, 0.8)
-        gx = cx + 260
+        gx = cx + 440
         if u < 1:
-            x, y = lerp(cx + 50, gx, u), lerp(roof, ROAD_Y + 20, u) + arc_y(u, 60)
+            x, y = lerp(cx + 50, gx, u), lerp(roof, ROAD_Y + 6, u) + arc_y(u, 60)
             kitty(c, tl, t, "whiskers", x, y, 0.55, 1, "leap")
         else:
-            kitty(c, tl, t, "whiskers", gx, ROAD_Y + 20, 0.62, -1 if t < T("r_clover", 0.3) else 1, "sit",
+            kitty(c, tl, t, "whiskers", gx, ROAD_Y + 6, 0.66, -1 if t < T("r_clover", 0.3) else 1, "sit",
                   eyes="wide" if t < T("r_clover", 0.5) else "happy", look=(0, 1) if t < T("r_clover", 0.3) else (1, 0))
             P.clover(c, gx + 30 * (-1 if t < T("r_clover", 0.3) else 1), ROAD_Y - 30, 1.0)
             sparkles(c, gx + 30 * (-1 if t < T("r_clover", 0.3) else 1), ROAD_Y - 30, t, r=26, n=5, k=0.9)
     else:
         u = tl.prog("r_end", t, 0.3, 0.7)
         if u < 1:
-            x, y = lerp(cx + 260, cx + 50, u), lerp(ROAD_Y + 20, roof, u) + arc_y(u, 80)
+            x, y = lerp(cx + 440, cx + 50, u), lerp(ROAD_Y + 6, roof, u) + arc_y(u, 80)
             kitty(c, tl, t, "whiskers", x, y, 0.55, -1, "leap")
         else:
             kitty(c, tl, t, "whiskers", cx + 50, roof, 0.55, 1, "sit", eyes="happy")
@@ -879,22 +879,37 @@ def cliffs_bg():
         # the ocean
         sea = D.gradient(W * SS, (H - 380) * SS, [(0, (90, 150, 190)), (1, (40, 90, 140))])
         c.img.paste(sea, (0, 380 * SS))
-        # far cliffs receding along the coast to the left
-        for k, (x0, top, base, col) in enumerate(((0, 330, 400, (150, 136, 120)), (120, 300, 440, (136, 120, 106)),
-                                                  (260, 250, 500, (120, 104, 92)))):
-            x1 = x0 + 260 + 60 * k
-            c.poly([(x0, top + 6), (x1 - 40, top), (x1, top + 30), (x1 - 10, base), (x0 - 30, base)], col, w=2)
-            c.poly([(x0 - 30, top - 6), (x1 - 40, top - 10), (x1, top + 30), (x0, top + 6)], (110, 170, 90), w=2)
-            for j in range(6):
-                yy = top + 20 + j * (base - top - 20) / 6
-                c.line([(x0 - 20, yy), (x1 - 8, yy - 6)], mix(col, (80, 70, 60), 0.4), 1.5, cap=False)
+        # far cliffs receding along the coast to the left: sunlit striped faces, green tops
+        rng = np.random.default_rng(12)
+        heads = ((-40, 190, 352, 386, 0.7), (40, 330, 318, 420, 0.45), (150, 470, 296, 486, 0.15))
+        for x0, x1, top, base, haze in heads:
+            col = mix((150, 116, 92), (190, 200, 214), haze)
+            dark = mix((104, 80, 66), (170, 180, 200), haze)
+            grass = mix((96, 160, 80), (180, 200, 200), haze)
+            n = 10
+            edge = [(x1 - 8 * math.sin(j * 1.7) - 14 * (j % 2), lerp(top + 12, base, j / n)) for j in range(n + 1)]
+            c.poly([(x0, top - 10), (x1 - 10, top + 10)] + edge + [(x0, base)], col, ol=None)
+            for j in range(1, 8):
+                yy = lerp(top + 14, base, j / 8)
+                c.line([(x0, yy - 6), (x1 - 12, yy)], dark, 2 if haze < 0.5 else 1.2, cap=False)
             for j in range(3):
-                c.arc(x0 + 40 + j * 70, base + 4, 30, 6, 200, 340, P.FOAM, 2)
-        # O'Brien's Tower on the far headland
-        tx, ty = 250, 312
-        c.rect(tx - 10, ty - 46, tx + 10, ty, (176, 166, 150), w=1.5)
+                xx = rng.uniform(x0 + 20, x1 - 30)
+                c.line([(xx, top + 16), (xx + rng.uniform(-6, 6), base - rng.uniform(0, 20))], dark, 1.5, cap=False)
+            c.poly([(x1 - 22, top + 12), (x1 + 4 - 8, top + 20)] + edge[:4] + [(x1 - 26, lerp(top, base, 0.35))],
+                   dark, ol=None)
+            c.poly([(x0, top - 18), (x1 - 4, top + 4), (x1 - 10, top + 14), (x0, top - 6)], grass, ol=None)
+            c.line([(x0, top - 6), (x1 - 10, top + 14)], mix(grass, (40, 80, 40), 0.4), 1.5, cap=False)
+            for j in range(4):
+                c.arc(x1 - 20 - j * 60, base + 3, 28, 5, 200, 340, P.FOAM, 2)
+        # sea stack (like Branaunmore) off the near headland
+        c.poly([(520, 500), (526, 420), (552, 414), (560, 500)], (124, 96, 80), w=2)
+        c.poly([(522, 424), (528, 412), (550, 410), (554, 418)], (96, 160, 80), ol=None)
+        c.arc(540, 502, 30, 6, 200, 340, P.FOAM, 2.5)
+        # O'Brien's Tower on the middle headland
+        tx, ty = 230, 312
+        c.rect(tx - 8, ty - 36, tx + 8, ty, (186, 176, 160), w=1.5)
         for k in range(3):
-            c.rect(tx - 10 + k * 8, ty - 52, tx - 6 + k * 8, ty - 46, (176, 166, 150), w=1)
+            c.rect(tx - 8 + k * 6, ty - 41, tx - 5 + k * 6, ty - 36, (186, 176, 160), w=1)
         # the near cliff: grassy top on the right, a sheer striped face falling to the sea
         face = [(EDGE_X, TOP_Y), (EDGE_X - 30, 560), (EDGE_X - 20, 600), (EDGE_X - 60, 640), (LEDGE[0] + 70, 650),
                 (LEDGE[0] - 60, 650), (LEDGE[0] - 40, 664), (LEDGE[0] - 70, H + 10), (W + 10, H + 10), (W + 10, TOP_Y)]
@@ -1072,10 +1087,6 @@ def cottage_bg():
             x = (k * 163) % W
             y = 530 + (k * 41) % 180
             c.ellipse(x, y, 60, 18, (164, 154, 140), w=1.5)
-        # the table in front
-        c.rect(560, 560, 1100, 584, (150, 100, 64), w=3, r=4)
-        c.rect(590, 584, 610, H, (120, 80, 50), w=2)
-        c.rect(1050, 584, 1070, H, (120, 80, 50), w=2)
         return c.img
     return cached("cottage", make)
 
@@ -1086,36 +1097,41 @@ def supper(tl, t):
     fire(c, 340, 512, t, 1.2)
     P.chowder_pot(c, 340, 410, 0.9, t)
     c.glow(340, 470, 220, 120, (255, 210, 140), (240, 236, 222), steps=6) if False else None
-    # bowls and bread on the table
-    P.soda_bread(c, 1010, 560, 0.8)
-    for bx in (720, 880):
-        c.ellipse(bx, 552, 40, 12, (246, 246, 250), w=2.5)
-        c.ellipse(bx, 548, 32, 7, (240, 190, 80), ol=None)
-        for k in range(2):
-            u = (t * 0.4 + k / 2) % 1
-            c.circle(bx - 10 + 20 * k + 6 * math.sin(t * 2 + k), 530 - 50 * u, 6 + 6 * u,
-                     mix((255, 255, 255), (240, 236, 222), u), ol=None)
-    # cats at the table
+    # cats behind the table
     eat = T("s_eat") <= t < T("s_eat", 1)
     w_mouth = 0.5 + 0.5 * math.sin(t * 16) if eat and math.sin(t * 2) > 0 else tl.mouth("whiskers", t)
-    kitty(c, tl, t, "whiskers", 720, 600, 0.9, -1 if t < T("s_true", 0.7) else 1, "sit", mouth=w_mouth,
+    kitty(c, tl, t, "whiskers", 720, 640, 1.0, -1 if t < T("s_true", 0.7) else 1, "sit", mouth=w_mouth,
           eyes="wide" if t < T("s_true") else "happy" if t < T("s_gave") or t >= T("s_luckier", 0.4) else "open",
           look=(-1, -0.4) if t < T("s_true", 0.7) else (1, 0))
-    if T("s_true") <= t < T("s_eat"):
-        hearts(c, 720, 440, t)
-    kitty(c, tl, t, "luna", 880, 600, 0.85, -1, "sit", eyes="happy" if t >= T("s_luckier", 0.5) else "open",
+    kitty(c, tl, t, "luna", 890, 640, 0.95, -1, "sit", eyes="happy" if t >= T("s_luckier", 0.5) else "open",
           look=(-1, 0))
+    # the table in front, with bowls of golden chowder and soda bread
+    c.rect(610, 590, 1010, 610, (150, 100, 64), w=3, r=4)
+    c.rect(622, 610, 998, 646, (130, 86, 54), w=3)
+    c.rect(640, 646, 660, H, (120, 80, 50), w=2)
+    c.rect(960, 646, 980, H, (120, 80, 50), w=2)
+    P.soda_bread(c, 965, 594, 0.6)
+    for bx in (740, 880):
+        c.ellipse(bx, 586, 40, 12, (246, 246, 250), w=2.5)
+        c.ellipse(bx, 582, 32, 7, (240, 190, 80), ol=None)
+        for k in range(2):
+            u = (t * 0.4 + k / 2) % 1
+            c.circle(bx - 14 + 28 * k + 4 * math.sin(t * 2 + k), 574 - 26 * u, 3 + 3 * u,
+                     mix((255, 255, 255), (240, 236, 222), u), ol=None)
+    if T("s_true") <= t < T("s_eat"):
+        hearts(c, 740, 440, t)
     # Bridie by the fire with Dot asleep, clover in her wool
-    P.bridie(c, 1030, 690, 0.8, -1, t, mouth=tl.mouth("bridie", t), sit=True, eyes="happy")
-    P.sheep(c, 1150, 700, 0.45, -1, t, lamb=True, eyes="closed", clover_on=True, seed=1.0)
-    D.zzz(c, 1130, 640, t)
+    P.bridie(c, 1090, 690, 0.8, -1, t, mouth=tl.mouth("bridie", t), sit=True, eyes="happy")
+    P.sheep(c, 1170, 704, 0.45, -1, t, lamb=True, eyes="closed", clover_on=True, seed=1.0)
+    D.zzz(c, 1150, 640, t)
     # Fergal plays a slow air in the corner
     play = 1.0 if t >= T("s_music") or t < T("s_true") else 0.6
-    P.fergal(c, 580, 690, 0.8, 1, t, play=play, eyes="closed" if t >= T("s_music") else "happy")
+    P.fergal(c, 500, 700, 0.85, 1, t, play=play, eyes="closed" if t >= T("s_music") else "happy")
     if t >= T("s_music"):
-        P.notes(c, 620, 480, t, 1.1, col=(120, 90, 60))
-    c.tint = None
-    return c
+        P.notes(c, 540, 470, t, 1.1, col=(120, 90, 60))
+    x0, y0, w = 200, 157, 1000
+    box = tuple(int(v * SS) for v in (x0, y0, x0 + w, y0 + w * H / W))
+    return Canvas(c.img.resize((W * SS, H * SS), Image.BILINEAR, box=box))
 
 
 # =================================================================== home
