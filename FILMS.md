@@ -31,3 +31,6 @@ again. When a new film is finished, tick it here and fill in its title and folde
 
 ## Ideas (not made yet)
 
+All 16 planned cities are done! Add new city ideas here, for example: Istanbul, Budapest, Kraków, Florence,
+Seville, Iceland (Reykjavík), Stockholm, Helsinki, Dubrovnik, Brussels/Bruges, the Swiss lakes, Cornwall.
+
