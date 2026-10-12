@@ -9,6 +9,7 @@ from common import *  # noqa: F401,F403
 from films.rome.sounds import EXTRA_SFX  # noqa: F401
 
 TITLE = "Whiskers and the Wishing Coin"
+PLACE = "Rome"            # folder in the catcute library
 SCENES = ["title", "postcard", "train", "streets", "colosseum", "piazza", "fountain", "wish", "home"]
 
 CAST = {

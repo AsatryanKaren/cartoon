@@ -1,6 +1,7 @@
 """Render the film: timeline -> audio -> frames (in parallel) -> final video.
 
-    python3 render.py --film rome        # full film -> out/rome.mp4  (default film: moonfish)
+    python3 render.py --film rome        # full film -> ~/Desktop/catcute/Rome/<title>.mp4
+    python3 render.py --all              # every film in films/, each into its place folder
     python3 render.py --still 130        # one frame at t=130s -> out/still_130.png
     python3 render.py --stills 12        # contact sheet of 12 frames across the film
     python3 render.py --from 95 --to 160 # render just a stretch (for checking a scene)
@@ -88,11 +89,22 @@ def main():
     p.add_argument("--to", dest="t1", type=float, default=None)
     p.add_argument("--jobs", type=int, default=cpu_count())
     p.add_argument("-o", "--output")
+    p.add_argument("--all", action="store_true", help="render every film in films/")
     a = p.parse_args()
+    if a.all:
+        films = sorted(d for d in os.listdir(os.path.join(ROOT, "films"))
+                       if os.path.exists(os.path.join(ROOT, "films", d, "story.py")))
+        for name in films:
+            extra = ["--tts", a.tts] + (["--premium"] if a.premium else []) + ["--jobs", str(a.jobs)]
+            subprocess.run([sys.executable, os.path.abspath(__file__), "--film", name, *extra], check=True)
+        return
     story.load(a.film)
     if a.t1 is None:
         a.t1 = float(story.FILM_SECONDS)
-    a.output = a.output or os.path.join(OUT, f"{a.film}.mp4")
+    if not a.output:
+        folder = os.path.join(story.LIBRARY, story.PLACE)
+        os.makedirs(folder, exist_ok=True)
+        a.output = os.path.join(folder, f"{story.TITLE}.mp4")
     build = os.path.join(BUILD, a.film)
     os.makedirs(OUT, exist_ok=True)
     os.makedirs(build, exist_ok=True)

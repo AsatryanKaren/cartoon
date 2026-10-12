@@ -9,6 +9,7 @@ from common import CAST, SUBTITLE_COLORS, Voice, Say, Act
 from films.montblanc import sounds
 
 TITLE = "Whiskers and the White Mountain"
+PLACE = "Chamonix"            # folder in the catcute library
 SCENES = ["title", "postcard", "train", "cablecar", "snow", "storm", "chalet", "summit", "sled", "home"]
 
 # New mountain friends

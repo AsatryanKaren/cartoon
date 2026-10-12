@@ -11,6 +11,7 @@ sound effects as (name, fraction-of-entry) pairs.
 from common import *  # noqa: F401,F403
 
 TITLE = "Whiskers and the Moon Fish"
+PLACE = "Home"            # folder in the catcute library
 SCENES = ["title", "morning", "legend", "garden", "meadow", "pond", "realize", "home"]
 
 # the playful music for the laugh, then back to the quiet pond theme

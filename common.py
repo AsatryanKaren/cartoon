@@ -5,7 +5,13 @@ characters by extending CAST and SUBTITLE_COLORS in its story.py:
 
     CAST = {**CAST, "pigeon": Voice("im_nicola", 1.0, 0, ["Alex"], 180, "en-us+m1", 50, 160)}
 """
+import os
 from dataclasses import dataclass, field
+
+# Finished films are saved as  <LIBRARY>/<PLACE>/<TITLE>.mp4  (and .srt).
+# Each film sets PLACE in its story.py. Override the library with the CATCUTE_DIR env variable.
+LIBRARY = os.environ.get("CATCUTE_DIR", os.path.expanduser("~/Desktop/catcute"))
+PLACE = "Other"
 
 FILM_SECONDS = 355          # 5:55, every film
 FPS = 24

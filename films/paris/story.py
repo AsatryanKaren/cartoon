@@ -11,6 +11,7 @@ from common import *  # noqa: F401,F403
 from films.paris.sounds import EXTRA_SFX  # noqa: F401
 
 TITLE = "Whiskers and the City of Lights"
+PLACE = "Paris"            # folder in the catcute library
 SCENES = ["title", "postcard", "train", "arrival", "bakery", "seine", "montmartre", "sparkle", "home"]
 
 CAST = {

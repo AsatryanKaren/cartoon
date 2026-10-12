@@ -14,7 +14,7 @@ brew install ffmpeg python
 cd cartoon
 python3 -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
-python3 render.py --film moonfish   # -> out/moonfish.mp4 + out/moonfish.srt
+python3 render.py --all     # renders every film into ~/Desktop/catcute/<Place>/
 ```
 
 ### Voices (natural, free): Kokoro
@@ -54,14 +54,30 @@ python3 render.py --film rome --from 95 --to 160   # render only part of the fil
 python3 timeline.py --film rome                    # generate speech, print scene timings
 ```
 
-## Films
+## Films and where they are saved
 
-| Folder | Film |
-|--------|------|
-| `films/moonfish/` | 1. Whiskers and the Moon Fish |
-| `films/rome/` | The cats travel to Rome |
-| `films/montblanc/` | The cats travel to Mont Blanc |
-| `films/paris/` | The cats travel to Paris |
+Every finished film is saved on your Desktop as `catcute/<Place>/<Title>.mp4` (plus a `.srt`
+subtitle file). The folder is created automatically.
+
+```
+Desktop/catcute/
+├── Home/      Whiskers and the Moon Fish.mp4
+├── Rome/      Whiskers and the Wishing Coin.mp4
+├── Chamonix/  Whiskers and the White Mountain.mp4
+└── Paris/     Whiskers and the City of Lights.mp4
+```
+
+| Code folder | Place folder | Film |
+|-------------|--------------|------|
+| `films/moonfish/` | Home | Whiskers and the Moon Fish |
+| `films/rome/` | Rome | Whiskers and the Wishing Coin |
+| `films/montblanc/` | Chamonix | Whiskers and the White Mountain |
+| `films/paris/` | Paris | Whiskers and the City of Lights |
+
+`python3 render.py --film rome` renders one film; `python3 render.py --all` renders them all.
+A new film only needs `TITLE` and `PLACE` in its `story.py` to land in the right folder.
+To save somewhere else, set `CATCUTE_DIR`, e.g. `CATCUTE_DIR=~/Movies/catcute python3 render.py --all`.
+Preview stills and contact sheets still go to `out/`.
 
 ## How it works
 
