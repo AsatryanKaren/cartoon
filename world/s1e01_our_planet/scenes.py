@@ -637,6 +637,16 @@ def swim_globe(tl, t):
     return c
 
 
+def note(c, x, y, k):
+    """A little music note."""
+    if k <= 0.05:
+        return
+    c.push(x, y, 0.6 + 0.4 * k)
+    c.ellipse(0, 0, 9, 7, (255, 255, 255), w=2.5)
+    c.line([(8, -2), (8, -34), (20, -26)], OUT, 3)
+    c.pop()
+
+
 def swim_close(tl, t):
     """Close-up riding Shelby across the sea (for the punchline)."""
     T = tl.t
@@ -656,7 +666,7 @@ def swim_close(tl, t):
         # a little sailor-song note or two
         for k in range(3):
             u = (t * 0.6 + k / 3) % 1
-            K.text(c, 640 + 40 * k + 30 * u, 280 - 120 * u, "~" if k % 2 else "♪", 34, (255, 255, 255), stroke=2)
+            note(c, 600 + 50 * k + 30 * u, 300 - 120 * u, 1 - u)
     gk = 1 - tl.prog("w_purpose", t, 0.0, 0.3)
     if gk > 0.01:
         def draw(ic):

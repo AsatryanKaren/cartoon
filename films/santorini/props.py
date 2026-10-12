@@ -679,19 +679,31 @@ CROWD_COLS = [(70, 46, 70), (60, 40, 64), (84, 52, 74), (52, 36, 58)]
 
 
 def person(c, x, y, s=1.0, col=(60, 40, 64), clap=0.0, t=0.0, seed=0, hat=False, kid=False):
-    """A backlit sunset-watcher (silhouette). clap: 0..1 arms up clapping."""
-    c.push(x, y, s * (0.7 if kid else 1.0))
-    c.rect(-16, -70, 16, 0, col, ol=None, r=8)
-    c.circle(0, -84, 13, col, ol=None)
+    """A backlit sunset-watcher (silhouette with a warm rim light). clap: 0..1 arms up clapping."""
+    c.push(x, y, s * (0.75 if kid else 1.0))
+    rim = mix(col, (255, 170, 120), 0.45)
+    c.rect(-13, -40, -3, 0, col, ol=None, r=4)
+    c.rect(3, -40, 13, 0, col, ol=None, r=4)
+    c.ellipse(0, -62, 20, 30, col, ol=None)
+    c.ellipse(-8, -70, 6, 18, rim, ol=None)
+    c.rect(-5, -96, 5, -86, col, ol=None)
+    c.circle(0, -104, 13, col, ol=None)
+    c.arc(0, -104, 13, 13, 120, 240, rim, 3)
     if hat:
-        c.ellipse(0, -94, 20, 5, col, ol=None)
-        c.ellipse(0, -98, 11, 8, col, ol=None)
+        c.ellipse(0, -114, 22, 5, col, ol=None)
+        c.ellipse(0, -118, 12, 9, col, ol=None)
+    elif seed % 2:
+        c.ellipse(4, -110, 14, 9, col, ol=None)      # hair bun / ponytail
+        c.circle(12, -98, 6, col, ol=None)
     if clap > 0:
         k = abs(math.sin(t * 11 + seed))
         for side in (-1, 1):
-            hx = side * (4 + 10 * k)
-            c.line([(side * 12, -62), (hx, -108)], col, 7)
-            c.circle(hx, -110, 5, col, ol=None)
+            hx = side * (3 + 9 * k)
+            c.line([(side * 14, -80), (side * 22, -100), (hx, -126)], col, 7)
+            c.circle(hx, -128, 5, col, ol=None)
+    else:
+        for side in (-1, 1):
+            c.line([(side * 16, -80), (side * 20, -46)], col, 7)
     c.pop()
 
 

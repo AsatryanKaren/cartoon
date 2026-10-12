@@ -64,8 +64,8 @@ def kat(c, tl, t, who, x, y, s=1.0, face=1, pose="sit", walk=0.0, bundle=False, 
         else:
             P.bags_bundle(c, x - 6 * s * face, y - 82 * s, s * 0.95)
     if piece:
-        bx = x - (44 if pose != "sit" else 30) * s * face
-        P.piece(c, bx, y - 40 * s, s * 0.7)
+        bx = x - (50 if pose != "sit" else 30) * s * face
+        P.piece(c, bx, y - 44 * s, s * 1.05)
 
 
 def pip(c, tl, t, x, y, s=1.0, face=1, **kw):
@@ -643,8 +643,8 @@ def harbour(tl, t):
             wing_up=0.8 if T("hb_steps") <= t < T("hb_steps", 1) else 0.0,
             eyes="happy" if T("hb_wash") <= t < T("hb_oia") else "open")
     # Luna
-    lu_keys = [(s0, 760), (T("hb_welcome", 0.6), 1360), (T("hb_oia"), 1360), (T("hb_oia", 0.4), 1270),
-               (s1 - 1.5, 1270), (s1, 1700)]
+    lu_keys = [(s0, 760), (T("hb_welcome", 0.6), 1360), (T("hb_oia"), 1360), (T("hb_oia", 0.4), 1330),
+               (s1 - 1.5, 1330), (s1, 1700)]
     lx = smooth(t, lu_keys, 0.3)
     lmoving = abs(speed(t, lu_keys)) > 20
     if lmoving:
@@ -676,13 +676,17 @@ def harbour(tl, t):
         jig = 3 * math.sin(t * 30) if k > 0.3 else 0
         # big octopus stretched between line and Whiskers' paws
         py = lerp(560, 600, k)
-        P.octopus(c, W_(1940) + (W_(x) - W_(1940)) * 0.25, 430 + (py - 430) * 0.3 - 8, 0.95, t,
-                  sway=lerp(0, -3, k), stretch=lerp(1.0, 1.4, k))
+        ox, oy = W_(1940) + (W_(x) - W_(1940)) * 0.25, 430 + (py - 430) * 0.3 - 8
+        paw = (W_(x) + 50 * 0.85, QUAY - (70 if k > 0.05 else 95) * 0.85)
+        for j in range(3):
+            mid = (lerp(ox, paw[0], 0.5) + 6 * (j - 1), lerp(oy + 30, paw[1], 0.5) + 10 + 4 * j)
+            c.stroke([(ox - 6 + 6 * j, oy + 30), mid, (paw[0] - 4 + 4 * j, paw[1])], (226, 110, 120), 6)
+        P.octopus(c, ox, oy, 0.95, t, sway=lerp(0, -3, k), stretch=lerp(1.0, 1.2, k))
         kat(c, tl, t, "whiskers", W_(x) + jig, QUAY, 0.85, 1, "crouch" if k > 0.05 else "stand",
             look=(0.5, -1), eyes="closed" if k > 0.4 else "open", mouth=0.3 * k)
     elif t < T("hb_pull", 0.86):
         u = tl.prog("hb_pull", t, 0.5, 0.86)
-        x = lerp(1760, 1080, u)
+        x = lerp(1760, 960, u)
         y = lerp(QUAY - 40, 560, u) + arc_y(u, 340)
         kat(c, tl, t, "whiskers", W_(x), y, 0.85, -1, "leap", eyes="wide", mouth=0.8, squash=1.1)
         P.octopus(c, W_(x) - 50, y - 90, 0.7, t, sway=-1.2)
@@ -691,16 +695,16 @@ def harbour(tl, t):
         out = tl.prog("hb_goat", t, 0.0, 0.5)
         if out <= 0:
             wy = 568 + 3 * math.sin(t * 4)
-            kat(c, tl, t, "whiskers", W_(1080), wy, 0.85, 1, "swim", wet=1.0,
+            kat(c, tl, t, "whiskers", W_(960), wy, 0.85, 1, "swim", wet=1.0,
                 eyes="happy" if T("hb_wash") <= t < T("hb_wash", 1) else "open")
-            P.octopus(c, W_(1150), wy - 70, 0.6, t, sway=0.5 * math.sin(t * 2))
+            P.octopus(c, W_(1030), wy - 70, 0.6, t, sway=0.5 * math.sin(t * 2))
         else:
-            keys = [(T("hb_goat"), 1080), (T("hb_goat", 0.5), 1150), (s1 - 1.5, 1150), (s1, 1600)]
+            keys = [(T("hb_goat"), 960), (T("hb_goat", 0.5), 1010), (s1 - 1.5, 1010), (s1, 1600)]
             x = smooth(t, keys, 0.2)
             y = lerp(560, QUAY, ease(out))
             mv = abs(speed(t, keys)) > 20
             kat(c, tl, t, "whiskers", W_(x), y, 0.85, 1, "walk" if mv else "stand", walk=x / 10, wet=1.0 - 0.5 * out)
-    splash_fx(c, W_(1080), 580, t - T("hb_pull", 0.86), 0.9)
+    splash_fx(c, W_(960), 580, t - T("hb_pull", 0.86), 0.9)
     return finish(c, tl, t)
 
 
@@ -1042,9 +1046,9 @@ def sunset_village():
     return cached("svillage", make)
 
 
-CROWD = [(830, 452, 0.55), (870, 455, 0.5), (905, 470, 0.55), (960, 492, 0.6), (1010, 510, 0.6), (1060, 520, 0.55),
-         (1120, 540, 0.65), (1180, 560, 0.62), (1240, 566, 0.65), (880, 600, 0.7), (950, 625, 0.7), (1030, 650, 0.75),
-         (1110, 680, 0.8), (1200, 690, 0.8), (40, 640, 0.9), (90, 650, 0.85)]
+CROWD = [(840, 470, 0.7), (900, 478, 0.65), (960, 500, 0.75), (1020, 520, 0.7), (1090, 540, 0.75),
+         (1160, 556, 0.8), (1235, 570, 0.8), (870, 610, 0.85), (960, 636, 0.9), (1050, 664, 0.95),
+         (1150, 700, 1.0), (1240, 712, 1.05), (30, 700, 1.3), (95, 716, 1.2)]
 
 
 def sunset_frame(tl, t, close=False):

@@ -1262,7 +1262,7 @@ def quiz_card(t, question, choices=None, answer=0, ask=1.0, count=0.0, reveal=0.
     for j, ln in enumerate(lines):
         text(c, 640, qy + 42 + j * 46, ln, 38, (48, 40, 70))
     if choices:
-        cy = 410
+        cy = 392
         for i, ch in enumerate(choices):
             cx = 360 if i == 0 else 920
             ki = clamp(ask * 2 - 0.5 - i * 0.3)
@@ -1289,7 +1289,7 @@ def quiz_card(t, question, choices=None, answer=0, ask=1.0, count=0.0, reveal=0.
                 c.pop()
             c.pop()
     if 0 < count < 1 and reveal <= 0:
-        cx, cy = (640, 410) if choices else (1110, 220)
+        cx, cy = (640, 392) if choices else (1110, 220)
         n = 3 - int(count * 3)
         f = (count * 3) % 1
         c.circle(cx, cy, 66, (255, 255, 255), w=4)
@@ -1302,7 +1302,7 @@ def quiz_card(t, question, choices=None, answer=0, ask=1.0, count=0.0, reveal=0.
         c.pop()
     if reveal > 0 and answer_text:
         kk = pop(reveal * 1.5)
-        c.push(640, 600, kk)
+        c.push(640, 604, kk)
         w_ = text_w(answer_text, 40) / 2 + 50
         c.rect(-w_, -40, w_, 40, (80, 190, 100), r=40, w=4)
         text(c, 0, 1, answer_text, 40, (255, 255, 255), stroke=3, stroke_fill=(30, 90, 40))
