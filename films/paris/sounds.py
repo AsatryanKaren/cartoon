@@ -104,5 +104,5 @@ EXTRA_SFX = {
     "sparkle": (sfx_sparkle, 0.45),
     "horn": (sfx_horn, 0.6),
     "poof": (sfx_poof, 0.6),
-    "accordion": (sfx_accordion, 0.5),
+    "accordion": (sfx_accordion, 1.3),
 }

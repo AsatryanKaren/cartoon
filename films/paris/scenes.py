@@ -778,7 +778,7 @@ def bakery(tl, t):
 
     # --- Gaston
     gk = [(s0, 330), (T("b_poof", 0.05), 330), (T("b_poof", 0.9), 720), (T("b_still", 0.2), 720),
-          (T("b_still", 0.9), 770), (T("b_chase", 0.15), 770), (T("b_chase", 1.0), 1600)]
+          (T("b_still", 0.9), 770), (T("b_chase", 0.3), 770), (T("b_chase", 1.0), 1500)]
     gx = smooth(t, gk)
     behind = gx < 585
     gface = -1 if t < T("b_hey") - 0.1 else 1
@@ -808,9 +808,9 @@ def bakery(tl, t):
     tray_table(c, 5 - taken if not fallen else 0)
 
     # --- friends near the door
-    fk_end = T("b_chase", 0.45)
+    fk_end = T("b_chase", 0.75)
     for who, x, y, s in (("pip", 1100, FLOOR + 2, 1.4), ("luna", 1150, FLOOR + 4, 1.0), ("colette", 1250, FLOOR, 0.95)):
-        enter = [(s0, 1350 + (x - 1100)), (T("b_arrive", 0.8), x), (T("b_chase", 0.2), x), (fk_end, 1500 + x - 1100)]
+        enter = [(s0, 1350 + (x - 1100)), (T("b_arrive", 0.8), x), (T("b_chase", 0.35), x), (fk_end, 1500 + x - 1100)]
         laugh = T("b_achoo", 0.7) <= t < T("b_monster")
         eyes = "happy" if laugh else ("wide" if T("b_poof", 0.3) <= t < T("b_achoo") else "open")
         if who == "pip":
@@ -827,7 +827,7 @@ def bakery(tl, t):
         flour = 0.45
     pal = P.floured(D.WHISKERS, flour)
     wk = [(s0, 1380), (T("b_arrive", 1), 1000), (T("b_narr", 1), 960), (T("b_sneak", 0.9), 830),
-          (T("b_wobble", 0.1), 830), (T("b_poof", 0.0), 900), (T("b_chase", 0.05), 900), (T("b_chase", 0.6), 1600)]
+          (T("b_wobble", 0.1), 830), (T("b_poof", 0.0), 900), (T("b_chase", 0.1), 900), (T("b_chase", 0.75), 1500)]
     wx = smooth(t, wk)
     v = (smooth(t + 0.05, wk) - smooth(t - 0.05, wk)) / 0.1
     moving = abs(v) > 20
@@ -1275,7 +1275,7 @@ def montmartre(tl, t):
     T = tl.t
     s0, s1 = tl.scenes["montmartre"]
     # Whiskers' path: arrive, then lead the climb
-    wk = [(s0, -150), (T("m_lost", 0.9), 380), (T("m_come", 0.7), 380), (T("m_climb", 0.05), 470),
+    wk = [(s0, -150), (T("m_lost", 0.9), 420), (T("m_come", 0.7), 420), (T("m_climb", 0.05), 470),
           (T("m_climb", 0.95), 1220)]
     lk = [(s0, -280), (T("m_lost", 0.95), 220), (T("m_come", 1.0), 220), (T("m_climb", 0.15), 400),
           (s1, 1180)]
@@ -1378,7 +1378,7 @@ def sparkle(tl, t):
         cx, cy = lerp(470 + 30, 400, u), lerp(SILL - 20, SILL - 70, u)
         sh = tl.prog("x_share", t, 0.2, 0.8)
         if sh <= 0:
-            P.croissant(c, cx, cy + 3 * math.sin(t * 3), 1.0, 0.1)
+            P.croissant(c, cx, cy + 3 * math.sin(t * 3), 1.3, 0.1)
             if u > 0.95:
                 for k in range(3):
                     a = t * 2 + k * 2.1
@@ -1386,8 +1386,8 @@ def sparkle(tl, t):
         else:
             e = ease(sh)
             # half to Luna, half to Whiskers, a crumb for Pip
-            P.croissant(c, lerp(cx - 14, 300 + 0.85 * 34, e), lerp(cy, SILL - 0.85 * 92, e), 0.6, -0.3)
-            P.croissant(c, lerp(cx + 14, 470 - 0.9 * 34, e), lerp(cy, SILL - 0.9 * 92, e), 0.6, 0.3)
+            P.croissant(c, lerp(cx - 14, 300 + 0.85 * 34, e), lerp(cy, SILL - 0.85 * 92, e), 0.75, -0.3)
+            P.croissant(c, lerp(cx + 14, 470 - 0.9 * 34, e), lerp(cy, SILL - 0.9 * 92, e), 0.75, 0.3)
             c.circle(lerp(cx, 386 + 20, e), lerp(cy, SILL - 38, e), 4, (226, 160, 70), w=1.5)
     if flash > 0.01:
         k = flash * 0.35
