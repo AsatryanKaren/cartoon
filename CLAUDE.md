@@ -7,3 +7,6 @@
 - Every film must be exactly 355 s (5:55). `python3 render.py --film <name>` saves to
   `~/Desktop/catcute/<PLACE>/<TITLE>.mp4`.
 - Finished videos are also committed to `catcute/<PLACE>/<TITLE>.mp4` (+ `.srt`) so they are saved on GitHub.
+- Second series: **Whiskers & Luna's World** (geography, educational) in `world/`. Its guide, format and
+  episode checklist are in `world/SERIES.md`: read it first, never remake a ticked episode, tick each finished one.
+  Episodes render with `--film world/s1eNN_slug`; videos go to `catcute/World/Season N/`.

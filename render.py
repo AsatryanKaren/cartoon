@@ -105,7 +105,8 @@ def main():
         folder = os.path.join(story.LIBRARY, story.PLACE)
         os.makedirs(folder, exist_ok=True)
         a.output = os.path.join(folder, f"{story.TITLE}.mp4")
-    build = os.path.join(BUILD, a.film)
+    safe = a.film.replace("/", "_")
+    build = os.path.join(BUILD, safe)
     os.makedirs(OUT, exist_ok=True)
     os.makedirs(build, exist_ok=True)
     started = time.time()
@@ -113,7 +114,7 @@ def main():
     tl = timeline.build(a.tts, a.premium)
 
     if a.still is not None:
-        path = os.path.join(OUT, f"{a.film}_still_{a.still:g}.png")
+        path = os.path.join(OUT, f"{safe}_still_{a.still:g}.png")
         frame(tl, int(a.still * story.FPS), cuts(tl)).save(path)
         print(path)
         return
@@ -126,7 +127,7 @@ def main():
             t = (k + 0.5) * story.FILM_SECONDS / n
             img = frame(tl, int(t * story.FPS), cuts(tl)).resize((640, 360))
             sheet.paste(img, ((k % cols) * 640, (k // cols) * 360))
-        path = os.path.join(OUT, f"{a.film}_contact_sheet.png")
+        path = os.path.join(OUT, f"{safe}_contact_sheet.png")
         sheet.save(path)
         print(path)
         return

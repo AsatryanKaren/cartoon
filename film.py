@@ -15,8 +15,10 @@ _scenes = None
 def load(name):
     global NAME, _story, _scenes
     NAME = name
-    _story = importlib.import_module(f"films.{name}.story")
-    _scenes = importlib.import_module(f"films.{name}.scenes")
+    # "rome" -> films/rome/ ; "world/s1e01_our_planet" -> world/s1e01_our_planet/ (a series folder)
+    pkg = name.replace("/", ".") if "/" in name else f"films.{name}"
+    _story = importlib.import_module(f"{pkg}.story")
+    _scenes = importlib.import_module(f"{pkg}.scenes")
 
 
 def scenes():
