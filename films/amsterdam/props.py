@@ -446,12 +446,12 @@ def houseboat(c, x, y, s=1.0, t=0.0, body=(46, 98, 80), cabin=(232, 210, 160), r
     c.rect(-48, -138, -16, -48, (80, 120, 100), w=2, r=3)               # door
     c.circle(-24, -92, 3, (240, 210, 90), ol=None)
     # roof garden: pots and a little chimney
-    c.rect(230, -196, 246, -164, (90, 90, 96), w=2)
-    for k, px in enumerate((40, 90, 200)):
+    c.rect(250, -196, 266, -164, (90, 90, 96), w=2)
+    for k, px in enumerate((206, 240)):
         c.rect(px - 12, -182, px + 12, -164, (200, 110, 70), w=2)
         D.bush(c, px, -180, 0.45, col=(80, 150, 80))
     if bike:
-        bicycle(c, 150, -164, 0.55, -1, 0.0, col=(200, 60, 60), basket=True)
+        bicycle(c, 60, -164, 0.55, -1, 0.0, col=(200, 60, 60), basket=True)
     # deck rail (low) at the stern, the deck edge
     c.rect(-292, -48, 292, -40, (250, 246, 236), w=2)
     for k in range(5):
