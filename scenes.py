@@ -6,7 +6,7 @@ sync whatever length the speech and stretched action moments end up being.
 import math
 
 import numpy as np
-from PIL import Image
+from PIL import Image, ImageDraw, ImageFilter
 
 import draw as D
 from draw import Canvas, W, H, SS, ease, lerp, clamp, mix
@@ -102,17 +102,31 @@ def room(night=False):
         c.line([(920, 110), (920, 370)], (240, 240, 240) if not night else (150, 150, 180), 6, cap=False)
         c.line([(760, 240), (1080, 240)], (240, 240, 240) if not night else (150, 150, 180), 6, cap=False)
         c.rect(740, 370, 1100, 392, (255, 250, 240) if not night else (150, 146, 170), r=4)
-        # sunbeam / moonbeam on the floor
-        beam = (255, 240, 170) if not night else (130, 130, 180)
-        c.poly([(760, 392), (1080, 392), (720, 700), (300, 700)], mix(floor, beam, 0.35), ol=None)
         # rug, plant, bowl
         c.ellipse(520, 612, 190, 40, (200, 70, 80) if not night else (110, 60, 90))
         c.ellipse(520, 612, 150, 28, (230, 120, 110) if not night else (130, 80, 110), ol=None)
         c.rect(150, 440, 210, 520, (190, 100, 70), r=6)
         for dx, dy in ((-30, -10), (0, -40), (30, -12), (-15, -30), (18, -36)):
             c.ellipse(180 + dx, 440 + dy, 14, 30, (80, 160, 90))
+        window_light(c.img, (255, 236, 185) if not night else (150, 160, 220), 0.22 if not night else 0.14)
         return c.img
     return cached(("room", night), make)
+
+
+def window_light(img, col, strength):
+    """Soft patch of light the window throws on the floor: four panes, blurred edges."""
+    mask = Image.new("L", img.size, 0)
+    md = ImageDraw.Draw(mask)
+
+    def p(u, v):   # window (u across, v down) -> floor point, light falling down-left
+        return (lerp(lerp(650, 900, u), lerp(470, 790, u), v) * SS, lerp(548, 700, v) * SS)
+
+    gap = 0.03
+    for u0, u1 in ((0, 0.5 - gap), (0.5 + gap, 1)):
+        for v0, v1 in ((0, 0.5 - gap), (0.5 + gap, 1)):
+            md.polygon([p(u0, v0), p(u1, v0), p(u1, v1), p(u0, v1)], fill=255)
+    mask = mask.filter(ImageFilter.GaussianBlur(7 * SS)).point(lambda a: int(a * strength))
+    img.paste(Image.new("RGB", img.size, col), (0, 0), mask)
 
 
 def bowl(c, x, y, jig=0.0):
