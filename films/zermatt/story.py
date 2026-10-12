@@ -65,7 +65,7 @@ SCRIPT = [
     S("pip", "Whiskers! Luna! There's a cloud stuck in the hedge!", "hedge", "g_pip"),
     A("hedge", 0.8, "g_pop", [("rustle", 0.0), ("pop", 0.55), ("baa", 0.7)]),
     S("wolli", "Hello! I'm Wolli. I fell off the trailer, on the way home from the fair.", "hedge", "g_wolli"),
-    S("luna", "Oh, you poor thing! Where is home, Wolli?", "hedge", "g_where"),
+    S("luna", "Where is home, Wolli?", "hedge", "g_where"),
     S("wolli", "Zermatt! Under the Matterhorn, the pointiest mountain in the world.", "hedge", "g_zermatt"),
     S("wolli", "At sunrise, it glows like a mountain of chocolate.", "hedge", "g_glow"),
     A("hedge", 0.6, "g_ears"),
@@ -82,7 +82,7 @@ SCRIPT = [
     S("narrator", "Three stowaways were snuggled inside.", "trailer", "tr_three", [("engine", 0.0)]),
     S("whiskers", "Fluffiest. Bed. Ever.", "trailer", "tr_bed", [("purr", 0.5)]),
     A("trailer", 1.6, "tr_night", [("engine", 0.0), ("engine", 0.5)]),
-    S("narrator", "At the end of the road, they hopped into a tiny electric taxi. No cars are allowed in Zermatt!",
+    S("narrator", "No cars are allowed in Zermatt, so they hopped into a tiny electric taxi!",
       "trailer", "tr_taxi", [("hum", 0.1)]),
     A("trailer", 1.2, "tr_zoom", [("hum", 0.0), ("toot", 0.55)]),
 
@@ -95,7 +95,7 @@ SCRIPT = [
     S("whiskers", "Hmm. It looks very... rocky. Where's the chocolate?", "village", "v_rocky"),
     A("village", 0.9, "v_cuckoo", [("cuckoo", 0.3)]),
     S("whiskers", "Waah! I jumped on purpose. To stretch.", "village", "v_stretch"),
-    S("wolli", "My family is high up on the summer meadow. We must find them before dark.", "village", "v_family"),
+    S("wolli", "My family is up on the high meadow. We must find them before dark.", "village", "v_family"),
     A("village", 0.7, "v_sniff", [("sniff", 0.1), ("sniff", 0.5)]),
     S("whiskers", "Wait. Do you smell that?", "village", "v_smell"),
     A("village", 0.7, "v_follow"),
@@ -164,5 +164,5 @@ SCRIPT = [
     A("home", 1.2, "h_curl", [("purr", 0.2)]),
     S("narrator", "Because however far you wander, the sweetest sound in the world is a friend calling you home.",
       "home", "h_moral"),
-    A("home", 2.6, "h_end", [("tick", 0.2)]),
+    A("home", 2.1, "h_end", [("tick", 0.2)]),
 ]

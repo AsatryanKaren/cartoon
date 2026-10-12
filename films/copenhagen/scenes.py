@@ -367,19 +367,19 @@ def rain(tl, t):
     if t < T("r_pip"):
         pass
     elif "pip" not in riders and t < T("r_go", 0.18):
-        book_y = 660 if t >= T("r_pip", 0.7) else 662 + 2 * math.sin(t * 20)
+        book_y = 634 if t >= T("r_pip", 0.7) else 636 + 2 * math.sin(t * 20)
         if t < T("r_pip", 0.75):
             P.book_cover(c, bx - 60, book_y, 0.9)
-            pip(c, tl, t, bx, 665, 0.9, 1, walk=bx / 6 if t < T("r_pip", 0.7) else 0)
+            pip(c, tl, t, bx, 640, 0.9, 1, walk=bx / 6 if t < T("r_pip", 0.7) else 0)
         else:
-            P.book_cover(c, 290, 662, 0.9)
-            pip(c, tl, t, 380, 665, 0.9, -1 if t < T("r_pah") else 1, eyes="open")
+            P.book_cover(c, 290, 636, 0.9)
+            pip(c, tl, t, 380, 640, 0.9, -1 if t < T("r_pah") else 1, eyes="open")
     elif "pip" not in riders:
-        P.book_cover(c, 290, 662, 0.9)
+        P.book_cover(c, 290, 636, 0.9)
         u = tl.prog("r_go", t, 0.18, 0.32)
-        pip(c, tl, t, lerp(380, tx + 60, u), lerp(665, ty - 60, u) + arc_y(u, 160), 0.8, 1, hop=0)
+        pip(c, tl, t, lerp(380, tx + 60, u), lerp(640, ty - 60, u) + arc_y(u, 160), 0.8, 1, hop=0)
     if t >= T("r_go", 0.18):
-        P.book_cover(c, 290, 662, 0.9)
+        P.book_cover(c, 290, 636, 0.9)
     # ---- Whiskers
     if "whiskers" not in riders:
         if t < T("r_pah", 0.1):
@@ -601,11 +601,11 @@ def nyhavn(tl, t):
             pip(c, tl, t, lerp(TRUNK_NY + 50, 760, u), lerp(FEET - 70, FEET, u) + arc_y(u, 120), 0.75, 1)
         else:
             lkeys = [(T("n_narr", 0.5), 600), (T("n_ducks", 0.6), 1000), (T("n_grey"), 1000), (T("n_grey", 0.4), 1110),
-                     (T("n_go", 0.1), 1110), (T("n_go", 1.0), 1150)]
-            wkeys = [(T("n_narr", 0.6), 820), (T("n_ducks", 0.7), 930), (T("n_pastry"), 930), (T("n_go", 0.05), 930),
+                     (T("n_go", 0.1), 1110), (T("n_go", 1.0), 1080)]
+            wkeys = [(T("n_narr", 0.6), 820), (T("n_ducks", 0.7), 860), (T("n_pastry"), 860), (T("n_go", 0.05), 860),
                      (T("n_go", 0.8), 1400)]
-            pkeys = [(T("n_narr", 0.55), 760), (T("n_ducks", 0.65), 1050), (T("n_go", 0.2), 1050),
-                     (T("n_go", 1.0), 1320)]
+            pkeys = [(T("n_narr", 0.55), 760), (T("n_ducks", 0.65), 950), (T("n_go", 0.2), 950),
+                     (T("n_go", 1.0), 1170)]
             look_up = t < T("n_ducks")
             mover(c, tl, t, "whiskers", wkeys, FEET, 0.85, 1, look=(1, -1) if look_up else (1, 0),
                   eyes="wide" if T("n_pastry") <= t < T("n_go") else "open")
@@ -693,11 +693,11 @@ def bakery(tl, t):
     alarm = t >= T("b_oh")
     saga(c, tl, t, 1250, FEET, 0.9, -1 if alarm else 1, eyes="wide" if alarm and t < T("b_follow") else "open",
           wing=0.5 if T("b_follow") <= t < T("b_follow", 0.7) else 0.0)
-    lx = smooth(t, [(T("b_oh"), 1150), (T("b_oh", 0.4), 1090)], r=0.1)
+    lx = smooth(t, [(T("b_oh"), 1080), (T("b_oh", 0.4), 1040)], r=0.1)
     kitty(c, tl, t, "luna", lx, FEET, 0.85, -1 if alarm else 1, "stand",
           eyes="wide" if alarm else "open", look=(1, -0.6) if alarm else (1, -0.4))
     laughing = T("b_roll") <= t < T("b_roll", 1)
-    pip(c, tl, t, 1330, FEET, 0.8, -1 if alarm else 1, eyes="happy" if laughing else "open",
+    pip(c, tl, t, 1170, FEET + 6, 0.8, -1 if alarm else 1, eyes="happy" if laughing else "open",
         hop=abs(math.sin(t * 9)) * 10 if laughing else None)
     # Whiskers: at the counter, the sandwich puzzle, the cinnamon whirl
     wx = 1440
@@ -931,22 +931,22 @@ def tivoli(tl, t):
     if t >= T("tv_fly"):
         u = tl.prog("tv_fly", t)
         if u < 0.15:
-            dpos = (lerp(470, 520, u / 0.15), PA_FEET + 2 - abs(math.sin(t * 10)) * 10, False)
+            dpos = (lerp(400, 470, u / 0.15), PA_FEET + 2 - abs(math.sin(t * 10)) * 10, False)
         elif u < 0.5:
             k = ease((u - 0.15) / 0.35)
-            dpos = (lerp(520, 740, k), lerp(PA_FEET, 120, k) + arc_y(k, 40), True)
+            dpos = (lerp(470, 740, k), lerp(PA_FEET, 120, k) + arc_y(k, 40), True)
         elif u < 0.6:
             dpos = (740 + 8 * math.sin(t * 4), 120, True)
         else:
             k = ease((u - 0.6) / 0.35)
-            dpos = (lerp(740, 850, k), lerp(120, 560, k), True)
+            dpos = (lerp(740, 900, k), lerp(120, 560, k), True)
             trunk_pos = (dpos[0] + 50, dpos[1] + 70)
             if u >= 0.95:
-                dpos = (860, PA_FEET, False)
-                trunk_pos = (1000, 660)
+                dpos = (910, PA_FEET, False)
+                trunk_pos = (1050, 660)
         trunk_glow = 0.2 + 0.6 * (0.5 <= u < 0.95)
     if t >= T("tv_swan") or (t >= T("tv_fly") and tl.prog("tv_fly", t) >= 0.95):
-        trunk_pos = (1000, 660)
+        trunk_pos = (1050, 660)
     # coaster car
     cu = coaster_u_of(tl, t)
     (cx, cy), ang = P.coaster_point(cu)
@@ -970,9 +970,9 @@ def tivoli(tl, t):
     # ---- everyone on the path
     swan = t >= T("tv_swan") or (dpos is not None and not dpos[2] and tl.prog("tv_fly", t) > 0.9)
     enter = T("tv_narr", 0.3)
-    lkeys = [(enter, -150), (T("tv_lights", 0.8), 590), (T("tv_ride"), 590), (T("tv_ride", 0.1), 560)]
-    pkeys = [(enter, -80), (T("tv_lights", 0.75), 660)]
-    dkeys = [(enter, -50), (T("tv_lights", 0.7), 470)]
+    lkeys = [(enter, -150), (T("tv_lights", 0.8), 550), (T("tv_ride"), 550), (T("tv_ride", 0.1), 540)]
+    pkeys = [(enter, -80), (T("tv_lights", 0.75), 650)]
+    dkeys = [(enter, -50), (T("tv_lights", 0.7), 400)]
     if dpos is None:
         mover(c, tl, t, "saga", dkeys, PA_FEET, 0.9, 1, look=(0, -1) if t < T("tv_cant") else (0, 0),
               sad=T("tv_cant") <= t < T("tv_spread"))
@@ -987,11 +987,11 @@ def tivoli(tl, t):
         hop=abs(math.sin(t * 9)) * 12 if t >= T("tv_cheer") else None, proud=T("tv_swan") <= t < T("tv_iam"))
     # Whiskers: to the station, the ride, dizzy, then with the others
     if t < T("tv_ride", 0.12):
-        wkeys = [(enter, -250), (T("tv_lights", 0.85), 720), (T("tv_ride", 0.0), 720), (T("tv_ride", 0.1), 200)]
+        wkeys = [(enter, -250), (T("tv_lights", 0.85), 780), (T("tv_ride", 0.0), 780), (T("tv_ride", 0.1), 200)]
         mover(c, tl, t, "whiskers", wkeys, PA_FEET, 0.85, 1, look=(1, -1) if t < T("tv_me") else (1, 0))
     elif t >= T("tv_ride", 0.88):
         wkeys = [(T("tv_ride", 0.88), 200), (T("tv_miss", 1.0), 240), (T("tv_high", 0.2), 240),
-                 (T("tv_high", 0.9), 760)]
+                 (T("tv_high", 0.9), 770)]
         dizzy = t < T("tv_high")
         x = smooth(t, wkeys)
         if dizzy:
