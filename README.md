@@ -33,7 +33,7 @@ cd ../..
 | Character | Kokoro voice | Speed | Pitch |
 |-----------|--------------|-------|-------|
 | Narrator  | `bm_george` (British man) | 0.95 | 0 |
-| Whiskers  | `am_puck` (American man) | 0.9 | -1 semitone (lazier) |
+| Whiskers  | `am_michael` (American man) | 0.92 | 0 |
 | Luna      | `af_heart` (American woman) | 1.05 | 0 |
 | Pip       | `af_sky`, pitched up | 1.1 | +4 semitones (small mouse) |
 
