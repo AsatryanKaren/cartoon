@@ -19,7 +19,11 @@ import story
 SR = 48000
 LINE_PAUSE = 0.35            # breath after each spoken line
 MIN_ACT_PER_WEIGHT = 0.6     # an action moment never gets shorter than this x weight
-CACHE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "build", "voices")
+HERE = os.path.dirname(os.path.abspath(__file__))
+CACHE = os.path.join(HERE, "build", "voices")
+KOKORO_MODEL = os.path.join(HERE, "build", "models", "kokoro-v1.0.onnx")
+KOKORO_VOICES = os.path.join(HERE, "build", "models", "voices-v1.0.bin")
+_kokoro = None
 
 
 # ------------------------------------------------------------------ speech
@@ -27,6 +31,12 @@ CACHE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "build", "voice
 def tts_backend(requested="auto"):
     if requested != "auto":
         return requested
+    if os.path.exists(KOKORO_MODEL) and os.path.exists(KOKORO_VOICES):
+        try:
+            import kokoro_onnx  # noqa: F401
+            return "kokoro"
+        except ImportError:
+            pass
     if platform.system() == "Darwin" and shutil.which("say"):
         return "say"
     if shutil.which("espeak-ng"):
@@ -75,7 +85,9 @@ def trim_silence(x, thresh=0.01):
 def speak(who, text, backend, premium=False):
     """Return mono float32 speech at SR for one line (cached on disk)."""
     v = story.CAST[who]
-    if backend == "say":
+    if backend == "kokoro":
+        key = f"kokoro|{v.kokoro}|{v.k_speed}|{v.k_pitch}|{text}"
+    elif backend == "say":
         name = pick_mac_voice(v, premium)
         key = f"say|{name}|{v.rate}|{text}"
     else:
@@ -85,12 +97,25 @@ def speak(who, text, backend, premium=False):
     out = os.path.join(CACHE, f"{who}_{h}.wav")
     if not os.path.exists(out):
         raw = out + (".aiff" if backend == "say" else ".raw.wav")
-        if backend == "say":
+        post = []
+        if backend == "kokoro":
+            global _kokoro
+            import soundfile
+            from kokoro_onnx import Kokoro
+            if _kokoro is None:
+                _kokoro = Kokoro(KOKORO_MODEL, KOKORO_VOICES)
+            lang = "en-gb" if v.kokoro.startswith("b") else "en-us"
+            samples, sr = _kokoro.create(text, voice=v.kokoro, speed=v.k_speed, lang=lang)
+            soundfile.write(raw, samples, sr)
+            if v.k_pitch:
+                f = 2 ** (v.k_pitch / 12)
+                post = ["-af", f"asetrate={sr}*{f:.5f},aresample={sr},atempo={1 / f:.5f}"]
+        elif backend == "say":
             subprocess.run(["say", "-v", name, "-r", str(v.rate), "-o", raw, text], check=True)
         else:
             subprocess.run(["espeak-ng", "-v", v.espeak, "-p", str(v.pitch), "-s", str(v.speed),
                             "-w", raw, text], check=True)
-        subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", raw, "-ac", "1", "-ar", str(SR),
+        subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", raw, *post, "-ac", "1", "-ar", str(SR),
                         "-sample_fmt", "s16", out], check=True)
         os.remove(raw)
     return trim_silence(read_wav(out))
@@ -247,7 +272,7 @@ def write_srt(tl, path):
 if __name__ == "__main__":
     import argparse
     p = argparse.ArgumentParser(description="Generate speech and print the timing")
-    p.add_argument("--tts", default="auto", choices=["auto", "say", "espeak"])
+    p.add_argument("--tts", default="auto", choices=["auto", "kokoro", "say", "espeak"])
     p.add_argument("--premium", action="store_true")
     p.add_argument("--list-voices", action="store_true")
     a = p.parse_args()

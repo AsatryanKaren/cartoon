@@ -20,20 +20,25 @@ SCENES = ["title", "morning", "legend", "garden", "meadow", "pond", "realize", "
 
 @dataclass
 class Voice:
+    kokoro: str          # Kokoro neural voice (natural sounding, free, offline) -- the main engine
+    k_speed: float       # Kokoro speed, 1.0 = normal
+    k_pitch: float       # pitch shift in semitones applied after Kokoro (0 = none)
     mac: list            # macOS `say` voices, most preferred first (Premium/Enhanced first)
     rate: int            # words per minute for `say`
-    espeak: str          # fallback espeak-ng voice
-    pitch: int           # fallback espeak-ng pitch 0-99
-    speed: int           # fallback espeak-ng words per minute
+    espeak: str          # last-resort espeak-ng voice (robotic)
+    pitch: int           # espeak-ng pitch 0-99
+    speed: int           # espeak-ng words per minute
 
 
-# Characters keep these voices in every film. With --premium the first
-# installed entry of `mac` is used; otherwise the last (the standard voice).
+# Characters keep these voices in every film. Engines, best first:
+# kokoro (if installed, see README) > macOS say > espeak-ng.
+# With `say` and --premium the first installed entry of `mac` is used; otherwise the last.
 CAST = {
-    "narrator": Voice(["Daniel (Premium)", "Daniel (Enhanced)", "Daniel"], 172, "en-gb+m3", 38, 150),
-    "whiskers": Voice(["Eddy (English (US))"], 168, "en-us+m7", 30, 150),
-    "luna":     Voice(["Flo (English (US))"], 182, "en-us+f3", 62, 165),
-    "pip":      Voice(["Junior"], 196, "en-us+f4", 92, 180),
+    "narrator": Voice("bm_george", 0.95, 0, ["Daniel (Premium)", "Daniel (Enhanced)", "Daniel"], 172,
+                      "en-gb+m3", 38, 150),
+    "whiskers": Voice("am_puck", 0.9, -1, ["Eddy (English (US))"], 168, "en-us+m7", 30, 150),
+    "luna":     Voice("af_heart", 1.05, 0, ["Flo (English (US))"], 182, "en-us+f3", 62, 165),
+    "pip":      Voice("af_sky", 1.1, 4, ["Junior"], 196, "en-us+f4", 92, 180),
 }
 
 SUBTITLE_COLORS = {

@@ -77,7 +77,7 @@ def _render_chunk(job):
 
 def main():
     p = argparse.ArgumentParser()
-    p.add_argument("--tts", default="auto", choices=["auto", "say", "espeak"])
+    p.add_argument("--tts", default="auto", choices=["auto", "kokoro", "say", "espeak"])
     p.add_argument("--premium", action="store_true", help="prefer Premium/Enhanced macOS voices")
     p.add_argument("--still", type=float, help="render one frame at this time (s)")
     p.add_argument("--stills", type=int, help="contact sheet of N frames across the film")

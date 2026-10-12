@@ -17,22 +17,33 @@ pip install -r requirements.txt
 python3 render.py            # -> out/film.mp4 + out/film.srt
 ```
 
-Voices come from the built-in `say` command. Install the voices once under
-**System Settings → Accessibility → Spoken Content → System Voice → Manage Voices**:
+### Voices (natural, free): Kokoro
 
-| Character | Voice |
-|-----------|-------|
-| Narrator  | Daniel (English UK) |
-| Whiskers  | Eddy (English (US)) |
-| Luna      | Flo (English (US)) |
-| Pip       | Junior |
+The film uses [Kokoro](https://github.com/thewh1teagle/kokoro-onnx), a free neural voice model
+that runs offline on your Mac (a few seconds per line). Install it once:
 
-`python3 timeline.py --list-voices` shows what is installed. To use free higher-quality
-voices, download "Daniel (Premium)" or "Daniel (Enhanced)" in the same panel and render with
-`--premium`. Characters keep the same voices in every film (see `CAST` in `story.py`).
+```bash
+pip install kokoro-onnx soundfile
+mkdir -p build/models && cd build/models
+curl -LO https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files-v1.0/kokoro-v1.0.onnx
+curl -LO https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files-v1.0/voices-v1.0.bin
+cd ../..
+```
 
-On Linux (or a Mac without `say`) the pipeline falls back to `espeak-ng`, which is
-robotic but keeps everything working.
+| Character | Kokoro voice | Speed | Pitch |
+|-----------|--------------|-------|-------|
+| Narrator  | `bm_george` (British man) | 0.95 | 0 |
+| Whiskers  | `am_puck` (American man) | 0.9 | -1 semitone (lazier) |
+| Luna      | `af_heart` (American woman) | 1.05 | 0 |
+| Pip       | `af_sky`, pitched up | 1.1 | +4 semitones (small mouse) |
+
+To change a voice, edit `CAST` in `story.py` and re-render; only changed lines are regenerated.
+Other voices: `af_bella`, `af_nicole`, `af_sky`, `am_michael`, `am_fenrir`, `am_echo`,
+`bm_fable`, `bm_lewis`, `bf_emma` and more (names starting with `b` are British).
+
+If Kokoro is not installed, the pipeline falls back to the macOS `say` voices
+(Daniel, Eddy, Flo, Junior; `--premium` picks Premium/Enhanced when installed), and then to
+`espeak-ng` (robotic). Force one with `--tts kokoro|say|espeak`.
 
 ## Useful commands
 
@@ -59,7 +70,6 @@ The timing rule takes care of the exact 5:55 length.
 
 ## Next steps
 
-- **Better voices:** free Premium/Enhanced macOS voices (`--premium`), or ElevenLabs (paid),
-  added as another backend in `timeline.speak`.
+- **Even better voices:** ElevenLabs (paid), added as another backend in `timeline.speak`.
 - **3D version:** Blender (free) driven by Python scripts, low-poly cute style, about
   30-90 minutes per render. It can reuse `story.py` and `timeline.py` unchanged.
