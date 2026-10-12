@@ -17,8 +17,8 @@ NAMES = {"pacific": "Pacific Ocean", "atlantic": "Atlantic Ocean", "indian": "In
          "arctic": "Arctic Ocean", "southern": "Southern Ocean"}
 SHORT = {"pacific": "Pacific", "atlantic": "Atlantic", "indian": "Indian", "arctic": "Arctic",
          "southern": "Southern"}
-OCOL = {"pacific": (255, 214, 80), "atlantic": (110, 226, 130), "indian": (255, 132, 112),
-        "arctic": (236, 246, 255), "southern": (186, 140, 255)}
+OCOL = {"pacific": (40, 236, 226), "atlantic": (140, 236, 100), "indian": (255, 120, 196),
+        "arctic": (240, 248, 255), "southern": (150, 110, 255)}
 # where each ocean faces the viewer on the globe (lon, lat)
 FACE = {"pacific": (-165, 2), "atlantic": (-32, 12), "indian": (78, -14), "arctic": (10, 72),
         "southern": (60, -68)}
@@ -45,7 +45,7 @@ def ocean_ids(width):
     lon = ((np.arange(width) + 0.5) / width * 360 - 180)[None, :]
     lat = (90 - (np.arange(h) + 0.5) / h * 180)[:, None]
     bnd = np.interp(lat, _B_LAT, _B_LON)
-    ind_e = np.where(lat < -30, 147, np.where(lat < -10, 122, 100))
+    ind_e = np.interp(lat, [-90, -44, -38, -12, -9, -5, 0, 90], [147, 147, 135, 128, 120, 105, 100, 100])
     out = np.zeros((h, width), np.uint8)
     atl = (lon >= bnd) & ((lon < 20) | ((lat >= 30) & (lon < 60)))
     ind = (lat < 30) & (lon >= 20) & (lon < ind_e)
@@ -252,20 +252,27 @@ def blowhole(x, y, s, face):
 
 
 def spout(c, x, y, k, s=1.0, t=0.0):
-    """Water spray shooting up from (x, y); k 0..1 is the life of the spout."""
+    """Water spray shooting up from the blowhole at (x, y); k 0..1 is the life of the spout."""
     if k <= 0.01 or k >= 0.99:
         return
-    h = 170 * s * math.sin(math.pi * min(1, k * 1.6)) if k < 0.6 else 170 * s * (1 - (k - 0.6) / 0.4 * 0.3)
-    fade = 1 - clamp((k - 0.6) / 0.4)
-    col = mix((150, 200, 240), (240, 250, 255), fade)
-    c.poly([(x - 8 * s, y), (x - 30 * s, y - h * 0.6), (x - 46 * s, y - h), (x, y - h * 0.85),
-            (x + 46 * s, y - h), (x + 30 * s, y - h * 0.6), (x + 8 * s, y)], col, w=2)
+    grow = ease(clamp(k * 3))
+    fade = 1 - clamp((k - 0.55) / 0.45)
+    h = 190 * s * grow
+    col = mix((170, 214, 245), (245, 250, 255), fade)
+    if fade > 0.3:
+        c.poly([(x - 7 * s, y), (x - 16 * s, y - h * 0.7), (x + 16 * s, y - h * 0.7), (x + 7 * s, y)], col, w=2)
+    top = y - h * 0.78 + (1 - fade) * 40 * s
+    for dx, dy, r in ((-34, 6, 26), (34, 6, 26), (-14, -14, 30), (16, -16, 30), (0, 10, 28)):
+        rr = r * s * grow * (0.6 + 0.4 * fade)
+        if rr > 1:
+            c.circle(x + dx * s * (1 + (1 - fade) * 0.8), top + dy * s, rr, col, w=2)
     rng = np.random.default_rng(3)
-    for i in range(12):
-        a = rng.uniform(-2.6, -0.5)
-        d = rng.uniform(0.5, 1.2) * h * 0.5
-        c.circle(x + math.cos(a) * d * 1.3, y - h * 0.9 - math.sin(a) * -d * 0.5 + k * 40 * s, 5 * s * fade + 1,
-                 col, w=1.5)
+    for i in range(10):
+        side = -1 if i % 2 else 1
+        u = clamp(k * 1.4 - 0.2 + rng.uniform(-0.1, 0.1))
+        dx = side * (40 + rng.uniform(0, 50)) * s * u
+        dy = -h * 0.75 + (h * 0.9) * u * u
+        c.circle(x + dx, y + dy, 5 * s, col, w=1.5)
 
 
 # ================================================================================ Nipper
@@ -545,10 +552,12 @@ def tide_diagram(ic, t, k):
     mx, my = w - 80, h / 2 - 6
     D.moon(ic, mx, my, 34, sky=(30, 30, 70))
     if k > 0.2:
-        for i in range(3):
-            u = (t * 0.7 + i / 3) % 1
-            x0 = lerp(mx - 50, ex + (r + 18) * st + 16, u)
-            K.arrow(ic, x0 + 24, my, x0, my, (255, 236, 110), 5, 1.0, head=12)
+        bx = ex + (r + 18) * st + 4 * k
+        for i, dy in enumerate((-34, 0, 34)):
+            u = (t * 0.8 + i / 3) % 1
+            K.arrow(ic, bx + 10, ey + dy * 0.6, bx + 46 + 14 * u, ey + dy * 0.6, (255, 236, 110), 5,
+                    clamp((k - 0.2) * 3), head=12)
+        K.text(ic, bx + 40, ey - 52, "pull!", 24, (255, 236, 110), stroke=3)
     K.text(ic, mx, my + 56, "Moon", 24, (255, 255, 255), stroke=3)
     K.text(ic, ex, h - 22, "Earth", 24, (255, 255, 255), stroke=3)
 
