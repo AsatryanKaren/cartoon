@@ -1167,9 +1167,10 @@ def title_card(tl, t, t0, ep, topic):
         kat(c, tl, t, "pip", gx, gy - r + 2 - 60 * (1 - kk), 0.9 * kk, 1, proud=True)
     logo(c, 640, 92, 66, t, clamp((tt - 0.4) / 1.4))
     kb = clamp((tt - 1.6) / 0.6)
-    ribbon(c, 640, 640, 560, 66, k=kb)
+    label_ = f"Episode {ep}:  {topic}"
+    ribbon(c, 640, 640, min(1180, max(560, 19 * len(label_) + 100)), 66, k=kb)   # widens for long topics
     if kb > 0.5:
-        text(c, 640, 640, f"Episode {ep}:  {topic}", 36, (255, 255, 255), stroke=3)
+        text(c, 640, 640, label_, 36, (255, 255, 255), stroke=3)
     sparkles(c, 640, 380, 300, t, n=14, k=k, seed=21)
     return c
 
