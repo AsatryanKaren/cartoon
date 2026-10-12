@@ -430,18 +430,20 @@ def caldera_aerial():
         P.sun(c, 1110, 120, 40, (210, 200, 226), core=(255, 246, 210), halo=(255, 230, 200))
         hz = 200
         # Therasia on the far left/back
-        P.cliff_band(c, -20, 420, lambda x: 232 + 0.0004 * (x - 200) ** 2 - 12, 290, seed=11)
-        P.village_top(c, 60, 300, lambda x: 232 + 0.0004 * (x - 200) ** 2 - 12, seed=12, density=0.6, domes=1,
-                      scale=0.32)
+        th = lambda x: 236 + 0.0004 * (x - 200) ** 2 - 12  # noqa: E731
+        P.cliff_face(c, -40, 430, th, lambda x: 44, seed=11)
+        P.village_top(c, 40, 320, th, seed=12, density=0.6, domes=1, scale=0.32)
         # the far, northern rim (Oia)
-        P.cliff_band(c, 560, 1000, lambda x: 216 - 6 * math.sin((x - 560) / 440 * math.pi), 250, seed=13)
-        P.village_top(c, 600, 980, lambda x: 216 - 6 * math.sin((x - 560) / 440 * math.pi), seed=14, density=0.8,
-                      domes=2, scale=0.3, mills=((620, 0.16), (960, 0.16)))
-        # main island curving round on the right, toward the viewer
+        rim = lambda x: 216 - 6 * math.sin((x - 560) / 440 * math.pi)  # noqa: E731
+        P.cliff_face(c, 540, 1010, rim, lambda x: 30, seed=13)
+        P.village_top(c, 600, 980, rim, seed=14, density=0.8, domes=2, scale=0.3, mills=((620, 0.16), (960, 0.16)))
+        # main island curving round on the right, toward the viewer: land behind the cliff edge
         def top(x):
-            return 230 + ((x - 960) / 320) ** 2 * 300 if x > 960 else 230
-        P.cliff_band(c, 960, 1300, top, 760, seed=15)
-        P.village_top(c, 980, 1290, top, seed=16, density=0.8, domes=3, scale=0.8)
+            return 226 + ((x - 940) / 340) ** 2 * 300 if x > 940 else 226
+        c.poly([(940, 226)] + [(x, top(x)) for x in range(940, 1300, 10)] + [(1300, 200), (1000, 200)],
+               (196, 170, 140), ol=None)
+        P.cliff_face(c, 900, 1340, top, lambda x: 20 + (x - 900) * 0.6, seed=15, taper=40)
+        P.village_top(c, 960, 1290, top, seed=16, density=0.8, domes=3, scale=0.8)
         # sea glints are drawn live; volcano in the middle
         P.volcano_island(c, 600, 410, 460, 70, smoke=0.0)
         P.volcano_island(c, 290, 352, 180, 30, col=(84, 66, 70), top=(104, 80, 80))
@@ -1084,6 +1086,10 @@ def sunset(tl, t):
     faso(c, tl, t, 250, 700, 0.9, 1, bags=False, eyes="happy" if t >= T("su_clap") else "open",
          mouth=laughing(t) * 0.6 if T("su_clap") <= t < T("su_clap", 1) else tl.mouth("fasolaki", t))
     cheer = T("su_clap") <= t < T("su_home")
+    aboard = t >= T("su_end")
+    if aboard:
+        c.tint = None
+        return _sunset_tail(c, tl, t, k)
     kat(c, tl, t, "luna", 420, 612, 0.82, 1, "sit", eyes="happy" if cheer else "open", look=(0, -0.3),
         mouth=laughing(t) * 0.5 if cheer and not tl.talking("luna", t) else tl.mouth("luna", t))
     kat(c, tl, t, "whiskers", 520, 612, 0.85, 1, "sit", eyes="happy" if cheer else "open", look=(0, -0.3),
@@ -1091,6 +1097,11 @@ def sunset(tl, t):
     pip(c, tl, t, 610, 612, 0.95, 1, eyes="happy" if cheer else "open",
         hop=abs(math.sin(t * 9)) * 10 if cheer else 0)
     c.tint = None
+    return _sunset_tail(c, tl, t, k)
+
+
+def _sunset_tail(c, tl, t, k):
+    T = tl.t
     # Stelios arrives for the flight home, then they all fly off
     if t >= T("su_clap_say"):
         land = tl.prog("su_clap_say", t, 0.0, 0.9)

@@ -659,14 +659,14 @@ def _halo(c, x, y, r, k, col):
     """Additive-looking soft halo (drawn as fading rings blended into what is underneath)."""
     rad = r * (1.15 + 0.6 * k)
     px, py = c.P(x, y)
-    R = rad * c.scale * SS
-    size = int(2 * R) + 4
-    key = (int(R), col)
+    R = int(rad * c.scale * SS)
+    size = 2 * R + 4
+    inner = round(r * c.scale * SS / max(1, R), 2)
+    key = (R, inner)
     m = _halo_cache.get(key)
     if m is None:
         yy, xx = np.mgrid[0:size, 0:size]
-        d = np.sqrt((xx - size / 2) ** 2 + (yy - size / 2) ** 2) / R
-        inner = r * c.scale * SS / R
+        d = np.sqrt((xx - size / 2) ** 2 + (yy - size / 2) ** 2) / max(1, R)
         a = np.clip((1 - d) / max(1e-3, 1 - inner), 0, 1) ** 1.6
         m = Image.fromarray((a * 255).astype(np.uint8), "L")
         if len(_halo_cache) > 40:

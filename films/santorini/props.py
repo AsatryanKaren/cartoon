@@ -218,6 +218,26 @@ def cliff_band(c, x0, x1, top_fn, bottom, seed=0, cols=CLIFF, ol=(70, 46, 46)):
         c.line([(x, y), (x + rng.uniform(-14, 14), y + rng.uniform(14, 40))], mix(cols[2], OUT, 0.3), 2)
 
 
+def cliff_face(c, x0, x1, top_fn, h_fn, seed=0, cols=CLIFF, ol=(70, 46, 46), taper=60):
+    """A cliff whose face height h_fn(x) varies (an island seen from above), tapering to points at both ends."""
+    xs = list(np.arange(x0, x1 + 1, 8))
+
+    def hh(x):
+        return h_fn(x) * min(1.0, (x - x0) / taper, (x1 - x) / taper) ** 0.6
+
+    top = [(x, top_fn(x)) for x in xs]
+    bot = [(x, top_fn(x) + hh(x)) for x in xs]
+    c.poly(top + bot[::-1], cols[0], ol=ol, w=2.5)
+    rng = np.random.default_rng(seed)
+    for k in range(1, 6):
+        f = k / 6
+        col = cols[k % len(cols)]
+        ph = rng.uniform(0, 6)
+        a = [(x, top_fn(x) + hh(x) * min(1, f + 0.04 * math.sin(x / 50 + ph))) for x in xs]
+        b = [(x, top_fn(x) + hh(x) * min(1, f + 0.09 + 0.04 * math.sin(x / 50 + ph + 0.5))) for x in xs]
+        c.poly(a + b[::-1], col, ol=None)
+
+
 def village_top(c, x0, x1, top_fn, seed=0, density=1.0, domes=2, scale=1.0, mills=()):
     """White houses and blue domes crowding the top edge of a cliff."""
     rng = np.random.default_rng(seed)
