@@ -667,7 +667,7 @@ def bakery(tl, t):
         P.trunk(c, tx, ty, 0.62, glow=glow, t=t)
     for j in range(2):
         if t < T("b_oh"):
-            dx = TRUNK_NY - 70 + j * 140
+            dx = TRUNK_NY - 35 + j * 110
             peck = abs(math.sin(t * 9 + j)) * (T("b_peck") <= t < T("b_peck", 0.5))
             P.duck(c, dx, FEET + 4, 0.8, 1 - 2 * j, t + peck * 0.1, laugh=0.2 + 0.8 * peck, seed=j)
         elif j == 0 and ducks_on:
@@ -754,7 +754,7 @@ def palace_bg():
         for x, y, s in ((300, 90, 0.8), (1100, 70, 0.6), (1700, 110, 0.9), (2300, 80, 0.7)):
             D.cloud(c, x, y, s)
         # the palace square
-        P.copper_dome(c, 1150, 420, 1.0)          # the Marble Church dome rises behind the square
+        P.copper_dome(c, 1330, 560, 0.85)          # the Marble Church dome rises behind the square
         P.amalienborg(c, 520, 560, 0.95)
         P.amalienborg(c, -300, 560, 0.9)
         c.rect(-10, 556, 1500, H + 10, (220, 206, 186), w=2.5)
@@ -762,7 +762,7 @@ def palace_bg():
         for row, y in enumerate(range(574, H, 26)):
             for x in range(-20 + (row % 2) * 30, 1500, 60):
                 c.ellipse(x, y, 26, 9, mix((220, 206, 186), (190, 176, 160), rng.uniform(0.2, 0.8)), ol=None)
-        P.horse_statue(c, 1150, 600, 0.9)
+        P.horse_statue(c, 1060, 600, 0.9)
         P.sentry_box(c, 120, 600, 0.95)
         P.sentry_box(c, 880, 600, 0.95)
         # the waterfront: harbour, far shore, trees and the Little Mermaid
@@ -811,10 +811,11 @@ def trunk_swoop(tl, t):
 
 def palace(tl, t):
     T = tl.t
-    camx = smooth(t, [(T("p_back", 0.6), 0), (T("p_round", 0.0), 1220)], r=0.4)
+    camx = smooth(t, [(T("p_back", 0.6), 0), (T("p_fit", 0.0), 1220)], r=0.4)
     c = view(palace_bg(), camx)
     c.push(-camx, 0)
-    ripples(c, t, max(1480, camx), camx + W, 430, 590, n=20, col=(170, 210, 240))
+    if camx + W > 1500:
+        ripples(c, t, max(1480, camx), camx + W, 430, 590, n=20, col=(170, 210, 240))
     # ---- guards
     hat = guard_hat_path(tl, t)
     lost = hat is not None
@@ -832,7 +833,7 @@ def palace(tl, t):
         P.bearskin(c, hat[0], hat[1], 0.95)
     # ---- the gang
     run_in = T("p_narr")
-    to_mer0, to_mer1 = T("p_mer", 0.0), T("p_round", 0.0)
+    to_mer0, to_mer1 = T("p_mer", 0.0), T("p_fit", 0.0)
     lkeys = [(run_in, -150), (T("p_narr", 0.7), 470), (to_mer0, 470), (to_mer1, 1680), (T("p_run", 0.2), 1680),
              (T("p_run", 1.0), 2700)]
     wkeys = [(run_in, -250), (T("p_narr", 0.8), 600), (to_mer0, 600), (to_mer1, 1540), (T("p_run", 0.3), 1540),
@@ -852,7 +853,7 @@ def palace(tl, t):
                    look=(1, -1) if looking_up else (1, 0))
     if hat == "whiskers":
         hx = wx + 52 * 0.82 * wf
-        P.bearskin(c, hx + 2 * wf, PA_FEET - 0.82 * 104, 0.95)
+        P.bearskin(c, hx + 2 * wf, PA_FEET - 0.82 * 84, 0.9)
     pp = T("p_there") <= t < T("p_run")
     mover(c, tl, t, "pip", pkeys, PA_FEET, 0.75, 1, proud=pp)
     if pp:
@@ -938,16 +939,14 @@ def tivoli(tl, t):
             dpos = (740 + 8 * math.sin(t * 4), 120, True)
         else:
             k = ease((u - 0.6) / 0.35)
-            dpos = (lerp(740, 720, k), lerp(120, 560, k), True)
-            trunk_pos = (lerp(790, 780, k), lerp(160, 660, k))
+            dpos = (lerp(740, 850, k), lerp(120, 560, k), True)
+            trunk_pos = (dpos[0] + 50, dpos[1] + 70)
             if u >= 0.95:
-                dpos = (720, PA_FEET, False)
-                trunk_pos = (780, 660)
+                dpos = (860, PA_FEET, False)
+                trunk_pos = (1000, 660)
         trunk_glow = 0.2 + 0.6 * (0.5 <= u < 0.95)
-    elif t >= T("tv_swan"):
-        trunk_pos = (780, 660)
     if t >= T("tv_swan") or (t >= T("tv_fly") and tl.prog("tv_fly", t) >= 0.95):
-        trunk_pos = (780, 660)
+        trunk_pos = (1000, 660)
     # coaster car
     cu = coaster_u_of(tl, t)
     (cx, cy), ang = P.coaster_point(cu)
@@ -1095,6 +1094,7 @@ def hygge(tl, t):
     if pouring:
         u = tl.prog("hy_narr", t, 0.5, 1.0)
         c.line([(1080, 520), (lerp(1060, 990, u), 600)], (110, 60, 40), 5)
+    c = zoom(c, 700, 480, 1.25 + 0.05 * ease(tl.prog("hy_cosy", t)))
     return finish(c, tl, t)
 
 

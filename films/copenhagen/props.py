@@ -60,8 +60,10 @@ def trunk(c, x, y, s=1.0, lid=0.0, glow=0.0, part="all", tilt=0.0, t=0.0):
         # cheap tilt: offset the left and right ends
         pass
     if glow > 0.01 and part in ("all", "back"):
-        c.glow(0, -50, 150 * (0.8 + 0.2 * glow), 90 * (0.8 + 0.2 * glow), (255, 240, 170),
-               mix((255, 230, 150), (120, 100, 160), 0.9), steps=6)
+        for k in range(3):
+            u = (t * 0.8 + k / 3) % 1.0
+            c.ellipse(0, -50, (110 + 60 * u), (60 + 40 * u), None, ol=mix((255, 236, 150), (255, 255, 255), u),
+                      w=3 * (1 - u) * glow + 0.5)
         rng = np.random.default_rng(int(t * 8))
         for k in range(int(10 * glow)):
             sx, sy = rng.uniform(-120, 120), rng.uniform(-130, 10)
@@ -861,9 +863,18 @@ def coaster_track(c, lit=1.0):
         if yy is None:
             continue
         c.line([(xx, yy + 6), (xx, 640)], wood_d, 4, cap=False)
+    tops = []
+    for xx in xs:
+        yy = 640
+        for a, b in zip(pts, pts[1:]):
+            if a[0] <= xx <= b[0]:
+                yy = lerp(a[1], b[1], (xx - a[0]) / max(1e-6, b[0] - a[0]))
+                break
+        tops.append(yy)
     for k in range(len(xs) - 1):
         for yy in range(640, 140, -60):
-            c.line([(xs[k], yy), (xs[k + 1], yy - 60)], mix(wood_d, (40, 30, 60), 0.3), 1.5, cap=False)
+            if yy - 60 > max(tops[k], tops[k + 1]) + 8:
+                c.line([(xs[k], yy), (xs[k + 1], yy - 60)], mix(wood_d, (40, 30, 60), 0.3), 1.5, cap=False)
     # rails
     c.line(pts, OUT, 12)
     c.line(pts, wood, 8)

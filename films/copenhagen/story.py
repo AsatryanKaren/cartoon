@@ -82,9 +82,9 @@ A = Act
 
 SCRIPT = [
     # ---------------------------------------------------------------- title
-    A("title", 1.3, "t_open", [("musicbox", 0.05)]),
+    A("title", 1.0, "t_open", [("musicbox", 0.05)]),
     S("narrator", "Whiskers and the Flying Trunk.", "title", "t_name"),
-    A("title", 1.0, "t_hold", [("sparkle", 0.4)]),
+    A("title", 0.7, "t_hold", [("sparkle", 0.4)]),
 
     # ----------------------------------------------------------------- rain
     A("rain", 0.8, "r_open", [("rain", 0.0)]),
