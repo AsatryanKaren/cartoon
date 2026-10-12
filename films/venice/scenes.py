@@ -346,6 +346,8 @@ def window_view():
         c.poly([(0, 200), (80, 176), (170, 196), (260, 170), (320, 186), (320, 260), (0, 260)], (130, 196, 110),
                ol=None)
         c.poly([(0, 230), (120, 214), (320, 226), (320, 260), (0, 260)], (110, 180, 96), ol=None)
+        c.ellipse(190, 228, 110, 16, (110, 170, 210), w=2)
+        c.ellipse(170, 226, 60, 6, (170, 210, 236), ol=None)
         return c.img
     return cached("winview", make)
 
@@ -380,7 +382,7 @@ def yarn(c, x, y, r=16, rot=0.0):
 
 
 def radio_bubble(c, x, y, k, t):
-    """A dreamy round picture of Venice above the radio while it talks."""
+    """A dreamy round picture of Venice (Luna remembering Grandma's stories)."""
     if k <= 0.01:
         return
     r = 120 * ease(k)
@@ -410,22 +412,20 @@ def bell(tl, t):
     T = tl.t
     c = Canvas(room_bg().copy())
     s0 = tl.scenes["bell"][0]
-    # the window (balloon rising over the meadow during b_window / b_ball)
-    bal = None
+    # the window: the little mail plane comes down onto the pond during b_window
+    pl = None
     if t >= T("b_window"):
-        u = ease(tl.prog("b_window", t, 0.0, 1.0))
-        bal = (190, lerp(330, 200, u) - 6 * tl.prog("b_ball", t) - 10 * tl.prog("b_run", t))
+        u = tl.prog("b_window", t, 0.0, 0.75)
+        pl = (lerp(380, 200, ease(u)), lerp(120, 232, ease(u) ** 1.5), 0.2 * (1 - u))
 
     def extra(sub):
-        if bal:
-            P.balloon(sub, bal[0], bal[1], 0.26, t, flame=1.0 if T("b_window", 0.25) < t < T("b_window", 0.6) else 0,
-                      sign=False)
+        if pl:
+            P.seaplane(sub, pl[0], pl[1], 0.3, t, face=-1, bank=pl[2])
+            if T("b_window", 0.7) <= t < T("b_ball"):
+                splash(sub, pl[0], pl[1], tl.prog("b_window", t, 0.7, 1.0), 0.3)
     draw_window(c, extra)
-    # radio
-    on = 1.0 if t >= T("b_sad", 0.5) else 0.0
-    talk = tl.mouth("radio", t)
-    P.radio(c, RADIO[0], RADIO[1], 1.0, on=on, t=t, talk=talk)
-    radio_bubble(c, RADIO[0] + 20, 300, tl.prog("b_radio", t, 0.0, 0.15) * (1 - tl.prog("b_go", t, 0.0, 0.3)), t)
+    # Luna's memory of Venice
+    radio_bubble(c, 660, 300, tl.prog("b_radio", t, 0.0, 0.12) * (1 - tl.prog("b_go", t, 0.0, 0.3)), t)
 
     # --- the yarn ball and Luna playing
     yk = [(s0, 200), (T("b_play", 0.5), 760), (T("b_play", 1.0), 560), (T("b_narr", 1), 620),
@@ -478,7 +478,8 @@ def bell(tl, t):
         lface = 1
         look = (0.3, 0.8) if sad else (1, 0)
         if T("b_radio") <= t < T("b_go"):
-            lface, look = -1, (1, -0.6)
+            look = (1, -0.8)
+            leyes = "happy" if tl.prog("b_radio", t) > 0.5 else "open"
         if t >= T("b_window", 0.2):
             look = (1, -1)
         if t >= T("b_run", 0.15):
@@ -526,8 +527,6 @@ def bell(tl, t):
             eyes = "wide"
         if T("b_sad") <= t < T("b_radio"):
             look = (0.2, 1)
-        if T("b_radio") <= t < T("b_go"):
-            look = (1, -0.6)
         if T("b_love") <= t < T("b_window"):
             eyes = "happy"
         if t >= T("b_window", 0.2):
@@ -538,8 +537,7 @@ def bell(tl, t):
 
     # Pip
     if t >= T("b_pip"):
-        pk = [(T("b_pip"), HOLE[0]), (T("b_sad"), HOLE[0]), (T("b_sad", 0.45), RADIO[0] + 80),
-              (T("b_window"), RADIO[0] + 80), (T("b_window", 0.7), 915)]
+        pk = [(T("b_pip"), HOLE[0]), (T("b_window"), HOLE[0]), (T("b_window", 0.7), 915)]
         rise = ease(tl.prog("b_pip", t, 0.0, 0.2))
         proud = (T("b_pip") <= t < T("b_pip", 1)) or (T("b_ball") <= t < T("b_ball", 1)) or t >= T("b_run", 0.5)
         pface = -1
@@ -634,54 +632,82 @@ def meadow_bg():
         c.line([(320, 580), (W, 580)], (200, 170, 130), 5, cap=False)
         rng = np.random.default_rng(2)
         for _ in range(60):
-            D.flower(c, rng.uniform(0, W), rng.uniform(620, H), [(250, 220, 90), (255, 255, 255), (240, 120, 160)][
-                int(rng.integers(3))], 0.7)
+            x, y = rng.uniform(0, W), rng.uniform(620, H)
+            if ((x - POND[0]) / (POND[2] + 30)) ** 2 + ((y - POND[1]) / (POND[3] + 30)) ** 2 < 1:
+                continue
+            D.flower(c, x, y, [(250, 220, 90), (255, 255, 255), (240, 120, 160)][int(rng.integers(3))], 0.7)
+        # the pond (Film 1's pond!) with reeds
+        c.ellipse(POND[0], POND[1], POND[2] + 10, POND[3] + 8, (110, 160, 90), ol=None)
+        c.ellipse(POND[0], POND[1], POND[2], POND[3], (100, 160, 205), w=3)
+        c.ellipse(POND[0] - 60, POND[1] - 14, POND[2] * 0.6, POND[3] * 0.35, (150, 200, 230), ol=None)
+        for k in range(7):
+            rx = POND[0] - POND[2] + 20 + k * 14
+            c.line([(rx, POND[1] - 10), (rx + 4, POND[1] - 60 - (k % 3) * 14)], (70, 130, 70), 3)
+        D.lily_pad(c, POND[0] + 220, POND[1] + 20, 26)
         return c.img
     return cached("meadow", make)
 
 
-def cats_in_basket(tl, t, wh_eyes="open", lu_eyes="open", look=(1, 0), wface=1, lface=1, lmouth=None, wmouth=None):
+POND = (880, 650, 340, 56)
+
+
+def cats_in_plane(tl, t, wh_eyes="open", lu_eyes="open", look=(1, 0), wface=1, lface=1):
+    """Cats riding in the seaplane's open cargo hatch (drawn in hatch-local space)."""
     def fn(c):
-        kitty(c, tl, t, "luna", -30, -50, 0.72, lface, "sit", eyes=lu_eyes, look=look,
-              **({} if lmouth is None else {"mouth": lmouth}))
-        kitty(c, tl, t, "whiskers", 28, -48, 0.75, wface, "sit", eyes=wh_eyes, look=look,
-              **({} if wmouth is None else {"mouth": wmouth}))
+        kitty(c, tl, t, "luna", -24, 4, 0.5, lface, "sit", eyes=lu_eyes, look=look)
+        kitty(c, tl, t, "whiskers", 24, 4, 0.52, wface, "sit", eyes=wh_eyes, look=look)
     return fn
+
+
+def gulls(c, t, n=3, x0=900, y0=200):
+    for k in range(n):
+        gx = (x0 + k * 120 + t * 40 * (1 + k * 0.2)) % (W + 200) - 100
+        gy = y0 + 40 * k + 10 * math.sin(t * 2 + k)
+        f = math.sin(t * 8 + k)
+        c.line([(gx - 18, gy - 8 * f), (gx, gy), (gx + 18, gy - 8 * f)], (250, 250, 250), 4)
+        c.line([(gx - 18, gy - 8 * f), (gx, gy), (gx + 18, gy - 8 * f)], OUT, 1.5, cap=False)
 
 
 def flight(tl, t):
     T = tl.t
     s0, s1 = tl.scenes["flight"]
     if t < T("v_narr"):
-        # take-off from the meadow
+        # take-off from the pond by the cottage
         c = Canvas(meadow_bg().copy())
+        ripples(c, t, POND[1] - 40, POND[1] + 40, 14, seed=2, col=(180, 220, 240), xmin=POND[0] - 260,
+                xmax=POND[0] + 260)
         u = tl.prog("v_lift", t, 0.5, 1.0)
-        by = 610 - 900 * ease(u) ** 1.4
-        flame = 1.0 if (T("v_lift", 0.1) < t < T("v_lift", 0.3) or T("v_lift", 0.55) < t < T("v_lift", 0.8)) else 0
+        px = 860 + 900 * ease(u) ** 1.2
+        py = POND[1] - 400 * clamp((u - 0.45) / 0.55) ** 1.5
         aboard = t >= T("v_lift", 0.42)
-        P.balloon(c, 820, by, 0.72, t, flame, inside=cats_in_basket(tl, t, "wide", "happy", (0, -1)) if aboard else None)
+        bank = -0.18 * clamp((u - 0.45) / 0.3)
+        P.seaplane(c, px, py, 0.85, t, 1, prop=1.0 if t >= T("v_lift", 0.4) else 0.0, bank=bank,
+                   inside=cats_in_plane(tl, t, "wide", "happy", (1, 0)) if aboard else None)
+        if 0.05 < u < 0.6:
+            splash(c, px - 100, POND[1], (u * 4) % 1.0, 0.4, seed=int(u * 4))
         if not aboard:
             for who, x0, dl in (("luna", -120, 0.0), ("whiskers", -260, 0.06)):
-                a, b = T("v_lift", 0.05 + dl), T("v_lift", 0.3 + dl)
+                a, b = T("v_lift", 0.05 + dl), T("v_lift", 0.28 + dl)
                 if t < b:
-                    actor(c, tl, t, who, [(a, x0), (b, 720)], 610, 0.8)
+                    actor(c, tl, t, who, [(a, x0), (b, 560)], 640, 0.8)
                 else:
-                    u2 = tl.prog("v_lift", t, 0.3 + dl, 0.42)
-                    D.cat(c, lerp(720, 820, u2), 610 + arc_y(u2, 90) - 40 * u2,
-                          P.LUNA_NOBELL if who == "luna" else D.WHISKERS, 0.75, 1, "leap", t=t)
+                    u2 = tl.prog("v_lift", t, 0.28 + dl, 0.42)
+                    D.cat(c, lerp(560, 860 - 80, u2), lerp(640, POND[1] - 100, u2) + arc_y(u2, 90),
+                          P.LUNA_NOBELL if who == "luna" else D.WHISKERS, 0.7, 1, "leap", t=t)
         # Pip waving from the fence
         D.mouse(c, 380, 546, 1.0, 1, t, eyes="happy", proud=True, hop=abs(math.sin(t * 6)) * 6)
         return c
     # flying south: one long panorama
     cam = smooth(t, [(T("v_narr"), 0), (T("v_venice", 0.55), PW - W), (s1, PW - W)], 0.6)
     c = view(pano_bg(), cam)
-    bx = 430 + 30 * math.sin(t * 0.6)
-    by = 330 + 10 * math.sin(t * 1.1)
+    bx = 480 + 30 * math.sin(t * 0.6)
+    by = 360 + 12 * math.sin(t * 1.1)
+    bank = 0.05 * math.sin(t * 0.8)
     if t >= T("v_land"):
-        u = tl.prog("v_land", t, 0.15, 1.0)
-        bx = lerp(430, 700, u)
-        by = 330 + 700 * ease(u) ** 1.6
-    flame = 1.0 if (T("v_alps", 0.55) < t < T("v_alps", 0.75) or T("v_land", 0.15) < t < T("v_land", 0.3)) else 0.0
+        u = tl.prog("v_land", t, 0.1, 1.0)
+        bx = lerp(480, 900, u)
+        by = 360 + 600 * ease(u) ** 1.6
+        bank = 0.2 * math.sin(math.pi * min(1, u * 1.5))
     looking_down = t >= T("v_look", 0.5)
     weyes = "closed" if T("v_down") <= t < T("v_look", 0.4) else ("wide" if looking_down else "open")
     if T("v_canals") <= t < T("v_land"):
@@ -690,21 +716,15 @@ def flight(tl, t):
     lface = 1
     if T("v_look") <= t < T("v_look", 1):
         lface = -1
-    P.balloon(c, bx, by, 0.55, t, flame, inside=cats_in_basket(tl, t, weyes, "happy" if looking_down else "open",
-                                                               look, 1, lface))
-    # gulls near Venice
+    P.seaplane(c, bx, by, 0.8, t, 1, bank=bank,
+               inside=cats_in_plane(tl, t, weyes, "happy" if looking_down else "open", look, 1, lface))
     if cam > PW - W - 400:
-        for k in range(3):
-            gx = (900 + k * 120 + t * 40 * (1 + k * 0.2)) % (W + 200) - 100
-            gy = 200 + 40 * k + 10 * math.sin(t * 2 + k)
-            f = math.sin(t * 8 + k)
-            c.line([(gx - 18, gy - 8 * f), (gx, gy), (gx + 18, gy - 8 * f)], (250, 250, 250), 4)
-            c.line([(gx - 18, gy - 8 * f), (gx, gy), (gx + 18, gy - 8 * f)], OUT, 1.5, cap=False)
+        gulls(c, t)
     shade_bottom(c, tl, t, 0.45)
-    # close-ups on the basket for the "don't look down" moment
+    # close-up on the cats for the "don't look down" moment
     z = ease(tl.prog("v_down", t, 0.0, 0.25)) * (1 - ease(tl.prog("v_venice", t, 0.0, 0.25)))
     if z > 0:
-        c = zoom(c, bx, by - 70, z, 560)
+        c = zoom(c, bx - 40, by - 150, z, 560)
     return c
 
 
