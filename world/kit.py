@@ -993,7 +993,9 @@ def map_highlight(c, v, name, k=1.0, col=(255, 240, 120), t=0.0):
     p = SS
     mx0, my0 = v.cx + (sx0 / SS - W / 2) / v.z, v.cy + (sy0 / SS - H / 2) / v.z
     mx1, my1 = v.cx + (sx1 / SS - W / 2) / v.z, v.cy + (sy1 / SS - H / 2) / v.z
-    piece = mask.resize((sx1 - sx0, sy1 - sy0), Image.BILINEAR, box=(mx0 * p, my0 * p, mx1 * p, my1 * p))
+    # clamp: at fractional map edges the box can poke slightly outside the mask
+    box = (max(0.0, mx0 * p), max(0.0, my0 * p), min(mask.size[0], mx1 * p), min(mask.size[1], my1 * p))
+    piece = mask.resize((sx1 - sx0, sy1 - sy0), Image.BILINEAR, box=box)
     a = clamp(k) * (0.45 + 0.15 * math.sin(t * 5))
     piece = piece.point(lambda q: int(q * a))
     c.img.paste(col, (sx0, sy0, sx1, sy1), piece)
