@@ -787,9 +787,9 @@ def embankment_bg():
         c.rect(-10, 404, W + 10, 418, (170, 160, 150), ol=None)
         water_band(c, -10, W + 10, 418, 556, (86, 130, 168), (150, 190, 220), rng, n=80)
         # a tour boat on the Thames
-        c.poly([(220, 500), (420, 500), (400, 524), (240, 524)], (250, 250, 250), w=2)
-        c.rect(250, 478, 390, 500, (150, 200, 230), w=2)
-        c.rect(250, 474, 390, 480, (214, 40, 46), w=1.5)
+        c.poly([(470, 500), (670, 500), (650, 524), (490, 524)], (250, 250, 250), w=2)
+        c.rect(500, 478, 640, 500, (150, 200, 230), w=2)
+        c.rect(500, 474, 640, 480, (214, 40, 46), w=1.5)
         # river wall with balustrade
         stone = (204, 192, 170)
         c.rect(-10, 556, W + 10, 600, stone, w=2.5)
@@ -1097,13 +1097,12 @@ def bridge_close(tl, t):
     if t >= T("br_tow"):
         flying = 1
         gx, gy = -200, -200
-    if t < T("br_climb", 0.0) + 0.01 or True:
-        hop = abs(math.sin(t * 9)) * 8 if (tl.talking("gus", t) and t >= T("br_oi")) else 0
-        gus(c, tl, t, gx, gy - hop, 1.15, gface, fish=holds_fish, sad=gsad, eyes=geyes, fly=flying)
+    hop = abs(math.sin(t * 9)) * 8 if (tl.talking("gus", t) and t >= T("br_oi")) else 0
+    gus(c, tl, t, gx, gy - hop, 1.15, gface, fish=holds_fish, sad=gsad, eyes=geyes, fly=flying)
 
     # ---- the cats
     climb = tl.prog("br_climb", t, 0.0, 0.45)
-    if t < T("br_tow", 0.5):
+    if t < T("br_tow", 0.62):
         # Luna and Pip follow up the edge
         lx = smooth(t, [(s0, 120), (T("br_climb", 0.5), 120), (T("br_climb", 1.0), 380), (T("br_kind"), 380),
                         (T("br_kind", 0.4), 470)])
@@ -1116,11 +1115,17 @@ def bridge_close(tl, t):
         if between(tl, t, "br_never", "br_oi"):
             leyes = "closed"
         moving = T("br_climb", 0.5) < t < T("br_climb", 1.0) or T("br_kind") < t < T("br_kind", 0.4)
-        kitty(c, tl, t, "luna", lx, ly, 0.95, 1, "walk" if moving else "stand", walk=lx / 12, eyes=leyes)
+        if t >= T("br_tow"):
+            leyes = "wide"
+        if t < T("br_tow", 0.5):
+            kitty(c, tl, t, "luna", lx, ly, 0.95, 1, "walk" if moving else "stand", walk=lx / 12, eyes=leyes)
         px = lx + 70 if t < T("br_climb", 1.0) else 300
-        pip(c, tl, t, px - 160, ly, 1.0, 1, proud=between(tl, t, "br_up", "br_never"))
+        if t < T("br_tow"):
+            pip(c, tl, t, px - 160, ly, 1.0, 1, proud=between(tl, t, "br_up", "br_never"))
         # Whiskers climbs over the railing and stalks the thief
-        if climb < 1:
+        if t >= T("br_tow", 0.6):
+            pass
+        elif climb < 1:
             wx, wy = 300, DECK + lerp(240, 0, ease(climb))
             kitty(c, tl, t, "whiskers", wx, wy, 1.0, 1, "stand", look=(1, -1))
         else:
@@ -1176,26 +1181,20 @@ def bridge_close(tl, t):
             gyk = by - 520 + 70 * k + 10 * math.sin(t * 5 + k)
             c.line([(bx + 100, by - 380 + 30 * k), (gxk - 6, gyk - 30)], (120, 90, 60), 2)
             P.gull(c, gxk, gyk, 0.7, 1, t + k * 0.3, fly=1, fish=False)
-        if u < 0.62:
-            pass
         # jumping in
         if 0.5 <= u < 0.62:
             v = (u - 0.5) / 0.12
             D.cat(c, lerp(470, bx - 36, v), lerp(DECK, by - 30, v) + arc_y(v, 90), D.LUNA, lerp(0.95, 0.6, v), 1,
                   "leap", t=t, seed=1.3)
-        if t < T("br_tow", 0.5) or u < 0.62:
-            kitty(c, tl, t, "whiskers", 700, DECK, 1.0, -1, "stand") if u < 0.6 else None
         if 0.6 <= u < 0.72:
             v = (u - 0.6) / 0.12
             D.cat(c, lerp(700, bx + 34, v), lerp(DECK, by - 30, v) + arc_y(v, 90), D.WHISKERS, lerp(1.0, 0.6, v), -1,
                   "leap", t=t)
-        if u < 0.5:
-            kitty(c, tl, t, "luna", 470, DECK, 0.95, 1, "stand", eyes="wide")
         if u < 0.7:
             D.mouse(c, lerp(300, bx + 70, clamp((u - 0.62) / 0.08)), DECK, 1.0, 1, t)
     # gentle push-in on the nest while Gus explains
-    z = 1 + 0.35 * ease(tl.prog("br_chicks", t, 0.0, 0.6)) * (1 - ease(tl.prog("br_think", t, 0.3, 1.0)))
-    c = zoom(c, 820, 470, z)
+    z = 1.2 + 0.3 * ease(tl.prog("br_chicks", t, 0.0, 0.6)) * (1 - ease(tl.prog("br_think", t, 0.3, 1.0)))
+    c = zoom(c, 700 + 120 * (z - 1.2) / 0.3, 470, z)
     return c
 
 
@@ -1245,7 +1244,6 @@ def big_dial(c, x, y, r, hours, minutes):
         for sy in (-1, 1):
             c.circle(x + sx * r * 1.12, y + sy * r * 1.12, r * 0.08, P.GOLD, w=2)
     P.clock_face(c, x, y, r, hours, minutes, w=4)
-    c.text(x, y - r * 0.38, "BIG BEN", int(r * 0.08), (120, 100, 70))
 
 
 def bong_rings(c, x, y, r, dt):
@@ -1264,26 +1262,28 @@ def bigben(tl, t):
         c = Canvas(westminster_bg().copy())
         P.big_ben(c, 1060, 900, 860, 3, 58)
         u = clamp((t - s0) / (T("bb_tick") - s0))
-        bx = lerp(-260, 760, ease(u))
+        bx = lerp(-300, 640, ease(u))
         by = 560 + 12 * math.sin(t * 2)
-        BS = 0.62
+        BS = 0.85
+        by = 600 + 12 * math.sin(t * 2)
         P.balloon(c, bx, by, BS, t, part="back", flame=1.0 if T("bb_hold", 0.8) < t else 0.0)
-        kitty(c, tl, t, "luna", bx - 22, by - 18, 0.36, 1, "sit", look=(1, -1))
-        kitty(c, tl, t, "whiskers", bx + 22, by - 18, 0.36, 1, "sit", eyes="wide")
-        ruby(c, tl, t, bx - 50, by - 44, 0.7, 1, wave=1.0 if tl.talking("ruby", t) else 0.0)
+        kitty(c, tl, t, "luna", bx - 30, by - 26, 0.5, 1, "sit", look=(1, -1))
+        kitty(c, tl, t, "whiskers", bx + 30, by - 26, 0.5, 1, "sit", eyes="wide")
+        ruby(c, tl, t, bx - 68, by - 60, 0.9, 1, wave=1.0 if tl.talking("ruby", t) else 0.0)
         P.balloon(c, bx, by, BS, t, part="front")
+        D.mouse(c, bx + 60, by - 60, 0.8, 1, t)
         for k in range(4):
-            gxk = bx + 170 + 50 * (k % 2) + 26 * k
-            gyk = by - 330 + 46 * k + 8 * math.sin(t * 6 + k)
-            c.line([(bx + 60, by - 230 + 18 * k), (gxk - 4, gyk - 20)], (120, 90, 60), 2)
-            P.gull(c, gxk, gyk, 0.5, 1, t + k * 0.3, fly=1)
+            gxk = bx + 230 + 60 * (k % 2) + 30 * k
+            gyk = by - 450 + 60 * k + 8 * math.sin(t * 6 + k)
+            c.line([(bx + 90, by - 320 + 24 * k), (gxk - 4, gyk - 24)], (120, 90, 60), 2)
+            P.gull(c, gxk, gyk, 0.65, 1, t + k * 0.3, fly=1)
         return finish(c, tl, t, 0.3)
     # ---- close-up: the minute hand clicks up to twelve
     if t < T("bb_bong"):
         c = Canvas(clock_stage_bg().copy())
         u = tl.prog("bb_tick", t)
         m = 59 + math.floor(u * 4 + 0.001) / 4
-        big_dial(c, 640, 360, 250, 3 + m / 60, m)
+        big_dial(c, 640, 360, 250, 3, m)
         return c
     # ---- the bongs, then tea beside the clock
     c = Canvas(clock_stage_bg().copy())
@@ -1298,57 +1298,58 @@ def bigben(tl, t):
     bong_rings(c, CX, CY, R, dt)
     if dt < 0.9 and t < T("bb_heard"):
         k = 1 - dt / 0.9
-        c.text(CX + 330, 120, "BONG!", 40 + 30 * (1 - k), mix(P.STONE, (120, 60, 40), k), stroke=3 * k,
+        c.text(CX, CY + R * 0.42, "BONG!", 30 + 34 * (1 - k), mix(P.STONE, (120, 60, 40), k), stroke=3 * k,
                stroke_fill=(255, 240, 200))
-    # balloon at the right with everyone
-    bx, by, BS = 900 + shake * 0.5, 690 + 6 * math.sin(t * 1.4), 1.25
+    # balloon at the right with everyone (close: the envelope runs off the top)
+    bx, by, BS = 880 + shake * 0.5, 724 + 5 * math.sin(t * 1.4), 2.0
     P.balloon(c, bx, by, BS, t, part="back")
     rim = by - 70 * BS
     tea = t >= T("bb_tea", 0.3)
     leyes = "wide" if t < T("bb_bong", 0.3) else "happy"
     if t >= T("bb_tea"):
-        leyes = "open" if not between(tl, t, "bb_cheers", "bb_cheers", 0, 1) else "happy"
-    kitty(c, tl, t, "luna", bx - 50, by - 40, 0.72, 1, "sit", eyes=leyes, look=(-1, -0.5))
+        leyes = "happy" if between(tl, t, "bb_cheers", "bb_cheers", 0, 1) or t < T("bb_narr") else "open"
+    kitty(c, tl, t, "luna", bx - 84, by - 58 * BS, 1.15, 1, "sit", eyes=leyes, look=(-1, -0.5))
     weyes = "wide" if t < T("bb_heard") else "happy"
     if between(tl, t, "bb_sorry", "bb_purpose"):
         weyes = "open"
     wmouth = tl.mouth("whiskers", t)
     if between(tl, t, "bb_narr", "bb_scones", 0.5, 0):
         wmouth = 0.3 + 0.3 * abs(math.sin(t * 9))          # munching
-    kitty(c, tl, t, "whiskers", bx + 48, by - 40, 0.74, -1 if t < T("bb_sorry") else 1, "sit", eyes=weyes,
-          mouth=wmouth)
+    wface = -1 if t < T("bb_sorry") else 1
+    kitty(c, tl, t, "whiskers", bx + 74, by - 58 * BS, 1.18, wface, "sit", eyes=weyes, mouth=wmouth)
     P.balloon(c, bx, by, BS, t, part="front")
-    ruby(c, tl, t, bx - 112, rim, 1.0, 1, wave=1.0 if tl.talking("ruby", t) else 0)
-    gus(c, tl, t, bx + 150, rim + 4, 0.9, -1, eyes="happy" if t >= T("bb_purpose") else "open")
-    pip(c, tl, t, bx + 2, rim, 1.0, 1, eyes="happy" if t >= T("bb_heard") else "wide")
+    ruby(c, tl, t, bx - 160, rim, 1.4, 1, wave=1.0 if tl.talking("ruby", t) else 0)
+    gus(c, tl, t, bx + 172, rim + 4, 1.1, -1, eyes="happy" if t >= T("bb_purpose") else "open")
+    pip(c, tl, t, bx - 8, rim, 1.2, 1, eyes="happy" if t >= T("bb_heard") else "wide")
     if tea:
         k = ease(tl.prog("bb_tea", t, 0.3, 0.8))
         y = rim - 4
-        P.teapot(c, bx - 64, y + 30 * (1 - k), 0.7)
-        P.teacup(c, bx - 26, y, 0.8, steam=1.0, t=t)
+        P.teapot(c, bx - 100, y - 30 * (1 - k), 0.9)
+        P.teacup(c, bx - 40, y, 1.0, steam=1.0, t=t)
         nsc = 3
         if t >= T("bb_narr", 0.5):
             nsc = 2
         if t >= T("bb_scones", 0.5):
             nsc = 1
-        c.push(bx + 66, y)
-        c.line([(0, 0), (0, -70)], P.GOLD, 3)
-        c.ellipse(0, -2, 34, 5, (246, 248, 252), w=1.5)
+        c.push(bx + 100, y)
+        c.line([(0, 0), (0, -90)], P.GOLD, 4)
+        c.circle(0, -94, 5, P.GOLD, w=1.5)
+        c.ellipse(0, -2, 40, 6, (246, 248, 252), w=1.5)
         for kk in range(nsc):
-            P.scone(c, -18 + 18 * kk, -4, 0.7)
-        c.ellipse(0, -40, 24, 4, (246, 248, 252), w=1.5)
-        for dx, col in ((-10, (250, 190, 210)), (10, (200, 230, 160))):
-            c.rect(dx - 6, -52, dx + 6, -42, col, w=1.5, r=2)
+            P.scone(c, -22 + 22 * kk, -4, 0.85)
+        c.ellipse(0, -50, 28, 5, (246, 248, 252), w=1.5)
+        for dx, col in ((-12, (250, 190, 210)), (12, (200, 230, 160))):
+            c.rect(dx - 8, -64, dx + 8, -52, col, w=1.5, r=2)
         c.pop()
-        P.teacup(c, bx + 120, y, 0.8, steam=1.0, t=t + 1)
+        P.teacup(c, bx + 40, y, 1.0, steam=1.0, t=t + 1)
         # Whiskers' scone with jam and cream
         if between(tl, t, "bb_narr", "bb_sorry", 0.5, 0):
-            P.scone(c, bx + 30, by - 40 - 72, 0.8)
+            P.scone(c, bx + 74 + 46 * wface, by - 58 * BS - 92, 1.1)
     # sparkles of joy at the end
     if t >= T("bb_cheers"):
         for k in range(10):
             a = t * 0.8 + k * 0.63
-            px, py = bx + 220 * math.cos(a), by - 260 + 120 * math.sin(a * 1.3)
+            px, py = bx + 260 * math.cos(a), by - 330 + 120 * math.sin(a * 1.3)
             r = 3 + 3 * abs(math.sin(t * 4 + k))
             c.poly([(px, py - 2 * r), (px + r * 0.5, py), (px, py + 2 * r), (px - r * 0.5, py)], (255, 236, 150),
                    ol=None)
