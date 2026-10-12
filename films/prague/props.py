@@ -916,7 +916,7 @@ def trdelnik(c, x, y, s=1.0, ang=0.0, vertical=False, bitten=0.0, steam=0.0, t=0
             c.line([(-R + 1, yy), (R - 1, yy - 6)], (176, 110, 50), 2, cap=False)
         rng = np.random.default_rng(3)
         for k in range(int(20 * length)):
-            c.circle(rng.uniform(-R + 3, R - 3), rng.uniform(-L + 3, -3), 1.2, (255, 250, 236), ol=None)
+            c.circle(rng.uniform(-R + 3, R - 3), rng.uniform(min(-3, -L + 3), -3), 1.2, (255, 250, 236), ol=None)
     else:
         ca, sa = math.cos(ang), math.sin(ang)
 
@@ -935,7 +935,7 @@ def trdelnik(c, x, y, s=1.0, ang=0.0, vertical=False, bitten=0.0, steam=0.0, t=0
         c.poly(pts, (110, 64, 36), ol=None)
         rng = np.random.default_rng(3)
         for k in range(int(18 * length)):
-            c.circle(*P(rng.uniform(-L / 2 + 3, L / 2 - 3), rng.uniform(-R + 3, R - 3)), 1.2, (255, 250, 236),
+            c.circle(*P(rng.uniform(-L / 2 + 3, max(-L / 2 + 3, L / 2 - 3)), rng.uniform(-R + 3, R - 3)), 1.2, (255, 250, 236),
                      ol=None)
     if steam > 0:
         for k in range(3):

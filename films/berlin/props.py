@@ -443,18 +443,41 @@ def berlin_flag(c, x, y, s=1.0, t=0.0, pole=150, w=90, h=58):
 
 
 def bear_silhouette(c, x, y, s=1.0, col=(30, 26, 26)):
-    """The heraldic Berlin bear walking upright (feet at x, y), ~110 tall at s=1."""
+    """The heraldic Berlin bear walking upright (feet at x, y), ~120 tall at s=1."""
     c.push(x, y, s)
-    c.ellipse(0, -52, 26, 30, col, ol=None)
-    c.circle(18, -90, 16, col, ol=None)
-    c.circle(10, -104, 6, col, ol=None)
-    c.ellipse(34, -86, 10, 7, col, ol=None)
-    c.line([(-10, -30), (-18, 0)], col, 10)
-    c.line([(10, -30), (16, 0)], col, 10)
-    c.line([(16, -66), (40, -60)], col, 9)
-    c.line([(18, -60), (36, -40)], col, 9)
-    c.circle(48, -88, 2.5, (220, 40, 46), ol=None)
+    c.line([(-12, -34), (-20, -4)], col, 16)
+    c.line([(12, -34), (20, -4)], col, 16)
+    c.ellipse(-24, -2, 12, 6, col, ol=None)
+    c.ellipse(24, -2, 12, 6, col, ol=None)
+    c.ellipse(0, -56, 30, 36, col, ol=None)
+    c.ellipse(-30, -60, 8, 10, col, ol=None)                       # stubby tail
+    c.line([(18, -76), (44, -84)], col, 13)                        # raised paws
+    c.line([(18, -62), (44, -60)], col, 13)
+    for px, py in ((48, -86), (48, -60)):
+        for k in range(3):
+            c.line([(px, py - 4 + k * 4), (px + 7, py - 6 + k * 4)], (220, 40, 46), 2, cap=False)
+    c.circle(12, -100, 20, col, ol=None)                           # head
+    c.circle(0, -116, 8, col, ol=None)                             # ear
+    c.ellipse(32, -96, 13, 9, col, ol=None)                        # snout
+    c.ellipse(36, -88, 6, 3, (220, 40, 46), ol=None)               # tongue
     c.pop()
+
+
+def bear_badge(c, x, y, r, t=0.0):
+    """A round sign with a smiling cartoon bear face (Berti-like)."""
+    p = BERTI
+    c.circle(x, y, r, (250, 214, 80), w=3)
+    c.circle(x, y, r * 0.86, (255, 244, 220), w=2)
+    s = r / 60
+    for ex in (-26, 26):
+        c.circle(x + ex * s, y - 24 * s, 12 * s, p["fur"], w=2)
+        c.circle(x + ex * s, y - 24 * s, 6 * s, p["ear"], ol=None)
+    c.circle(x, y + 2 * s, 30 * s, p["fur"], w=2.5)
+    c.ellipse(x, y + 12 * s, 14 * s, 10 * s, p["belly"], ol=None)
+    c.ellipse(x, y + 7 * s, 5 * s, 3.5 * s, (40, 28, 26), ol=None)
+    c.arc(x, y + 14 * s, 6 * s, 4 * s, 20, 160, OUT, 2)
+    for ex in (-11, 11):
+        c.circle(x + ex * s, y - 6 * s, 3.2 * s, (40, 28, 26), ol=None)
 
 
 def reichstag(c, x, base, s=1.0, col=STONE, shade=STONE_S, lw=2.0, glow=0.0, flags=True, t=0.0):
@@ -696,10 +719,10 @@ def moving_van(c, x, y, s=1.0, door=0.0, wheel=0.0, inside=None, lights=0.0):
             c.rect(-170, -106, -140, -98, (110, 110, 120), w=1.5, r=2)
     else:
         c.rect(ox0, oy0, ox1, oy0 + 10, (236, 232, 222), w=2)
-    # side painting: bear + BERLIN
-    bear_silhouette(c, 2, -110, 1.25, (40, 34, 34))
-    _text(c, 74, -230, "BERLIN", 34, red, stroke=2, stroke_fill=OUT)
-    _text(c, 80, -190, "Umzüge", 18, (60, 60, 70))
+    # side painting: smiling bear badge + BERLIN
+    bear_badge(c, 4, -170, 62)
+    _text(c, 4, -264, "BERLIN", 30, red, stroke=2, stroke_fill=OUT)
+    _text(c, 112, -170, "Umzüge", 16, (60, 60, 70))
     for k in range(-280, 150, 30):
         c.line([(k, -290), (k + 14, -290)], (220, 40, 46), 4, cap=False)
     # wheels
@@ -997,6 +1020,16 @@ def mural(c, kind, x0, x1, top, base, t=0.0, seed=0):
         c.rect(x0, top, x1, base, (252, 252, 248), ol=None)
 
 
+def clip_draw(c, x0, y0, x1, y1, fn):
+    """Run fn(canvas) clipped to the box (needs an unscaled canvas)."""
+    w, h = int(math.ceil(x1 - x0)), int(math.ceil(y1 - y0))
+    tmp = D.Canvas(size=(w, h))
+    tmp.push(-x0, -y0)
+    fn(tmp)
+    px, py = c.P(x0, y0)
+    c.img.paste(tmp.img, (int(round(px)), int(round(py))))
+
+
 def heart(c, x, y, r, col, ol=None):
     c.circle(x - r * 0.5, y - r * 0.2, r * 0.58, col, ol=ol, w=2)
     c.circle(x + r * 0.5, y - r * 0.2, r * 0.58, col, ol=ol, w=2)
@@ -1054,11 +1087,14 @@ def wall_run(c, x0, x1, base, plan, t=0.0, top_y=None, prog=None):
     x = x0
     for kind, n, seed in plan:
         xe = min(x1, x + n * SEG)
-        if kind == "cats":
-            mural(c, "blank", x, xe, top, base, t, seed)
-            painted_cats(c, x, xe, top, base, 1.0 if prog is None else prog)
-        else:
-            mural(c, kind, x, xe, top, base, t, seed)
+
+        def paint(tc, kind=kind, x=x, xe=xe, seed=seed):
+            if kind == "cats":
+                mural(tc, "blank", x, xe, top, base, t, seed)
+                painted_cats(tc, x, xe, top, base, 1.0 if prog is None else prog)
+            else:
+                mural(tc, kind, x, xe, top, base, t, seed)
+        clip_draw(c, x, top, xe, base, paint)
         x = xe
     # segment seams and the outline
     for k in np.arange(x0, x1 + 1, SEG):

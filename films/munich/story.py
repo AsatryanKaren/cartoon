@@ -81,9 +81,9 @@ A = Act
 
 SCRIPT = [
     # ---------------------------------------------------------------- title
-    A("title", 1.4, "t_open", [("chime", 0.05)]),
+    A("title", 1.0, "t_open", [("chime", 0.05)]),
     S("narrator", "Whiskers and the Swan Castle.", "title", "t_name"),
-    A("title", 1.2, "t_hold", [("honk", 0.4)]),
+    A("title", 0.9, "t_hold", [("honk", 0.4)]),
 
     # ---------------------------------------------------------------- attic
     A("attic", 0.9, "a_open", [("rain", 0.0)]),
@@ -96,8 +96,7 @@ SCRIPT = [
     S("luna", "Look at the stamp. Neuschwanstein Castle Library. Please return by eighteen eighty-six!",
       "attic", "a_stamp"),
     S("whiskers", "That's not late. That's ancient.", "attic", "a_ancient"),
-    S("luna", "And the last page is torn out! Nobody knows how it ends.", "attic", "a_page"),
-    S("luna", "A borrowed book should go home. Let's take it back.", "attic", "a_back"),
+    S("luna", "The last page is torn out! Let's take it back, and find out how it ends.", "attic", "a_page"),
     S("whiskers", "To the mountains? No, thank you.", "attic", "a_no"),
     S("pip", "Bavaria. Land of giant pretzels and apple strudel.", "attic", "a_pretzel"),
     A("attic", 0.6, "a_ears"),
@@ -136,8 +135,7 @@ SCRIPT = [
     S("resi", "Nobody passes our village without trying the apple strudel!", "village", "v_strudel"),
     A("village", 2.0, "v_eat", [("squirt", 0.45), ("squirt", 0.6), ("gulp", 0.85)]),
     S("whiskers", "A cream beard. On purpose. It's Bavarian fashion.", "village", "v_beard"),
-    S("luna", "Careful with the book!", "village", "v_careful"),
-    S("whiskers", "Relax. I'll carry it. I'm very responsible.", "village", "v_carry"),
+    S("whiskers", "And relax, Luna. From now on, I'll carry the book. I'm very responsible.", "village", "v_carry"),
     A("village", 0.9, "v_go", [("neigh", 0.1), ("clop", 0.5)]),
 
     # --------------------------------------------------------------- forest
@@ -158,7 +156,6 @@ SCRIPT = [
     S("luna", "Whiskers. That book waited a hundred and forty years to go home.", "bridge", "b_waited"),
     A("bridge", 0.9, "b_quiet", [("falls", 0.0)]),
     S("whiskers", "No. It wasn't on purpose. I was showing off. It was my fault.", "bridge", "b_fault"),
-    S("whiskers", "So I'll get it back.", "bridge", "b_back"),
     A("bridge", 2.4, "b_climb", [("falls", 0.0), ("pebble", 0.2), ("pebble", 0.45), ("splash", 0.62),
                                   ("pebble", 0.8)]),
     S("resi", "Pull, everybody!", "bridge", "b_pull"),
@@ -176,8 +173,7 @@ SCRIPT = [
     A("castle", 0.7, "c_pause"),
     S("ludwig", "Telling the truth when it's hard? That is what a true knight does.",
       "castle", "c_knight"),
-    S("luna", "But how does the story end?", "castle", "c_end"),
-    S("ludwig", "It was never written. Perhaps you should write it.", "castle", "c_write",
+    S("ludwig", "And the last page? It was never written. Perhaps you should write it.", "castle", "c_write",
       [("sparkle", 0.6)]),
     A("castle", 1.0, "c_quill", [("sparkle", 0.2)]),
 
@@ -193,8 +189,7 @@ SCRIPT = [
     # ----------------------------------------------------------------- home
     A("home", 1.0, "h_open", [("posthorn", 0.1), ("thud", 0.7)]),
     S("pip", "You're back! How does the story end?", "home", "h_pip", [("tape", 0.6)]),
-    S("whiskers", "We wrote it ourselves, Pip. Listen.", "home", "h_read"),
-    S("whiskers", "And the cat said, it was my fault. And everybody still loved him.", "home", "h_page"),
+    S("whiskers", "We wrote it ourselves! And the cat said, it was my fault. And everybody still loved him.", "home", "h_page"),
     A("home", 1.0, "h_hug", [("purr", 0.2)]),
     S("narrator", "Because anyone can make a mistake. The truly brave say: that was me.",
       "home", "h_moral"),

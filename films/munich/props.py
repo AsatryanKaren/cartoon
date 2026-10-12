@@ -241,8 +241,11 @@ def book(c, x, y, s=1.0, ang=0.0, wet=0.0, ol=OUT):
     c.poly(R([(-40, -48), (-30, -48), (-30, 44), (-40, 44)]), mix(cover, (0, 0, 0), 0.25), ol=None)
     c.poly(R([(-24, -36), (26, -36), (26, 32), (-24, 32)]), cover, ol=GOLD, w=1.5)
     # gold swan emblem: body, neck curve
-    sw = R([(-10, 10), (14, 10), (18, 2), (6, 4), (4, -14), (-2, -16), (-4, -10), (0, -8), (0, 4), (-12, 2)])
-    c.poly(sw, GOLD, ol=None)
+    for px, py, r in ((-4, 6, 9), (6, 8, 7), (8, -4, 3), (7, -12, 3), (9, -18, 3.5)):
+        q = R([(px, py)])[0]
+        c.circle(q[0], q[1], r, GOLD, ol=None)
+    q = R([(13, -18)])[0]
+    c.circle(q[0], q[1], 2, (240, 130, 50), ol=None)
     if wet > 0.05:
         for k in range(3):
             dx, dy = R([(-20 + 18 * k, 40 + 4 * math.sin(k))])[0]
@@ -287,38 +290,35 @@ def castle_painting(w, h, night=False):
 # =================================================================== parcel
 
 def parcel(c, x, y, s=1.0, lid=0.0, label=True, stamp="", w=200, h=120, front=True, back=True):
-    """Cardboard parcel, origin bottom centre. lid: 0 closed .. 1 flaps wide open.
-    back/front let a scene draw cats between the back and front walls."""
+    """Cardboard parcel, origin bottom centre. lid: 0 closed, 1 flaps open.
+    back/front let a scene draw cats between the back and the front of the box."""
     c.push(x, y, s)
     hw = w / 2
-    if back:
-        c.poly([(-hw, -h), (-hw + 24, -h - 22), (hw + 24, -h - 22), (hw, -h)], CARD_D, w=2.5)     # inside/back
-        if lid > 0.02:
-            a = lid
-            c.poly([(-hw + 24, -h - 22), (hw + 24, -h - 22), (hw + 24 - 10 * a, -h - 22 - 60 * a),
-                    (-hw + 24 + 10 * a, -h - 22 - 60 * a)], CARD, w=2.5)
+    d = 24
+    if back and lid > 0.5:
+        c.poly([(-hw + d, -h - d), (hw + d, -h - d), (hw + d - 10, -h - d - 56), (-hw + d + 10, -h - d - 56)],
+               mix(CARD, (255, 255, 255), 0.08), w=2.5)                                          # back flap up
+        c.poly([(-hw, -h), (-hw + d, -h - d), (hw + d, -h - d), (hw, -h)], mix(CARD_D, (40, 20, 10), 0.45), w=2.5)
     if front:
         c.rect(-hw, -h, hw, 0, CARD, w=2.5)
-        c.poly([(hw, -h), (hw + 24, -h - 22), (hw + 24, -22), (hw, 0)], CARD_D, w=2.5)
-        if lid > 0.02:
-            a = lid
-            c.poly([(-hw, -h), (hw, -h), (hw - 6 * a, -h + 60 * a * 0.0 - 50 * a), (-hw + 6 * a, -h - 50 * a)],
-                   mix(CARD, (255, 255, 255), 0.1), w=2.5)
+        c.poly([(hw, -h), (hw + d, -h - d), (hw + d, -d), (hw, 0)], CARD_D, w=2.5)
+        if lid > 0.5:
+            c.poly([(-hw, -h), (-hw - 20, -h - 50), (-hw + 8, -h - 46), (-hw + d, -h - d)], CARD, w=2)   # side flaps
+            c.poly([(hw + d, -h - d), (hw + d + 26, -h - 60), (hw + d + 12, -h - 30), (hw, -h)], CARD_D, w=2)
+            c.poly([(-hw, -h), (hw, -h), (hw - 4, -h + 40), (-hw + 4, -h + 40)], mix(CARD, (0, 0, 0), 0.08), w=2.5)
         else:
-            c.poly([(-hw, -h), (-hw + 24, -h - 22), (hw + 24, -h - 22), (hw, -h)], CARD, w=2.5)
-            c.rect(-10, -h - 1, 10, -h + 40, (230, 214, 170), ol=None)
-            c.poly([(-hw + 24 - 10 + 12, -h - 22), (-hw + 24 + 10 + 12, -h - 22), (10, -h), (-10, -h)],
-                   (230, 214, 170), ol=None)
-        c.rect(-10, -h, 10, 0, (230, 214, 170), ol=None)                  # tape
-        if label:
-            c.rect(hw - 92, -h + 40, hw - 14, -h + 92, (255, 252, 240), w=2)
+            c.poly([(-hw, -h), (-hw + d, -h - d), (hw + d, -h - d), (hw, -h)], mix(CARD, (255, 255, 255), 0.1), w=2.5)
+            c.poly([(-10 + 12, -h - d), (10 + 12, -h - d), (10, -h), (-10, -h)], (232, 216, 172), ol=None)
+            c.rect(-10, -h, 10, 0, (232, 216, 172), ol=None)                                     # tape
+        if label and not stamp:
+            c.rect(hw - 86, -h + 50, hw - 12, -h + 98, (255, 252, 240), w=2)
             for k in range(3):
-                c.line([(hw - 84, -h + 56 + k * 12), (hw - 30 - 10 * (k == 2), -h + 56 + k * 12)], (90, 90, 120), 2)
-            c.rect(hw - 34, -h + 44, hw - 18, -h + 52, (220, 60, 60), ol=None)
+                c.line([(hw - 78, -h + 64 + k * 11), (hw - 26 - 10 * (k == 2), -h + 64 + k * 11)], (90, 90, 120), 2)
+            c.rect(hw - 30, -h + 53, hw - 16, -h + 61, (220, 60, 60), ol=None)
         if stamp:
-            c.push(-hw + 50, -h + 50)
-            c.rect(-46, -16, 46, 16, None, ol=(200, 40, 40), w=3, r=4)
-            c.text(0, 0, stamp, 11, (200, 40, 40))
+            c.push(-hw + 62, -h + 76)
+            c.rect(-56, -15, 56, 15, None, ol=(200, 40, 40), w=3, r=4)
+            c.text(0, 0, stamp, 10, (200, 40, 40))
             c.pop()
     c.pop()
 
@@ -475,13 +475,14 @@ def painted_house(c, x, y, w=220, h=170, wall=(250, 240, 214), roof=(150, 70, 52
     # gable window
     c.rect(-12, -h - 46, 12, -h - 18, (90, 110, 140), w=2)
     # mural in the gable / between windows (Lueftlmalerei)
-    c.circle(0, -h * 0.55, 16, mix(wall, mural, 0.6), ol=None)
-    c.circle(0, -h * 0.55, 10, mix(wall, (230, 190, 80), 0.6), ol=None)
+    my = -h + 46
+    c.circle(0, my, 15, mix(wall, mural, 0.6), ol=None)
+    c.circle(0, my, 9, mix(wall, (230, 190, 80), 0.6), ol=None)
     for k in range(6):
         a = k * math.pi / 3
-        c.ellipse(math.cos(a) * 22, -h * 0.55 + math.sin(a) * 22, 5, 5, mix(wall, (200, 80, 80), 0.5), ol=None)
+        c.ellipse(math.cos(a) * 21, my + math.sin(a) * 21, 4.5, 4.5, mix(wall, (200, 80, 80), 0.5), ol=None)
     winc = mix((90, 110, 140), (255, 210, 110), night)
-    for row, wy in enumerate((-h + 30, -h * 0.42)):
+    for row, wy in enumerate((-h + 24, -56)):
         for wx in (-hw * 0.6, hw * 0.6):
             c.rect(wx - 16, wy, wx + 16, wy + 34, winc, w=2)
             c.line([(wx, wy), (wx, wy + 34)], (250, 250, 250), 2)
@@ -496,7 +497,7 @@ def painted_house(c, x, y, w=220, h=170, wall=(250, 240, 214), roof=(150, 70, 52
                 c.circle(wx - 16 + k * 8, wy + 32, 4, ((220, 50, 60), (250, 120, 160), (230, 60, 50))[k % 3],
                          ol=None)
     if balcony:
-        by = -h + 84
+        by = -h + 74
         c.rect(-hw - 8, by, hw + 8, by + 8, (130, 84, 50), w=2)
         for k in range(int(w // 14) + 1):
             c.rect(-hw - 6 + k * 14, by + 8, -hw + 2 + k * 14, by + 30, (150, 100, 60), ol=None)
@@ -552,8 +553,8 @@ def onion_church(c, x, y, s=1.0, wall=(250, 246, 236), dome=(70, 130, 90), night
     for a in np.linspace(0, math.pi, 22):
         r = 44 * math.sin(a) ** 0.8 * (1 - 0.35 * (1 - math.cos(a)) / 2)
         pts.append((0, 0))
-    prof = [(38, -280), (44, -300), (40, -322), (26, -342), (10, -356), (5, -368), (12, -378), (6, -392),
-            (0, -400)]
+    prof = [(26, -280), (40, -296), (44, -314), (36, -334), (18, -348), (6, -360), (6, -368), (12, -376),
+            (6, -390), (0, -400)]
     pts = prof + [(-px, py) for px, py in reversed(prof)]
     c.poly(pts, dome, w=2.5)
     c.poly(prof + [(0, -280)], mix(dome, (0, 0, 0), 0.2), ol=None)
@@ -614,7 +615,22 @@ def town_hall(c, x, y, s=1.0, t=0.0, spin=0.0):
         c.rect(-80, by, 80, by + 12, st_d, w=2)
         c.rect(-74, by - 74, 74, by, (90, 70, 66), w=2)
         c.rect(-74, by - 74, 74, by - 66, st_d, ol=None)
-        # figures on a turntable
+    # spire top: octagonal top with small green domes
+    c.rect(-50, -780, 50, -720, st_l, w=2.5)
+    for k in range(6):
+        c.rect(-52 + k * 18, -796, -44 + k * 18, -780, st_l, w=1.5)
+    c.poly([(-36, -796), (0, -880), (36, -796)], (90, 140, 120), w=2.5)
+    c.circle(0, -884, 6, GOLD, w=1.5)
+    for sx in (-56, 56):
+        c.rect(sx - 8, -780, sx + 8, -730, st_l, w=1.5)
+        c.poly([(sx - 10, -780), (sx, -812), (sx + 10, -780)], (90, 140, 120), w=1.5)
+    c.pop()
+
+
+def glock_figures(c, x, y, s=1.0, spin=0.0):
+    """The Glockenspiel's little figures on their turntables (drawn over town_hall's oriels)."""
+    c.push(x, y, s)
+    for k, (by, fy) in enumerate(((-480, -486), (-380, -386))):
         for j in range(5):
             ph = spin * (1 if k == 0 else -1) + j * math.tau / 5
             fx = 52 * math.sin(ph)
@@ -632,15 +648,6 @@ def town_hall(c, x, y, s=1.0, t=0.0, spin=0.0):
                 c.ellipse(fx, fy - 60 - hop, 10, 3, (190, 140, 60), ol=None)
             c.line([(fx - 4, fy - 12 - hop), (fx - 5, fy - hop)], OUT, 2)
             c.line([(fx + 4, fy - 12 - hop), (fx + 5, fy - hop)], OUT, 2)
-    # spire top: octagonal top with small green domes
-    c.rect(-50, -780, 50, -720, st_l, w=2.5)
-    for k in range(6):
-        c.rect(-52 + k * 18, -796, -44 + k * 18, -780, st_l, w=1.5)
-    c.poly([(-36, -796), (0, -880), (36, -796)], (90, 140, 120), w=2.5)
-    c.circle(0, -884, 6, GOLD, w=1.5)
-    for sx in (-56, 56):
-        c.rect(sx - 8, -780, sx + 8, -730, st_l, w=1.5)
-        c.poly([(sx - 10, -780), (sx, -812), (sx + 10, -780)], (90, 140, 120), w=1.5)
     c.pop()
 
 
@@ -930,16 +937,17 @@ def swan(c, x, y, s=1.0, face=1, t=0.0, mouth=0.0, eyes="open", swim=True, crown
             c.stroke([(fx, -50), (fx, -6)], (60, 56, 60), 6)
             c.poly([(fx - 10, 0), (fx + 14, 0), (fx + 2, -8)], (60, 56, 60), w=1.5)
         c.push(0, -42)
-    # body
-    c.poly([(-70, -30), (-56, -48), (-20, -58), (30, -56), (56, -40), (60, -18), (40, 0), (-40, 0), (-66, -14)],
-           wh, w=2.5)
-    # wing (folded, raised when gesturing)
+    # body: a plump teardrop with an upturned tail
+    c.poly([(-78, -44), (-58, -34), (-40, -28)], wh, w=2)                    # tail tip
+    c.ellipse(-4, -26, 62, 28, wh, w=2.5)
+    if swim:
+        c.rect(-60, -24, 56, 0, wh, ol=None)
+        c.line([(-64, -1), (60, -1)], OUT, 2.5)
     wa = wing
-    c.poly([(-50, -34), (-30, -60 - 30 * wa), (10, -66 - 40 * wa), (40, -50 - 20 * wa), (20, -30), (-20, -26)],
+    c.poly([(-56, -34), (-30, -54 - 34 * wa), (10, -62 - 44 * wa), (40, -48 - 22 * wa), (30, -30), (-20, -20)],
            sh, w=2)
     for k in range(3):
-        c.line([(-30 + k * 18, -36), (-24 + k * 18, -52 - 26 * wa)], mix(sh, (150, 160, 190), 0.4), 1.5)
-    c.poly([(-70, -30), (-84, -46 - 8 * wa), (-60, -40)], wh, w=2)    # tail
+        c.line([(-34 + k * 20, -30), (-26 + k * 20, -48 - 28 * wa)], mix(sh, (150, 160, 190), 0.4), 1.5)
     # neck: S-curve
     nx = [44, 54, 50, 36, 34, 44]
     ny = [-34, -60, -84, -104, -124, -138]
