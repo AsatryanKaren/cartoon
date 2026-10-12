@@ -22,10 +22,10 @@ again. When a new film is finished, tick it here and fill in its title and folde
 - [x] **Vienna**: *Whiskers and the Two Left Paws* (`films/vienna`, `catcute/Vienna/`)
 - [x] **Prague**: *Whiskers and the Chimney Cake* (`films/prague`, `catcute/Prague/`)
 - [x] **Munich**: *Whiskers and the Swan Castle* (`films/munich`, `catcute/Munich/`)
+- [x] **Berlin**: *Whiskers and the Painted Wall* (`films/berlin`, `catcute/Berlin/`)
 
 ## Ideas (not made yet)
 
-- [ ] **Berlin**: Brandenburg Gate, TV tower, painted Wall, pretzels
 - [ ] **Lisbon**: yellow trams on steep hills, tiled houses, Belém tower, custard tarts
 - [ ] **Dublin / Ireland**: green hills, castles, folk music, legends of luck and rainbows
 - [ ] **Edinburgh**: castle on a rock, bagpipes, tartan, Loch Ness monster
