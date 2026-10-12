@@ -65,9 +65,9 @@ A = Act
 
 SCRIPT = [
     # ---------------------------------------------------------------- title
-    A("title", 1.6, "t_open", [("wind", 0.0), ("shimmer", 0.3)]),
+    A("title", 1.2, "t_open", [("wind", 0.0), ("shimmer", 0.3)]),
     S("narrator", "Whiskers and the Dancing Lights.", "title", "t_name"),
-    A("title", 1.6, "t_hold", [("shimmer", 0.2)]),
+    A("title", 1.0, "t_hold", [("shimmer", 0.2)]),
 
     # ------------------------------------------------------------------ van
     A("van", 1.0, "v_open", [("engine", 0.0)]),
@@ -151,7 +151,7 @@ SCRIPT = [
     A("aurora", 1.4, "au_reindeer", [("shimmer", 0.2), ("bells", 0.4)]),
     S("whiskers", "Luna? This was worth every single minute.", "aurora", "au_worth"),
     S("luna", "Thank you for waiting with me.", "aurora", "au_thanks"),
-    A("aurora", 2.6, "au_hold", [("shimmer", 0.1), ("purr", 0.4), ("shimmer", 0.6)]),
+    A("aurora", 3.0, "au_hold", [("shimmer", 0.1), ("purr", 0.4), ("shimmer", 0.6)]),
 
     # ----------------------------------------------------------------- home
     A("home", 1.0, "h_open"),
@@ -166,5 +166,5 @@ SCRIPT = [
     A("home", 1.2, "h_eat", [("munch", 0.1), ("purr", 0.4)]),
     S("narrator", "Because the most wonderful things are worth the wait, when you wait with a friend.",
       "home", "h_moral"),
-    A("home", 2.8, "h_end"),
+    A("home", 2.0, "h_end"),
 ]
