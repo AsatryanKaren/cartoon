@@ -565,6 +565,470 @@ def post_road(tl, t):
     return finish(c, tl, t, 0.3)
 
 
-SCENE_FUNCS = {"title": title, "attic": attic, "post": post}
+# ================================================================= square
+
+SQ_W = 2 * W
+SQ_Y = 650
+TH = (640, 606, 0.68)       # town hall position and scale
+
+
+def cobbles(c, x0, x1, y0, y1, base=(190, 176, 156), seed=1):
+    c.rect(x0, y0, x1, y1, base, ol=None)
+    rng = np.random.default_rng(seed)
+    y = y0 + 6
+    row = 0
+    while y < y1:
+        h = 8 + (y - y0) * 0.08
+        x = x0 - (row % 2) * h
+        while x < x1:
+            w = h * rng.uniform(1.3, 1.9)
+            col = mix(base, (120, 104, 96) if rng.random() < 0.5 else (230, 220, 200), rng.uniform(0.1, 0.35))
+            c.ellipse(x + w / 2, y + h / 2, w / 2 - 1, h / 2 - 1, col, ol=None)
+            x += w
+        y += h
+        row += 1
+
+
+def facade(c, x, y, w, h, col, seed=0, gable="step"):
+    """A town house front with windows and a gable. origin bottom-left."""
+    rng = np.random.default_rng(seed)
+    c.rect(x, y - h, x + w, y, col, w=2.5)
+    top = y - h
+    if gable == "step":
+        steps = [(x, top), (x + w * 0.1, top), (x + w * 0.1, top - 24), (x + w * 0.25, top - 24), (x + w * 0.25, top - 48),
+                 (x + w * 0.4, top - 48), (x + w * 0.4, top - 72), (x + w * 0.6, top - 72), (x + w * 0.6, top - 48),
+                 (x + w * 0.75, top - 48), (x + w * 0.75, top - 24), (x + w * 0.9, top - 24), (x + w * 0.9, top),
+                 (x + w, top)]
+        c.poly(steps, col, w=2.5)
+    elif gable == "curve":
+        pts = [(x + w * u, top - 70 * math.sin(math.pi * u) ** 0.6) for u in np.linspace(0, 1, 16)]
+        c.poly(pts, col, w=2.5)
+        c.circle(x + w / 2, top - 76, 8, col, w=2)
+    else:
+        c.poly([(x - 10, top), (x + w / 2, top - 60), (x + w + 10, top)], (150, 74, 56), w=2.5)
+    c.rect(x, y - h, x + 8, y, mix(col, (0, 0, 0), 0.08), ol=None)
+    n = max(2, int(w // 52))
+    for row in range(int((h - 90) // 64)):
+        wy = top + 30 + row * 64
+        for k in range(n):
+            wx = x + (k + 0.5) * w / n
+            c.rect(wx - 11, wy, wx + 11, wy + 34, (80, 96, 130), w=2)
+            c.rect(wx - 15, wy + 34, wx + 15, wy + 38, (250, 250, 250), ol=None)
+    c.rect(x + w * 0.3, y - 64, x + w * 0.7, y, mix(col, (60, 40, 30), 0.5), w=2)
+
+
+def pigeon(c, x, y, t, s=1.0, face=1, seed=0.0):
+    peck = max(0.0, math.sin(t * 3 + seed * 5)) ** 6
+    c.push(x, y, s, flip=face < 0)
+    c.ellipse(0, -12, 14, 9, (150, 150, 168), w=2)
+    c.poly([(-12, -14), (-24, -10), (-12, -8)], (120, 120, 140), w=1.5)
+    hx, hy = 12 + 4 * peck, -22 + 12 * peck
+    c.circle(hx, hy, 6, (130, 140, 160), w=2)
+    c.circle(hx + 2, hy - 1, 1.5, OUT, ol=None)
+    c.poly([(hx + 5, hy), (hx + 10, hy + 2), (hx + 5, hy + 3)], (230, 170, 80), ol=None)
+    c.line([(-2, -4), (-3, 0)], (200, 110, 110), 2)
+    c.line([(4, -4), (5, 0)], (200, 110, 110), 2)
+    c.pop()
+
+
+def square_bg():
+    def make():
+        c = Canvas(D.gradient(SQ_W * SS, H * SS, [(0, (120, 182, 238)), (0.6, (206, 232, 250)), (1, (206, 232, 250))]),
+                   size=(SQ_W, H))
+        for x, y, s in ((200, 90, 1.0), (900, 60, 0.8), (1500, 110, 1.1), (2200, 70, 0.9)):
+            D.cloud(c, x, y, s)
+        P.frauenkirche(c, 400, 606, 0.62)
+        # houses left of the town hall
+        facade(c, -20, 606, 150, 230, (240, 214, 150), 1, "curve")
+        facade(c, 130, 606, 150, 210, (236, 190, 180), 2, "step")
+        x, y, s = TH
+        P.town_hall(c, x, y, s)
+        # houses on the right side of the square
+        cols = [(246, 226, 160), (226, 200, 210), (200, 226, 206), (246, 236, 220), (236, 196, 160), (210, 220, 236),
+                (246, 216, 186), (226, 236, 196)]
+        xx = 1000
+        k = 0
+        while xx < SQ_W:
+            w = 170 + 50 * ((k * 7) % 3)
+            h = 200 + 30 * ((k * 5) % 3)
+            facade(c, xx, 606, w, h, cols[k % len(cols)], k + 3, ("step", "curve", "roof")[k % 3])
+            xx += w
+            k += 1
+        cobbles(c, 0, SQ_W, 606, H)
+        c.line([(0, 606), (SQ_W, 606)], mix((190, 176, 156), (0, 0, 0), 0.3), 2.5)
+        P.mary_column(c, 1060, 640, 0.8)
+        P.pretzel_stand(c, 1290, 640, 0.9)
+        # a chestnut tree and benches near the wagon
+        D.tree(c, 2480, 640, 1.2, leaf=(100, 160, 80), trunk=(120, 84, 56))
+        for bx in (760, 1600):
+            c.rect(bx - 50, 612, bx + 50, 620, (140, 96, 60), w=2)
+            c.rect(bx - 44, 620, bx - 38, 640, (90, 64, 44), ol=None)
+            c.rect(bx + 38, 620, bx + 44, 640, (90, 64, 44), ol=None)
+        return c.img
+    return cached("square", make)
+
+
+def square(tl, t):
+    T = tl.t
+    STAMPED[0] = True
+    camx = smooth(t, [(T("s_grab"), 0), (T("s_grab", 0.6), 420), (T("s_roll", 0.1), 420),
+                      (T("s_roll", 0.85), 1280)], 0.5)
+    camx = clamp(camx, 0, SQ_W - W)
+    c = view(square_bg(), camx)
+    c.push(-camx, 0)
+    x, y, s = TH
+    P.glock_figures(c, x, y, s, spin=t * 1.1)
+    for k, px in enumerate((150, 196, 230, 880)):
+        pigeon(c, px, 652 + (k % 2) * 8, t, 0.9, 1 if k % 2 else -1, seed=k)
+    # Hansl and the hay wagon
+    P.hay_wagon(c, 2180, SQ_Y, 0.8, wheel=0.0)
+    P.horse(c, 2410, SQ_Y + 2, 0.72, 1, t, head=0.15 + 0.1 * math.sin(t * 0.8))
+    u0 = tl.prog("s_open", t)
+    # the post van drives away
+    if u0 < 0.6:
+        vx = lerp(760, -420, ease(u0 / 0.6))
+        P.post_van(c, vx, 676, 0.9, -1, t, wheel=vx / 20)
+    # the parcel pops open, the cats hop out
+    open_ = u0 > 0.15
+    bx, by = 460, 668
+    P.parcel(c, bx, by, 0.9, lid=1.0 if open_ else 0.0, front=False, label=False)
+    pose_s = 0.78
+    lu = clamp((u0 - 0.3) / 0.25)
+    wu = clamp((u0 - 0.45) / 0.25)
+    inside = []
+    if lu <= 0 and open_:
+        inside.append(("luna", bx - 30))
+    if wu <= 0 and open_:
+        inside.append(("whiskers", bx + 30))
+    for who, ix in inside:
+        kat(c, tl, t, who, ix, by - 40, 0.7, 1, "sit", eyes="wide" if who == "whiskers" else "open")
+    P.parcel(c, bx, by, 0.9, lid=1.0 if open_ else 0.0, back=False, label=not open_)
+    # Luna
+    if lu > 0:
+        if t < T("s_grab"):
+            lx = lerp(bx - 30, 360, lu)
+            ly = lerp(by - 40, SQ_Y, lu) + jump_y(lu, 50)
+            pose = "leap" if 0 < lu < 1 else "sit"
+            kat(c, tl, t, "luna", lx, ly, pose_s, 1, pose, look=(0.4, -1) if t >= T("s_look") else (1, 0),
+                eyes="happy" if T("s_look") <= t < T("s_look", 1) and tl.mouth("luna", t) < 0.1 else "open")
+        else:
+            keys = [(T("s_roll", 0.0), 360), (T("s_roll", 1.0), 1640), (T("s_end", 0.1), 1640),
+                    (T("s_end", 0.7), 2200)]
+            hu = tl.prog("s_end", t, 0.72, 0.92)
+            ly = lerp(SQ_Y, 548, hu) + jump_y(hu, 40)
+            lx = actor(c, tl, t, "luna", keys, ly, pose_s, 1, pose="sit" if hu >= 1 else "stand", look=(1, 0))
+    # Whiskers and the giant pretzel
+    pr_x, pr_ang, pr_on = 1370, 0.0, True
+    if wu > 0:
+        if t < T("s_grab"):
+            wx = lerp(bx + 30, 580, wu)
+            wy = lerp(by - 40, SQ_Y, wu) + jump_y(wu, 50)
+            pose = "leap" if 0 < wu < 1 else "sit"
+            sniff = T("s_smell") <= t
+            kat(c, tl, t, "whiskers", wx, wy, pose_s, 1, pose, eyes="closed" if sniff and tl.mouth("whiskers", t) < 0.1
+                else "open", look=(1, -0.6), head_dy=-6 if sniff else 0)
+        elif t < T("s_roll"):
+            keys = [(T("s_grab"), 580), (T("s_grab", 0.55), 1300)]
+            wx = actor(c, tl, t, "whiskers", keys, SQ_Y, pose_s, 1)
+            if t >= T("s_grab", 0.62):
+                pr_on = False
+                kat_pretzel = True
+                lift = ease(tl.prog("s_grab", t, 0.62, 0.8))
+                P.pretzel(c, wx + 62 * pose_s, SQ_Y - 40 - 40 * lift, 40, 0.0)
+        else:
+            u = tl.prog("s_roll", t)
+            keys = [(T("s_roll", 0.1), 1300), (T("s_roll", 0.9), 1760), (T("s_end", 0.1), 1760),
+                    (T("s_end", 0.75), 2120)]
+            hop = 0.0
+            if t >= T("s_end", 0.75):
+                hop = 1.0
+            wy = SQ_Y
+            on_hay = t >= T("s_end", 0.75)
+            hu = tl.prog("s_end", t, 0.75, 0.95)
+            if on_hay:
+                wy = lerp(SQ_Y, 548, hu) + jump_y(hu, 40)
+            wx = actor(c, tl, t, "whiskers", keys, wy, pose_s, 1, pose="sit" if hu >= 1 else "stand",
+                       eyes="wide" if u < 0.9 and t < T("s_resi") else "open")
+            pr_on = False
+        if pr_on:
+            P.pretzel(c, pr_x, 610, 40, 0.15)
+    else:
+        P.pretzel(c, pr_x, 610, 40, 0.15)
+    # the runaway pretzel
+    if t >= T("s_roll"):
+        u = tl.prog("s_roll", t)
+        px = lerp(1340, 1872, ease(clamp((u - 0.03) / 0.82)) ** 1.3)
+        if t < T("s_end"):
+            bump = abs(math.sin(px / 14)) * 4 * (u < 0.85)
+            P.pretzel(c, px, SQ_Y - 40 - bump, 40, (px - 1340) / 40)
+    # Luna on the hay
+    if t >= T("s_end", 0.8):
+        pass
+    # Resi
+    if t >= T("s_roll", 0.5):
+        keys = [(T("s_roll", 0.55), 2120), (T("s_roll", 0.85), 1920), (T("s_end", 0.1), 1920),
+                (T("s_end", 0.7), 2060)]
+        ru = tl.prog("s_end", t, 0.75, 0.95)
+        ry = lerp(SQ_Y, 552, ru) + jump_y(ru, 40)
+        actor(c, tl, t, "resi", keys, ry, 0.8, -1, wave=1.0 if T("s_resi") <= t < T("s_resi", 0.6) else 0.0,
+              eyes="happy" if T("s_hop") <= t < T("s_hop", 1) else "open")
+    if t >= T("s_end", 0.75):
+        # Luna hops onto the hay too
+        pass
+    c.pop()
+    return finish(c, tl, t, 0.4)
+
+
+# ================================================================ village
+
+VW = 2 * W
+VY = 660
+
+
+def village_bg():
+    def make():
+        c = Canvas(D.gradient(VW * SS, H * SS, [(0, (110, 176, 236)), (0.55, (214, 236, 250)), (1, (214, 236, 250))]),
+                   size=(VW, H))
+        for x, y, s in ((300, 80, 0.9), (1100, 60, 1.1), (1900, 90, 0.8)):
+            D.cloud(c, x, y, s)
+        rng = np.random.default_rng(3)
+        for k in range(8):
+            P.alp(c, 160 + k * 340 + rng.uniform(-40, 40), 470, rng.uniform(420, 560), rng.uniform(250, 360), seed=k)
+        P.hill(c, [480, 440, 470, 430, 460, 420, 450, 430, 470], 0, VW, (120, 176, 96), ol=OUT)
+        for x in np.linspace(0, VW, 40):
+            yy = np.interp(x, np.linspace(0, VW, 9), [480, 440, 470, 430, 460, 420, 450, 430, 470])
+            if rng.random() < 0.6:
+                P.fir(c, x + rng.uniform(-20, 20), yy + 10, rng.uniform(0.28, 0.38), col=(60, 120, 80), dark=(44, 96, 66))
+        P.hill(c, [560, 540, 556, 530, 548, 540, 560], 0, VW, (140, 196, 104), ol=OUT)
+        # the village on the right
+        P.onion_church(c, 2300, 560, 0.75)
+        P.maypole(c, 1980, 600, 360)
+        houses = [(1700, 230, 170, (250, 240, 214), (60, 120, 80)), (2120, 200, 160, (252, 230, 200), (160, 60, 50)),
+                  (2500, 220, 170, (240, 236, 220), (60, 90, 150))]
+        for k, (hx, w, h, wall, sh) in enumerate(houses):
+            P.painted_house(c, hx, 600, w, h, wall=wall, shutter=sh, seed=k)
+        # meadow, road, flowers
+        P.hill(c, [612, 606, 616, 604, 612, 608, 614], 0, VW, (150, 206, 110), ol=OUT)
+        c.poly([(0, 640), (VW, 640), (VW, 700), (0, 700)], (206, 176, 128), ol=None)
+        c.line([(0, 640), (VW, 640)], (170, 140, 100), 2.5)
+        c.line([(0, 700), (VW, 700)], (170, 140, 100), 2.5)
+        c.rect(0, 700, VW, H, (130, 190, 96), ol=None)
+        for _ in range(140):
+            x, y = rng.uniform(0, VW), rng.uniform(612, 636)
+            c.circle(x, y, 2.5, ((255, 255, 255), (250, 210, 60), (230, 80, 120))[rng.integers(3)], ol=None)
+        # a wooden fence along the road
+        for x in range(0, VW, 70):
+            c.rect(x, 600, x + 7, 640, (150, 104, 66), w=1.5)
+        c.line([(0, 612), (VW, 612)], (150, 104, 66), 4)
+        c.line([(0, 626), (VW, 626)], (150, 104, 66), 4)
+        return c.img
+    return cached("village", make)
+
+
+def bakery_bg():
+    def make():
+        c = Canvas(D.gradient(W * SS, H * SS, [(0, (110, 176, 236)), (1, (214, 236, 250))]))
+        P.alp(c, 120, 300, 420, 220, seed=4)
+        P.alp(c, 1160, 300, 460, 240, seed=6)
+        cobbles(c, 0, W, 520, H, base=(196, 184, 160), seed=4)
+        P.painted_house(c, 640, 540, 640, 470, wall=(250, 238, 210), roof=(160, 76, 56), shutter=(60, 120, 80),
+                        seed=9, balcony=True, door=False)
+        # shop window + sign
+        c.rect(450, 380, 830, 520, (120, 76, 46), w=3)
+        c.rect(462, 392, 818, 520, (255, 236, 190), ol=None)
+        for k in range(5):
+            P.pretzel(c, 500 + k * 72, 440, 20, 0.0)
+            c.rect(480 + k * 72, 476, 522 + k * 72, 492, (226, 178, 98), w=1.5, r=6)
+        c.rect(520, 330, 760, 370, (60, 90, 60), w=2.5, r=6)
+        c.text(640, 350, "BÄCKEREI", 26, (255, 236, 160))
+        # hanging pretzel sign on a wrought-iron bracket
+        c.line([(930, 300), (1030, 300)], OUT, 4)
+        c.line([(930, 330), (1000, 300)], OUT, 3)
+        c.line([(1010, 300), (1010, 316)], OUT, 2)
+        P.pretzel(c, 1010, 344, 30, 0.0)
+        # geraniums
+        for x in (380, 900):
+            c.rect(x - 40, 500, x + 40, 520, (160, 90, 50), w=2)
+            for k in range(7):
+                c.circle(x - 34 + k * 11, 494 - (k % 2) * 6, 7, (226, 50, 60), w=1.5)
+        # the table with a Bavarian diamond cloth
+        c.rect(250, 556, 1030, H + 10, (255, 255, 255), w=3)
+        for row in range(5):
+            for k in range(30):
+                xx = 250 + k * 28 + (14 if row % 2 else 0)
+                yy = 572 + row * 34
+                if xx < 1020:
+                    c.poly([(xx, yy), (xx + 14, yy - 16), (xx + 28, yy), (xx + 14, yy + 16)], P.BAV_BLUE, ol=None)
+        c.rect(250, 548, 1030, 562, (250, 250, 250), w=3)
+        return c.img
+    return cached("bakery", make)
+
+
+def piping_bag(c, x, y, ang=2.2, s=1.0):
+    c.push(x, y, s)
+    pts = P.rot([(0, 0), (40, -14), (44, 14)], ang)
+    c.poly(pts, (240, 240, 250), w=2)
+    tip = P.rot([(0, 0), (-8, -4), (-8, 4)], ang)
+    c.poly(tip, (200, 200, 210), w=1.5)
+    c.pop()
+
+
+def village(tl, t):
+    T = tl.t
+    STAMPED[0] = True
+    if t < T("v_strudel"):
+        return village_ride(tl, t)
+    return village_bakery(tl, t)
+
+
+def village_ride(tl, t):
+    T = tl.t
+    keys = [(T("v_ride"), 200), (tl.ev("v_narr").end + 0.3, 1600)]
+    wx = smooth(t, keys, 0.6)
+    moving = speed(t, keys) > 5
+    camx = clamp(wx - 420, 0, VW - W)
+    c = view(village_bg(), camx)
+    c.push(-camx, 0)
+    from films.montblanc.props import cow
+    for x, y, f in ((700, 600, 1), (1180, 596, -1)):
+        cow(c, x, y, 0.55, f, t)
+    bob = abs(math.sin(wx / 30)) * 3 if moving else 0
+    P.hay_wagon(c, wx, VY - bob * 0.3, 0.8, wheel=wx / 27)
+    P.horse(c, wx + 230, VY + 2, 0.72, 1, t, walk=wx / 22 if moving else 0.0)
+    top = VY - 98 - bob
+    resi(c, tl, t, wx - 90, top + 4, 0.7, 1)
+    kat(c, tl, t, "luna", wx - 20, top, 0.7, 1, "sit", look=(1, -0.3), eyes="happy" if moving else "open")
+    kat(c, tl, t, "whiskers", wx + 50, top + 2, 0.7, 1, "sit", look=(1, -0.2), eyes="happy" if moving else "open")
+    c.pop()
+    return finish(c, tl, t, 0.4)
+
+
+def village_bakery(tl, t):
+    T = tl.t
+    c = Canvas(bakery_bg().copy())
+    u = tl.prog("v_eat", t) if t < T("v_beard") else 1.0
+    eaten = ease(clamp((u - 0.1) / 0.35))
+    cream = ease(clamp((u - 0.45) / 0.2)) * (1 - ease(clamp((u - 0.7) / 0.12)))
+    beard = 1.0 if u >= 0.82 else 0.0
+    lean = ease(clamp(u / 0.1)) * (1 - ease(clamp((u - 0.85) / 0.1)))
+    dive = math.sin(math.pi * clamp((u - 0.68) / 0.16))
+    # behind the table (cats are cut off by the tablecloth drawn after)
+    wy = 604
+    going = t >= T("v_go")
+    if not going:
+        chomp = 0.5 + 0.5 * math.sin(t * 22) if 0.1 < u < 0.45 else None
+        kw = {}
+        if chomp is not None:
+            kw["mouth"] = chomp
+        kat(c, tl, t, "whiskers", 520 + 40 * lean, wy, 1.05, 1, "sit", head_dy=12 * lean + 26 * dive, beard=beard,
+            eyes="closed" if (0.1 < u < 0.45 or dive > 0.2) else ("happy" if beard and tl.mouth("whiskers", t) < 0.1
+                                                                     else "open"), look=(1, 0.6), **kw)
+    else:
+        keys = [(T("v_go"), 520), (T("v_go", 0.9), 1450)]
+        actor(c, tl, t, "whiskers", keys, wy, 1.05, 1, carry=True)
+    lmouth = laughing(t) * 0.7 if T("v_beard", 0.3) <= t < T("v_carry") else tl.mouth("luna", t)
+    kat(c, tl, t, "luna", 900, wy, 1.05, -1, "sit", mouth=lmouth, look=(-1, 0.4),
+        eyes="happy" if T("v_beard", 0.3) <= t < T("v_carry") else "open")
+    # table top items
+    c.rect(250, 548, 1030, 562, (250, 250, 250), w=3)
+    for row in range(5):
+        pass
+    tablecloth = cached("cloth", lambda: bakery_bg().crop((0, 548 * SS, W * SS, H * SS)))
+    c.img.paste(tablecloth, (0, 548 * SS))
+    P.strudel(c, 650, 556, 1.1, eaten=eaten, cream=cream)
+    # Resi on the table with a piping bag
+    squirt = 0.45 < u < 0.66
+    rx = 790
+    resi(c, tl, t, rx, 552, 0.85, -1, eyes="happy" if T("v_beard") <= t < T("v_carry") else "open")
+    if t < T("v_beard"):
+        piping_bag(c, rx - 30, 500 + (6 * math.sin(t * 20) if squirt else 0), 2.6, 1.1)
+    return finish(c, tl, t, 0.45)
+
+
+# ================================================================= forest
+
+FW = W + 420
+FY = 650
+
+
+def forest_bg():
+    def make():
+        c = Canvas(D.gradient(FW * SS, H * SS, [(0, (40, 70, 70)), (0.45, (190, 160, 96)), (0.62, (120, 130, 80)),
+                                                (1, (50, 70, 44))]), size=(FW, H))
+        rng = np.random.default_rng(6)
+        for x in np.linspace(-40, FW + 40, 34):
+            P.fir_flat(c, x + rng.uniform(-20, 20), 600 + rng.uniform(-20, 10), rng.uniform(0.9, 1.3), (96, 120, 96))
+        for x in np.linspace(-40, FW + 40, 24):
+            P.fir_flat(c, x + rng.uniform(-30, 30), 620 + rng.uniform(-10, 10), rng.uniform(1.1, 1.5), (60, 86, 66))
+        # light shafts
+        shafts = Image.new("RGBA", c.img.size, (0, 0, 0, 0))
+        sd = ImageDraw.Draw(shafts)
+        for x0 in (300, 700, 1150, 1480):
+            pts = [(x0, 0), (x0 + 70, 0), (x0 - 160, 720), (x0 - 330, 720)]
+            sd.polygon([(px * SS, py * SS) for px, py in pts], fill=(255, 236, 170, 46))
+        shafts = shafts.filter(ImageFilter.GaussianBlur(12 * SS))
+        base = c.img.convert("RGBA")
+        base.alpha_composite(shafts)
+        c.img = base.convert("RGB")
+        c.d = ImageDraw.Draw(c.img)
+        # mid trees with trunks
+        for x in (120, 420, 880, 1180, 1420, 1640):
+            P.fir(c, x, 612, 1.5, col=(40, 84, 62), dark=(28, 62, 48))
+        # forest floor
+        c.rect(0, 600, FW, H, (70, 96, 54), ol=None)
+        c.poly([(0, 630), (FW, 626), (FW, 690), (0, 694)], (160, 128, 86), ol=None)
+        c.line([(0, 630), (FW, 626)], (110, 86, 60), 2.5)
+        c.line([(0, 694), (FW, 690)], (110, 86, 60), 2.5)
+        for _ in range(26):
+            x, y = rng.uniform(0, FW), rng.uniform(604, 626)
+            for k in range(5):
+                a = -math.pi / 2 + (k - 2) * 0.5
+                c.line([(x, y), (x + math.cos(a) * 26, y + math.sin(a) * 22)], (90, 140, 70), 4)
+        for x, y in ((240, 620), (760, 616), (1300, 622), (1560, 618)):
+            c.rect(x - 3, y - 14, x + 3, y, (250, 246, 236), w=1.5)
+            c.ellipse(x, y - 16, 12, 8, (220, 50, 40), w=2)
+            for dx in (-5, 2, 6):
+                c.circle(x + dx, y - 18 + abs(dx) * 0.3, 1.8, (255, 255, 255), ol=None)
+        c.rect(0, 694, FW, H, (60, 84, 48), ol=None)
+        return c.img
+    return cached("forest", make)
+
+
+def forest(tl, t):
+    T = tl.t
+    STAMPED[0] = True
+    camx = smooth(t, [(T("f_in"), 0), (T("f_eyes"), 300), (T("f_end"), 300), (T("f_end", 1), 420)], 0.5)
+    c = view(forest_bg(), camx)
+    c.push(-camx, 0)
+    # glowing eyes in the dark
+    if T("f_eyes", 0.2) <= t < T("f_deer", 0.2):
+        P.glow_eyes(c, 1040, 520, t, 1.0, seed=1)
+        P.glow_eyes(c, 1160, 566, t, 0.8, seed=2)
+    # the deer step out
+    if t >= T("f_deer"):
+        k = ease(tl.prog("f_deer", t, 0.0, 0.8))
+        bow = math.sin(math.pi * tl.prog("f_bow", t, 0.1, 0.7))
+        P.deer(c, lerp(1260, 1030, k), FY - 6, 0.9, -1, t, bow=bow)
+        P.deer(c, lerp(1330, 1150, k), FY, 0.6, -1, t, bow=bow * 0.8, fawn=True, seed=3)
+    c.tint = ((30, 40, 70), 0.12)
+    scared = T("f_eyes", 0.3) <= t < T("f_deer", 0.5)
+    bowing = math.sin(math.pi * tl.prog("f_bow", t, 0.3, 0.8))
+    rk = [(T("f_in"), -60), (T("f_in", 1), 760), (T("f_end"), 760), (T("f_end", 1), 1560)]
+    actor(c, tl, t, "resi", rk, FY, 0.8, 1, eyes="happy" if T("f_deer") <= t < T("f_bow") else "open")
+    lk = [(T("f_in"), -200), (T("f_in", 1), 620), (T("f_end", 0.15), 620), (T("f_end", 1), 1400)]
+    actor(c, tl, t, "luna", lk, FY, 0.85, 1, head_dy=10 * bowing, eyes="happy" if bowing > 0.3 else "open")
+    wk = [(T("f_in"), -340), (T("f_in", 1), 480), (T("f_end", 0.3), 480), (T("f_end", 1), 1260)]
+    actor(c, tl, t, "whiskers", wk, FY, 0.85, 1, carry=True, eyes="wide" if scared else (
+        "happy" if bowing > 0.3 else "open"), head_dy=10 * bowing, look=(1, -0.3) if scared else (0, 0))
+    c.tint = None
+    # foreground ferns
+    c.pop()
+    for x in (60, 1230):
+        P.fir(c, x, 760, 1.9, col=(24, 50, 38), dark=(16, 36, 28))
+    return finish(c, tl, t, 0.3)
+
+
+SCENE_FUNCS = {"title": title, "attic": attic, "post": post, "square": square, "village": village,
+               "forest": forest}
 CONTINUOUS = set()
-EXTRA_CUTS = ["p_van", "p_road"]
+EXTRA_CUTS = ["p_van", "p_road", "v_strudel"]

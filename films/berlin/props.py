@@ -590,18 +590,21 @@ def berliner_dom(c, x, base, s=1.0, col=(150, 160, 150), dome=(96, 140, 120), lw
     c.pop()
 
 
-def oberbaum(c, x, base, s=1.0, deck_y=-170, lw=2.5):
+def oberbaum(c, x, base, s=1.0, deck_y=-170, lw=2.5, span=560):
     """The Oberbaum Bridge: red brick arches over the river, an arcade for the U-Bahn on top,
     and two towers in the middle. base = water line. About 1100 wide at s=1."""
     c.push(x, base, s)
     ol = OUT
-    L = 560
+    L = span
     c.rect(-L, deck_y + 50, L, 30, BRICK, ol=ol, w=lw)
     # river arches
-    for k in range(-3, 4):
+    for k in range(-int(L // 150), int(L // 150) + 1):
         ax = k * 150
         c.ellipse(ax, 30, 62, 110, (50, 70, 100), ol=ol, w=lw)
-    c.rect(-L - 4, 26, L + 4, 60, RIVER, ol=None)
+    c.rect(-L - 4, 28, L + 4, 150, RIVER, ol=None)
+    for k in range(-int(L // 150), int(L // 150) + 1):
+        c.line([(k * 150 - 40, 40), (k * 150 + 40, 40)], RIVER_L, 3, cap=False)
+        c.line([(k * 150 - 20, 52), (k * 150 + 26, 52)], RIVER_L, 2, cap=False)
     # road deck
     c.rect(-L, deck_y + 50, L, deck_y + 70, BRICK_D, ol=ol, w=lw)
     # the arcade (viaduct for the trains)

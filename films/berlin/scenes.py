@@ -396,6 +396,11 @@ def house_window(c, tl, t, cats_fn):
     x0, y0, x1, y1 = WIN_BOX
     c.rect(x0, y0, x1, y1, (236, 214, 176), ol=None)
     c.rect(x0, y1 - 40, x1, y1, (200, 150, 110), ol=None)
+    c.rect(x0 + 90, y0 + 30, x0 + 150, y0 + 70, (60, 70, 120), w=2)          # the moon picture
+    for side in (0, 1):                                                       # curtains
+        xa = x0 if side == 0 else x1 - 34
+        c.poly([(xa, y0), (xa + 34, y0), (xa + (24 if side == 0 else 10), y1 - 50), (xa + (side * 34), y1 - 40)],
+               (120, 170, 220), w=2)
     cats_fn(c)
     c.rect(x0, y0, x1, y1, None, w=6)
     c.rect(x0 - 12, y1, x1 + 12, y1 + 14, (255, 250, 240), w=2.5, r=3)
@@ -436,8 +441,6 @@ def sill_street(tl, t):
     if jp >= 1:
         inside.append(("pip", -160))
     s_van = 0.8
-    P.moving_van(c, vx, STREET_Y, s_van, door=door, wheel=wheel, inside=van_inside_fn(inside),
-                 lights=0.0)
 
     # ---- the window with the cats
     def cats_fn(cc):
@@ -452,6 +455,8 @@ def sill_street(tl, t):
         if t < T("s_wait"):
             pip(cc, tl, t, 288, cy - 2, 0.7, 1)
     house_window(c, tl, t, cats_fn)
+    P.moving_van(c, vx, STREET_Y, s_van, door=door, wheel=wheel, inside=van_inside_fn(inside),
+                 lights=0.0)
     # leaping cats (outside the window frame)
     dx0, dy0 = vx + (-150) * s_van, STREET_Y - 92 * s_van
     for who, u, x0 in (("luna", jl, 340), ("whiskers", jw, 230)):
@@ -566,12 +571,12 @@ def van(tl, t):
             lx = (k * 420 - t * 380) % (W + 400) - 200
             P.gas_lamp(c, lx, 600, 1.2, lit=1.0)
         D.moon(c, 1060, 120, 34, sky=(30, 34, 80))
-        P.moving_van(c, 560, 640 + 2 * math.sin(t * 9), 0.9, wheel=-t * 9, lights=1.0)
         # road sign
         sx = lerp(1500, -300, u)
         c.line([(sx, 600), (sx, 470)], (180, 180, 190), 6, cap=False)
         c.rect(sx - 80, 420, sx + 80, 480, (30, 120, 70), w=3, r=6)
         c.text(sx, 450, "BERLIN  ->", 24, (255, 255, 255))
+        P.moving_van(c, 560, 640 + 2 * math.sin(t * 9), 0.9, wheel=t * 9, lights=1.0)
         return finish(c, tl, t, 0.4)
     c = Canvas(van_inside_bg().copy())
     sleep = t >= T("v_sleep", 0.15)
@@ -629,10 +634,13 @@ def gate_bg():
         # far: the TV Tower, the Reichstag behind the trees
         P.tv_tower(c, 180, 560, 420, col=(226, 230, 240), shade=(196, 200, 214), lw=2)
         P.skyline(c, -20, GW + 20, 560, rng, 50, 120, [(206, 210, 226), (196, 202, 220), (214, 216, 230)])
-        P.reichstag(c, 820, 590, 0.62, flags=True)
-        for x in range(380, 1300, 90):
+        P.reichstag(c, 800, 560, 0.66, flags=True)
+        for x in (330, 420, 1180, 1270, 1360):
             P.linden(c, x + rng.uniform(-20, 20), 600, rng.uniform(0.55, 0.7), leaf=(110, 160, 96),
                      leaf_l=(140, 186, 116))
+        c.rect(520, 560, 1080, 600, (150, 196, 120), ol=None)                     # the lawn in front
+        for x in range(530, 1080, 60):
+            D.bush(c, x, 604, 0.45, col=(100, 160, 90))
         P.skyline(c, 2300, GW + 20, 600, rng, 120, 200, [(236, 222, 200), (226, 214, 196)], win=(120, 140, 170),
                   p=0.4, ol=OUT)
         # the plaza
@@ -680,7 +688,7 @@ def gate(tl, t):
     c = view(gate_bg(), cam)
     c.tint = None
     # flags flapping by the gate
-    for fx in (1440, 2360):
+    for fx in (880, 1440, 2360):
         P.berlin_flag(c, fx - cam, 640, 1.0, t)
     # ---- the van, parked on the left
     door = ease(tl.prog("g_open", t, 0.0, 0.3))
@@ -694,12 +702,12 @@ def gate(tl, t):
     # ---- the cats jump out
     jump = tl.prog("g_open", t, 0.38, 0.7)
     dx0, dy0 = 380 - cam + (-150) * 0.72, 660 - 92 * 0.72
-    wk = [(T("g_open"), 560), (T("g_look", 0.08), 560), (T("g_look", 0.85), GATE_X - 140),
+    wk = [(T("g_open"), 600), (T("g_look", 0.08), 600), (T("g_look", 0.85), GATE_X - 140),
           (T("g_sniff", 0.35), GATE_X - 140), (T("g_sniff", 1.0), GATE_X + 300)]
-    lk = [(T("g_open"), 470), (T("g_look", 0.15), 470), (T("g_look", 0.9), GATE_X + 170)]
-    pk = [(T("g_open"), 520), (T("g_look", 0.1), 520), (T("g_look", 0.88), GATE_X + 240)]
+    lk = [(T("g_open"), 420), (T("g_look", 0.15), 420), (T("g_look", 0.9), GATE_X + 170)]
+    pk = [(T("g_open"), 510), (T("g_look", 0.1), 510), (T("g_look", 0.88), GATE_X + 240)]
     bk = [(T("g_open"), GATE_X + 200), (T("g_narr", 0.6), GATE_X + 200), (T("g_hallo", 0.0), 1600),
-          (T("g_hallo", 0.6), 760), (T("g_look", 0.1), 760), (T("g_look", 0.9), GATE_X + 20)]
+          (T("g_hallo", 0.6), 800), (T("g_look", 0.1), 800), (T("g_look", 0.9), GATE_X + 20)]
     glance = T("g_glance") <= t < T("g_glance", 0.45)
     turned = t >= T("g_glance", 0.45) and t < T("g_sniff")
     # Berti
@@ -814,11 +822,6 @@ WH_X, LU_X = 470, 1080
 def imbiss(tl, t):
     T = tl.t
     c = Canvas(imbiss_bg().copy())
-    # steam over the grill (animated)
-    for k in range(3):
-        u = (t * 0.5 + k / 3) % 1.0
-        c.circle(STAND_X - 130 * 0.92 + k * 36 + 10 * math.sin(t * 2 + k), 600 - 200 * 0.92 - 70 * u,
-                 5 + 9 * u, mix((255, 255, 255), (220, 230, 240), u), ol=None)
     # ---- what Hilde hands over
     hand = None
     pret_u = tl.prog("i_pretzel", t, 0.0, 0.18)
@@ -839,7 +842,7 @@ def imbiss(tl, t):
         if hand == "donut" and donut_u < 0.5:
             P.berliner(cc, x + 20, y, 0.9)
     hilde_talk = tl.mouth("hilde", t)
-    P.hilde(c, STAND_X - 40, COUNTER_Y, 0.95, -1, t, mouth=hilde_talk, lean=max(hreach, 0.4 if tl.talking("hilde", t) else 0),
+    P.hilde(c, STAND_X + 30, COUNTER_Y, 1.05, -1, t, mouth=hilde_talk, lean=max(hreach, 0.4 if tl.talking("hilde", t) else 0),
             arm=hreach, hold=hold,
             eyes="happy" if T("i_necklace") <= t < T("i_purpose", 1) or T("i_notpurpose") <= t < T("i_train") else "open")
     # ---- Whiskers walks in, sits facing the stand
@@ -908,7 +911,7 @@ def imbiss(tl, t):
                 continue
             x = lerp(sx_head + 60, lx + 6, u)
             y = lerp(sy_head + 20, 650 - 100, u) + arc_y(u, 120)
-            c.circle(x, y, 9 - k, P.JAM, w=1.5)
+            c.circle(x, y, 13 - k, P.JAM, w=1.5)
     jam_k = 0.0
     if t >= T("i_donut", 0.58):
         jam_k = 1.0 - ease(tl.prog("i_train", t, 0.1, 0.4))
@@ -958,7 +961,7 @@ def bridge_bg():
         # river banks
         c.rect(0, 420, W, 440, (150, 160, 140), ol=None)
         river(c, 0, W, 440, 640, np.random.default_rng(10), n=110)
-        P.oberbaum(c, 640, 470, 1.0)
+        P.oberbaum(c, 640, 470, 1.0, span=700)
         # near bank: a riverside path with grass
         c.poly([(0, 640), (W, 620), (W, H), (0, H)], (120, 176, 100), w=2.5)
         c.poly([(0, 664), (W, 646), (W, 690), (0, 708)], (214, 200, 170), w=2)
@@ -998,7 +1001,7 @@ def platform_bg():
         c.text(214, 135, "U", 22, (255, 255, 255))
         c.text(370, 135, "Warschauer Str.", 22, (40, 50, 80))
         # track bed
-        c.rect(-10, 400, W + 10, 560, (90, 84, 80), ol=None)
+        c.rect(-10, 530, W + 10, 560, (90, 84, 80), ol=None)
         # platform (in front)
         c.rect(-10, 560, W + 10, H + 10, (196, 196, 200), w=2.5)
         c.rect(-10, 560, W + 10, 576, (250, 220, 60), ol=None)
@@ -1046,7 +1049,7 @@ def ubahn(tl, t):
         if -100 < x0 < W + 100:
             def face(tc):
                 tc.rect(x0 - 10, y0 - 10, x1 + 10, y1 + 10, (150, 196, 220), ol=None)
-                D.cat(tc, dxs - 14, y1 + 70, D.LUNA, 0.62, -1, "sit", t=t, seed=1.3, look=(-1, 0),
+                D.cat(tc, dxs + 13, (y0 + y1) / 2 + 106 * 0.72 + 6, D.LUNA, 0.72, -1, "sit", t=t, seed=1.3, look=(-1, 0),
                       eyes="open", mouth=tl.mouth("luna", t))
                 tc.line([(x0 + 4, y1 - 6), (x0 + 20, y0 + 8)], (240, 250, 255), 2, cap=False)
             P.clip_draw(c, max(0, x0), y0, min(W, x1), y1, face)
@@ -1139,6 +1142,12 @@ def storybook_bg():
         c = Canvas(bg=(60, 44, 40))
         c.rect(40, 30, W - 40, H - 30, (246, 232, 200), w=3, r=10)
         c.rect(70, 60, W - 70, H - 60, (236, 218, 180), w=2, r=8)
+        c.circle(1060, 150, 40, (240, 200, 120), ol=None)
+        D.cloud(c, 260, 140, 0.7, (250, 240, 220))
+        for hx in (140, 240, 330, 940, 1040, 1130):
+            c.rect(hx - 34, 380, hx + 34, 470, (214, 186, 150), w=2)
+            c.poly([(hx - 40, 382), (hx, 344), (hx + 40, 382)], (190, 120, 90), w=2)
+            c.rect(hx - 10, 410, hx + 10, 440, (150, 120, 100), ol=None)
         c.rect(70, 470, W - 70, H - 60, (206, 190, 150), ol=None)
         c.rect(70, 60, W - 70, H - 60, None, w=2, r=8)
         return c.img
@@ -1196,30 +1205,24 @@ def storybook(tl, t):
     hug = ease(tl.prog("ga_apart", t, 0.7, 1.0))
     # the grey wall across the middle, crumbling into blocks
     rng = np.random.default_rng(4)
-    for k in range(6):
-        for j in range(4):
-            bx = 610 + (k % 2) * 30 - 30
-            by = 470 - 34 * (j + 1) - 0 * k
-            if k >= 4:
-                continue
-            x0 = 600 + (k - 2) * 0
-            dx = rng.uniform(-1, 1) * 260 * fall
-            dy = (470 - 20 - (by)) * fall
-            rot = rng.uniform(-0.5, 0.5) * fall
-            cx, cy = 640 + (k - 1.5) * 1 + dx * (1 if k % 2 else -1), by + 17 + dy * rng.uniform(0.8, 1.0)
-            c.push(cx, cy)
-            w2, h2 = 40, 16
-            pts = [(-w2 * math.cos(rot) + h2 * math.sin(rot), -w2 * math.sin(rot) - h2 * math.cos(rot)),
-                   (w2 * math.cos(rot) + h2 * math.sin(rot), w2 * math.sin(rot) - h2 * math.cos(rot)),
-                   (w2 * math.cos(rot) - h2 * math.sin(rot), w2 * math.sin(rot) + h2 * math.cos(rot)),
-                   (-w2 * math.cos(rot) - h2 * math.sin(rot), -w2 * math.sin(rot) + h2 * math.cos(rot))]
-            c.poly(pts, (170, 168, 166), w=2)
-            c.pop()
-    if fall < 0.02:
-        c.rect(600, 160, 680, 470, (170, 168, 166), w=3)
-        for yy in range(190, 470, 34):
-            c.line([(600, yy), (680, yy)], (140, 138, 136), 2, cap=False)
-        c.rect(594, 150, 686, 166, (190, 188, 186), w=2.5, r=6)
+    if hug < 0.45:
+        fade = 1 - clamp(hug / 0.45)
+        for j in range(9):
+            for k in range(3):
+                bx = 584 + k * 40 + (20 if j % 2 else 0) - 20
+                by = 470 - 34 * (j + 0.5)
+                dx = rng.uniform(-1, 1) * 200 * fall
+                ty = 470 - 12 - rng.uniform(0, 30)
+                cx = bx + dx
+                cy = lerp(by, ty, fall)
+                rot = rng.uniform(-0.6, 0.6) * fall
+                w2, h2 = 19 * fade + 1, 16 * fade + 1
+                cr, sr = math.cos(rot), math.sin(rot)
+                pts = [(cx + px * cr - py * sr, cy + px * sr + py * cr)
+                       for px, py in ((-w2, -h2), (w2, -h2), (w2, h2), (-w2, h2))]
+                c.poly(pts, (170, 168, 166), w=2)
+    if hug > 0.3:
+        sparkles(c, t, 520, 760, 380, 470, n=14, seed=5, col=(255, 220, 120))
     # friends on both sides: sad and waving, then running together for a hug
     left = [("bunny", 380, 0.0), ("bear", 470, 1.0)]
     right = [("fox", 800, 2.0), ("duck", 890, 3.0)]
@@ -1231,7 +1234,7 @@ def storybook(tl, t):
         friend(c, xx, 470, kind, t, cheer=hug, sad=1 - fall, face=-1, seed=sd)
     if hug > 0.3:
         hearts_up(c, t, 640, 330, k=1.0, n=5)
-    c.text(640, 600, "Friends apart..." if fall < 0.5 else "...friends together!", 34, (110, 80, 50))
+    c.text(640, 530, "Friends apart..." if fall < 0.5 else "...friends together!", 34, (110, 80, 50))
     return c
 
 
@@ -1248,7 +1251,8 @@ def gallery(tl, t):
     if prog > 0:
         x0, x1 = PANEL_X0 - cam, PANEL_X1 - cam
         P.clip_draw(c, max(0, x0), PANEL_TOP, min(W, x1), GAL_BASE,
-                    lambda tc: P.painted_cats(tc, x0, x1, PANEL_TOP, GAL_BASE, prog))
+                    lambda tc: (P.mural(tc, "blank", x0, x1, PANEL_TOP, GAL_BASE),
+                                P.painted_cats(tc, x0, x1, PANEL_TOP, GAL_BASE, prog)))
     # ---- Whiskers and Berti walk along the wall
     sx = PANEL_X0 - 60
     wk = [(T("ga_narr"), 40), (T("ga_narr", 1.0), 520), (T("ga_smile"), 620), (T("ga_walk", 1.0), GAL_END_CAM + 330),
@@ -1481,10 +1485,11 @@ def tower_in(tl, t):
     # the line where the wall once ran
     wa = ease(tl.prog("tw_wall", t, 0.2, 0.6)) * (1 - ease(tl.prog("tw_one", t, 0.0, 0.5)))
     if wa > 0.02:
-        col = mix((60, 60, 110), (210, 210, 220), wa)
-        c.line(WALL_LINE, col, 7)
+        col = mix((60, 60, 110), (236, 236, 244), wa)
+        c.line(WALL_LINE, mix((60, 60, 110), (40, 40, 60), wa), 14)
+        c.line(WALL_LINE, col, 9)
         for x, y in WALL_LINE[1:-1]:
-            c.circle(x, y, 5, col, ol=None)
+            c.circle(x, y, 7, col, ol=None)
     if T("tw_one") <= t < T("tw_one", 0.8):
         u = tl.prog("tw_one", t, 0.0, 0.8)
         for k, (x, y) in enumerate(WALL_LINE):
@@ -1531,8 +1536,6 @@ def home(tl, t):
         arrive = tl.prog("h_back", t, 0.0, 0.45)
         vx = lerp(-500, VAN_STOP, 1 - (1 - arrive) ** 2)
         door = ease(tl.prog("h_back", t, 0.5, 0.65))
-        P.moving_van(c, vx, STREET_Y, 0.8, door=door, wheel=vx / 26,
-                     inside=van_inside_fn([("luna", -200), ("whiskers", -120)] if t < T("h_back", 0.7) else []))
         dx0, dy0 = vx - 150 * 0.8, STREET_Y - 92 * 0.8
         out = []
         for who, lag, x1 in (("luna", 0.0, 340), ("whiskers", 0.12, 230)):
@@ -1549,6 +1552,8 @@ def home(tl, t):
             if t >= T("h_narr", 0.3):
                 pip(cc, tl, t, 288, WIN_BOX[3] - 2, 0.7, 1, hop=abs(math.sin(t * 9)) * 8)
         house_window(c, tl, t, cats_fn)
+        P.moving_van(c, vx, STREET_Y, 0.8, door=door, wheel=vx / 26,
+                     inside=van_inside_fn([("luna", -200), ("whiskers", -120)] if t < T("h_back", 0.7) else []))
         for who, u, x1 in out:
             if 0 < u < 1:
                 x = lerp(dx0, x1, u)
@@ -1576,9 +1581,9 @@ def home(tl, t):
     pip(c, tl, t, 790, SILL_Y, 0.8, 1, eyes="happy" if t >= T("h_munch") else "open")
     if t >= T("h_munch"):
         hearts_up(c, t, 926, 260, k=0.8, n=3)
-    z = 1 + ease(tl.prog("h_moral", t, 0.0, 1.0)) * 0.9
+    z = 1.6 + ease(tl.prog("h_moral", t, 0.0, 1.0)) * 0.5
     if t >= T("h_end"):
-        z = 1.9
+        z = 2.1
     c = zoom(c, 926, 300, z)
     k = ease(tl.prog("h_end", t, 0.25, 0.5))
     if k > 0:
