@@ -14,7 +14,7 @@ brew install ffmpeg python
 cd cartoon
 python3 -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
-python3 render.py            # -> out/film.mp4 + out/film.srt
+python3 render.py --film moonfish   # -> out/moonfish.mp4 + out/moonfish.srt
 ```
 
 ### Voices (natural, free): Kokoro
@@ -48,25 +48,43 @@ If Kokoro is not installed, the pipeline falls back to the macOS `say` voices
 ## Useful commands
 
 ```bash
-python3 render.py --stills 24            # contact sheet of 24 frames -> out/contact_sheet.png
-python3 render.py --still 130            # one frame at 130 s
-python3 render.py --from 95 --to 160     # render only part of the film
-python3 timeline.py                      # generate speech, print scene timings
+python3 render.py --film rome --stills 24          # contact sheet -> out/rome_contact_sheet.png
+python3 render.py --film rome --still 130          # one frame at 130 s
+python3 render.py --film rome --from 95 --to 160   # render only part of the film
+python3 timeline.py --film rome                    # generate speech, print scene timings
 ```
+
+## Films
+
+| Folder | Film |
+|--------|------|
+| `films/moonfish/` | 1. Whiskers and the Moon Fish |
+| `films/rome/` | The cats travel to Rome |
+| `films/montblanc/` | The cats travel to Mont Blanc |
+| `films/paris/` | The cats travel to Paris |
 
 ## How it works
 
+Shared engine (root folder):
+
 | File | Role |
 |------|------|
-| `story.py` | Script, cast and voices. Spoken lines (`Say`) and weighted silent action moments (`Act`), each with optional id and sound effects. |
+| `common.py` | Film format (355 s, 1280x720, 24 fps), `Say`/`Act` script entries, and the cast's voices (`CAST`), which stay the same in every film. |
+| `film.py` | Selects the film being rendered (`--film name`). |
 | `timeline.py` | Generates speech (cached in `build/voices`), then stretches the action moments by weight so the total is exactly 355 s. Mouth tracks from speech volume; `.srt` export. |
-| `draw.py` | Canvas (2x supersampled), cats, Pip, frogs, butterfly, moon, trees, Moon Fish reflection, subtitles. |
-| `scenes.py` | One function per scene: title, morning, legend, garden, meadow, pond, realize, home. Animation is keyed to script event ids, so it stays in sync whatever the speech length. |
-| `audio.py` | Procedural music per scene mood, ducked under speech; synthesised meow, splash, clink, whoosh, ribbit and purr; final mix. |
+| `draw.py` | Canvas (2x supersampled), cats, Pip, frogs, butterfly, moon, trees, subtitles. |
+| `audio.py` | Procedural music moods ducked under speech; synthesised meow, splash, clink, whoosh, ribbit, purr; final mix. |
 | `render.py` | Renders frame chunks in parallel straight into ffmpeg, joins them, muxes audio and checks the length is exactly 355 s. |
 
-To make a new film, write a new script in `story.py` (or copy it) and add scene functions.
-The timing rule takes care of the exact 5:55 length.
+Each film folder has:
+
+| File | Role |
+|------|------|
+| `story.py` | Title, scene list and script. Can add new characters (`CAST`), music moods (`MUSIC`, `MOODS`, `MUSIC_CUES`) and sound effects (`EXTRA_SFX`). |
+| `scenes.py` | One function per scene (`SCENE_FUNCS`). Animation is keyed to script event ids, so it stays in sync whatever the speech length. |
+
+To make a new film, copy a film folder, rewrite `story.py` and the scenes, and render with
+`--film <folder>`. The timing rule takes care of the exact 5:55 length.
 
 ## Next steps
 
