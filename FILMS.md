@@ -18,10 +18,10 @@ again. When a new film is finished, tick it here and fill in its title and folde
 - [x] **Venice**: *Whiskers and the Singing Glass* (`films/venice`, `catcute/Venice/`)
 - [x] **Norway**: *Whiskers and the Dancing Lights* (`films/norway`, `catcute/Norway/`)
 - [x] **Athens**: *Whiskers and the Owl of Athens* (`films/athens`, `catcute/Athens/`)
+- [x] **Santorini**: *Whiskers and the Missing Sun* (`films/santorini`, `catcute/Santorini/`)
 
 ## Ideas (not made yet)
 
-- [ ] **Santorini**: white houses with blue domes, sunsets, donkeys on the steps
 - [ ] **Prague**: Charles Bridge, astronomical clock, castle, puppets
 - [ ] **Vienna**: palaces, waltz music, horse carriages, Sachertorte, Prater Ferris wheel
 - [ ] **Berlin**: Brandenburg Gate, TV tower, painted Wall, pretzels
