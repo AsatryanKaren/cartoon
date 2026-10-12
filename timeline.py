@@ -14,7 +14,7 @@ from dataclasses import dataclass
 
 import numpy as np
 
-import story
+import film as story
 
 SR = 48000
 LINE_PAUSE = 0.35            # breath after each spoken line
@@ -96,7 +96,7 @@ def speak(who, text, backend, premium=False):
     os.makedirs(CACHE, exist_ok=True)
     out = os.path.join(CACHE, f"{who}_{h}.wav")
     if not os.path.exists(out):
-        raw = out + (".aiff" if backend == "say" else ".raw.wav")
+        raw = out + f".{os.getpid()}" + (".aiff" if backend == "say" else ".raw.wav")
         post = []
         if backend == "kokoro":
             global _kokoro
@@ -115,8 +115,10 @@ def speak(who, text, backend, premium=False):
         else:
             subprocess.run(["espeak-ng", "-v", v.espeak, "-p", str(v.pitch), "-s", str(v.speed),
                             "-w", raw, text], check=True)
+        tmp = out + f".{os.getpid()}.tmp.wav"
         subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", raw, *post, "-ac", "1", "-ar", str(SR),
-                        "-sample_fmt", "s16", out], check=True)
+                        "-sample_fmt", "s16", tmp], check=True)
+        os.replace(tmp, out)
         os.remove(raw)
     return trim_silence(read_wav(out))
 
@@ -275,7 +277,9 @@ if __name__ == "__main__":
     p.add_argument("--tts", default="auto", choices=["auto", "kokoro", "say", "espeak"])
     p.add_argument("--premium", action="store_true")
     p.add_argument("--list-voices", action="store_true")
+    p.add_argument("--film", default="moonfish")
     a = p.parse_args()
+    story.load(a.film)
     if a.list_voices:
         print("\n".join(installed_mac_voices()))
         raise SystemExit

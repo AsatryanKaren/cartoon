@@ -8,7 +8,7 @@ import wave
 
 import numpy as np
 
-import story
+import film as story
 from timeline import SR
 
 TAU = 2 * np.pi
@@ -72,8 +72,12 @@ def tone(freq, dur, harmonics=((1, 1.0),), decay=0.0, a=0.01, r=0.05):
     return x * env_adsr(n, a, r, decay)
 
 
+def mood_table():
+    return {**MOODS, **story.MOODS}
+
+
 def music_section(dur, mood, seed):
-    m = MOODS[mood]
+    m = mood_table().get(mood, MOODS["garden"])
     rng = np.random.default_rng(seed)
     out = np.zeros(int(dur * SR) + SR * 3, np.float32)
     beat = 60.0 / m["bpm"]
@@ -118,9 +122,9 @@ def music_section(dur, mood, seed):
 
 def music(tl):
     """Whole-film music track: one section per scene, crossfaded."""
-    sections = [(tl.scenes[s][0], s) for s in story.SCENES]
-    sections.append((tl.t("r_laugh"), "laugh"))
-    sections.append((tl.t("r_end", 0.3), "realize"))
+    sections = [(tl.scenes[s][0], story.MUSIC.get(s, s)) for s in story.SCENES]
+    for event_id, frac, mood in story.MUSIC_CUES:
+        sections.append((tl.t(event_id, frac), mood))
     sections.sort()
     track = np.zeros(N, np.float32)
     fade = 0.8
@@ -228,9 +232,12 @@ SFX_GAIN = {"meow": 0.7, "splash": 0.9, "clink": 0.5, "whoosh": 0.45, "ribbit": 
 def effects(tl):
     track = np.zeros(N, np.float32)
     rng = np.random.default_rng(11)
+    table = {k: (fn, SFX_GAIN[k]) for k, fn in SFX.items()}
+    table.update(story.EXTRA_SFX)
     for e in tl.events:
         for name, frac in e.sfx or []:
-            place(track, e.start + e.dur * frac, SFX[name](rng), SFX_GAIN[name])
+            fn, gain = table[name]
+            place(track, e.start + e.dur * frac, fn(rng), gain)
     return track
 
 

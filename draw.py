@@ -12,7 +12,7 @@ from functools import lru_cache
 import numpy as np
 from PIL import Image, ImageDraw, ImageFont
 
-from story import WIDTH as W, HEIGHT as H
+from common import WIDTH as W, HEIGHT as H
 
 SS = 2
 OUT = (48, 34, 40)

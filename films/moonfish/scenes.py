@@ -658,3 +658,5 @@ SCENE_FUNCS = {"title": title, "morning": morning, "legend": legend, "garden": g
 
 # scene starts that continue the previous shot (no fade through black)
 CONTINUOUS = {"legend", "realize"}
+# extra fades through black inside a scene, at the start of these events
+EXTRA_CUTS = ["h_sill"]
