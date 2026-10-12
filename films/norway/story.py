@@ -54,7 +54,7 @@ MOODS = {
 }
 MUSIC = {"title": "n_title", "van": "n_street", "plane": "n_fly", "harbour": "n_harbour", "fjord": "n_viking",
          "forest": "n_forest", "hill": "n_wait", "aurora": "n_aurora", "home": "n_home"}
-MUSIC_CUES = [("v_sneak", 0.0, "n_sneak"), ("pl_narr", 0.0, "n_fly"), ("hb_ten", 0.0, "n_waffle"),
+MUSIC_CUES = [("v_sneak", 0.0, "n_sneak"), ("hb_ten", 0.0, "n_waffle"),
               ("hb_end", 0.0, "n_harbour"), ("fo_troll", 0.0, "n_troll"), ("fo_magnus", 0.0, "n_moose"),
               ("hi_waffles", 0.0, "n_hope")]
 

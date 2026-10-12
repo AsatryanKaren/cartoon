@@ -145,7 +145,7 @@ def crew(c, tl, t, x, y, s=1.0, face=1, fly=0.0, who=("whiskers", "luna", "pip")
     """The friends sitting on the flying cushion. (x, y) = cushion bottom centre.
 
     eyes / look: per-character overrides, e.g. eyes={"whiskers": "wide"}.
-    extra: per-character dict of other kat() keywords."""
+    extra: per-character dict of other kat() keywords (also pose=..., dy= vertical offset)."""
     eyes, look, extra = eyes or {}, look or {}, extra or {}
     bob = math.sin(t * 2.6) * 6 * fly
     if fly > 0.01:
@@ -165,7 +165,8 @@ def crew(c, tl, t, x, y, s=1.0, face=1, fly=0.0, who=("whiskers", "luna", "pip")
             kw["eyes"] = eyes[w_]
         if w_ in look:
             kw["look"] = look[w_]
-        kat(c, tl, t, w_, x + face * spots[w_] * s, top, sc, face, "sit", **kw)
+        pose = kw.pop("pose", "sit")
+        kat(c, tl, t, w_, x + face * spots[w_] * s, top + kw.pop("dy", 0) * s, sc, face, pose, **kw)
 
 
 # ============================================================================ helpers

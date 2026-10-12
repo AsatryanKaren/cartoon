@@ -161,11 +161,17 @@ def beard(c, x, y, s, face, pose, head_dy=0.0, col=(252, 250, 244), t=0.0, drip=
     hx, hy = _head_pos(pose, head_dy)
     c.push(x, y, s, flip=face < 0)
     wob = math.sin(t * 3) * 1.5
-    pts = [(hx - 4, hy + 18), (hx + 30, hy + 16), (hx + 26 + wob, hy + 34 * size),
-           (hx + 18 + wob, hy + 48 * size), (hx + 10, hy + 36 * size), (hx + 2, hy + 30 * size)]
-    c.poly(pts, col, w=2)
-    c.line([(hx + 14, hy + 26), (hx + 16 + wob, hy + 40 * size)], mix(col, (0, 0, 0), 0.12), 1.5, cap=False)
+    blobs = [(hx + 2, hy + 24, 10), (hx + 26, hy + 24, 10), (hx + 14, hy + 30, 13),
+             (hx + 8, hy + 30 + 12 * size, 10 * size), (hx + 20 + wob, hy + 30 + 14 * size, 10 * size),
+             (hx + 14 + wob, hy + 30 + 26 * size, 8 * size)]
+    for bx, by, r in blobs:
+        c.circle(bx, by, r, col, w=2.2)
+    for bx, by, r in blobs:
+        c.circle(bx, by, r - 1.5, col, ol=None)
+    c.arc(hx + 14, hy + 34, 6, 4, 20, 160, mix(col, (0, 0, 0), 0.25), 1.5)
     if drip:
+        for cx, cy, r in ((hx - 4, hy + 14, 9 * size), (hx + 34, hy + 12, 8 * size), (hx + 6, hy - 18, 6)):
+            c.circle(cx, cy, r, col, w=1.5)
         k = (t * 0.8) % 1.0
         c.ellipse(hx + 18 + wob, hy + 50 * size + k * 30, 3, 4, col, w=1.5)
         c.ellipse(hx + 26, hy + 14, 4, 3, HONEY_L, ol=None)   # a blob of honey on the nose
@@ -179,7 +185,7 @@ def street_cat(c, x, y, k, s=1.0, face=1, pose="sit", t=0.0, walk=0.0, eyes="ope
 
 # =================================================================== airship
 
-def airship(c, x, y, s=1.0, t=0.0, part="all", face=1, rope=0.0, lit=0.0):
+def airship(c, x, y, s=1.0, t=0.0, part="all", face=1, rope=0.0, lit=0.0, jars=True):
     """Silver honey airship. Origin at the envelope's centre. part: back | front | all.
 
     The gondola (an open deck with a rail) hangs below at about y=+100; things placed on
@@ -212,8 +218,9 @@ def airship(c, x, y, s=1.0, t=0.0, part="all", face=1, rope=0.0, lit=0.0):
             c.circle(pts[-1][0], pts[-1][1], 5, (180, 150, 100), w=1.5)
     if part in ("front", "all"):
         # honey jars on the deck edge and the front rail
-        for k, jx in enumerate((-70, -40, 40, 66)):
-            honey_jar(c, jx, 118, 0.55)
+        if jars:
+            for k, jx in enumerate((-82, 76)):
+                honey_jar(c, jx, 118, 0.55)
         c.rect(-96, 118, 96, 150, (196, 128, 70), w=3, r=5)
         for k in range(7):
             c.line([(-80 + k * 26, 122), (-80 + k * 26, 146)], (150, 92, 50), 2, cap=False)
@@ -459,13 +466,24 @@ def temple_far(c, x, base, w, h, col, shade, ol=None, lw=1.5, n=6):
 # ================================================================ the Plaka
 
 def bougainvillea(c, x, y, rx, ry, seed=0, col=BOUG, col_l=BOUG_L, leaf=(70, 130, 70), ol=OUT):
+    """A cloud of bougainvillea: lumpy green leaves covered in magenta flowers."""
     rng = np.random.default_rng(seed)
-    c.ellipse(x, y, rx, ry, leaf, ol=ol, w=2)
-    for _ in range(int(rx * ry / 30)):
+    lumps = []
+    for _ in range(max(4, int((rx + ry) / 18))):
         a = rng.uniform(0, math.tau)
-        r = math.sqrt(rng.uniform(0, 1))
-        px, py = x + math.cos(a) * rx * r * 0.95, y + math.sin(a) * ry * r * 0.95
-        c.circle(px, py, rng.uniform(3, 5.5), col if rng.random() < 0.6 else col_l, ol=None)
+        r = math.sqrt(rng.uniform(0, 0.75))
+        rr = rng.uniform(0.35, 0.55) * min(rx, ry) + 6
+        lumps.append((x + math.cos(a) * rx * r, y + math.sin(a) * ry * r, rr))
+    for lx, ly, rr in lumps:
+        c.circle(lx, ly, rr, leaf, ol=ol, w=2)
+    for lx, ly, rr in lumps:
+        c.circle(lx, ly, rr - 1, leaf, ol=None)
+    for lx, ly, rr in lumps:
+        for _ in range(int(rr * rr / 22)):
+            a = rng.uniform(0, math.tau)
+            d = math.sqrt(rng.uniform(0, 1)) * rr * 0.9
+            c.circle(lx + math.cos(a) * d, ly + math.sin(a) * d, rng.uniform(2.8, 5), col if rng.random() < 0.6
+                     else col_l, ol=None)
 
 
 def house(c, x0, x1, base, h, wall, rng, door=True, roof="flat", shutter=GBLUE, balcony=False, boug=False,

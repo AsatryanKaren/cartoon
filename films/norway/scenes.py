@@ -1027,7 +1027,7 @@ def forest(tl, t):
                        eyes="happy" if T("fo_magnus", 0.2) <= t < T("fo_magnus", 0.5) else "open")
             c.tint = ((40, 40, 110), 0.18)
         else:
-            keys = [(ride0 + 1.6, MX1), (s1 + 0.5, 1700)]
+            keys = [(ride0 + 1.6, MX1), (s1 + 2.5, 1700)]
             mx = actor(c, tl, t, "magnus", keys, GROUND, 0.8, 1)
     # --- the cats + Tuva
     if t < ride0:
@@ -1059,7 +1059,7 @@ def forest(tl, t):
               wing=1.0 if T("fo_troll", 0.4) <= t < T("fo_reveal", 0.3) else 0.0)
     else:
         # hop up onto Magnus' back, then ride away
-        mxs = smooth(t, [(ride0 + 1.6, MX1), (s1 + 0.5, 1700)])
+        mxs = smooth(t, [(ride0 + 1.6, MX1), (s1 + 2.5, 1700)])
         bx, by = mxs + 10 * 0.8, GROUND + (-170 - 40 - 66) * 0.8
         for k, (who, x0, dx, dl) in enumerate((("whiskers", 420, -40, 0.0), ("luna", 560, 30, 0.25),
                                                 ("tuva", 680, 90, 0.5))):
@@ -1134,7 +1134,7 @@ def hill(tl, t):
     # Magnus lying down, Tuva asleep on his back
     magnus(c, tl, t, 960, HILL_Y + 6, 0.62, -1, lie=1.0, head_up=1.0 if t >= T("hi_change") else 0.0,
            eyes="closed" if T("hi_snuggle", 0.3) <= t < T("hi_change") else "open")
-    tuva(c, tl, t, 975, HILL_Y - 112, 1.1, -1, eyes="closed" if T("hi_snuggle", 0.2) <= t < T("hi_change", 0.6)
+    tuva(c, tl, t, 990, HILL_Y - 76, 1.1, -1, eyes="closed" if T("hi_snuggle", 0.2) <= t < T("hi_change", 0.6)
          else ("wide" if look_up else "open"))
     # the cats
     lean = ease(tl.prog("hi_snuggle", t, 0.05, 0.3)) * (1 - ease(tl.prog("hi_part", t, 0.0, 0.3)))
@@ -1220,14 +1220,14 @@ def aurora(tl, t):
     # reindeer crossing the far ridge
     if T("au_reindeer") - 0.5 <= t:
         for k in range(5):
-            u = (t - T("au_reindeer") + 0.5) * 34 - k * 70
+            u = (t - T("au_reindeer") + 0.5) * 55 - k * 70
             x = 1360 - u
             if 800 < x < W + 80:
                 P.reindeer(c, x, float(np.interp(x, [760, 960, 1100, 1300], [590, 556, 546, 552])) + 6, 0.8 - 0.08 * (k % 2), -1, walk=u / 14,
                            col=(18, 24, 50))
     look = (0.5, -1)
     magnus(c, tl, t, 640, 626, 0.5, 1, lie=1.0, head_up=1.0, eyes="open")
-    tuva(c, tl, t, 650, 545, 0.95, 1, eyes="wide" if t < T("au_hold") else "happy",
+    tuva(c, tl, t, 650, 562, 0.95, 1, eyes="wide" if t < T("au_hold") else "happy",
          wing=1.0 if tl.talking("tuva", t) else 0.0)
     kat(c, tl, t, "luna", 430, 612, 0.78, 1, "sit", look=look, eyes="wide" if tl.talking("luna", t) else "open")
     kat(c, tl, t, "whiskers", 340, 618, 0.8, 1, "sit", look=look,
