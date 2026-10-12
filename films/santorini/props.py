@@ -314,6 +314,23 @@ def cactus(c, x, y, s=1.0):
 
 # ================================================================ pelican
 
+def _riders(c, riders, bx0, by0, L, t, pouch_pts):
+    """Heads (and paws) of the passengers peeking out of the pouch between the open bills."""
+    n = len(riders)
+    order = sorted(range(n), key=lambda k: riders[k][0] == "pip")
+    for k in order:
+        who, pal = riders[k]
+        px = bx0 + 56 + (L - 60) * k / max(1, n - 1) if n > 1 else bx0 + 80
+        py = by0 - 6 + 2 * math.sin(t * 3 + k)
+        if who == "pip":
+            D.mouse(c, px - 4, py + 26, 0.8, 1, t, eyes="open", proud=True)
+        else:
+            D.cat(c, px - 30 * 0.6, py + 8, pal, 0.6, 1, "swim", t=t, seed=k * 1.3,
+                  mouth=(pal or {}).get("_mouth", 0.0), eyes=(pal or {}).get("_eyes", "open"))
+    # lower bill lip across the front
+    c.poly(pouch_pts[:8] + [(bx0 + (L - 6) * 0.7, by0 + 26), (bx0, by0 + 22)], PEL_POUCH, ol=None)
+
+
 PEL_W = (252, 250, 244)
 PEL_SH = (222, 220, 222)
 PEL_BEAK = (246, 190, 90)
@@ -351,9 +368,9 @@ def pelican(c, x, y, s=1.0, face=1, t=0.0, beak=0.0, eyes="open", pouch=0.0, rid
     c.line(nk, PEL_W, 26)
     hx, hy = 34, -182
     # pouch (behind the lower bill)
-    open_a = beak * 0.55
+    open_a = max(beak * 0.55, 0.72 if riders else 0.0)
     bx0, by0 = hx + 14, hy + 4
-    L = 108
+    L = 120 if riders else 108
     tip_up = (bx0 + math.cos(-open_a) * L, by0 + math.sin(-open_a) * L)
     low_tip = (bx0 + L * 0.96, by0 + 10)
     bulge = 22 + 46 * pouch
@@ -367,16 +384,7 @@ def pelican(c, x, y, s=1.0, face=1, t=0.0, beak=0.0, eyes="open", pouch=0.0, rid
         c.arc(bx0 + 40 + 18 * k, by0 + 12 + bulge * 0.5, 14, 6, 200, 340, mix(PEL_POUCH, OUT, 0.3), 1.5)
     # riders peeking out of the pouch (heads and paws over the lower bill)
     if riders:
-        n = len(riders)
-        for k, (who, pal) in enumerate(riders):
-            px = bx0 + 24 + 64 * (k + 0.5) / n
-            py = by0 + 14
-            if who == "pip":
-                D.mouse(c, px - 6, py + 12, 0.8, 1, t, eyes="open")
-            else:
-                D.cat(c, px - 30 * 0.42, py + 6, pal, 0.42, 1, "swim", t=t, seed=k * 1.3)
-        # lower bill lip across the front
-        c.poly(pouch_pts[:6] + [(bx0 + (L - 6) * 0.5, by0 + 22), (bx0, by0 + 16)], PEL_POUCH, ol=None)
+        _riders(c, riders, bx0, by0, L, t, pouch_pts)
     # lower bill
     c.line([(bx0, by0 + 8), low_tip], mix(PEL_BEAK, OUT, 0.15), 6)
     # head
@@ -424,11 +432,11 @@ def pelican_fly(c, x, y, s=1.0, face=1, t=0.0, beak=0.0, riders=(), flap_speed=5
     hx, hy = 70, -22
     c.ellipse(52, -12, 26, 20, PEL_W, ol=None)
     bx0, by0 = hx + 14, hy + 4
-    L = 112
-    open_a = beak * 0.4
+    L = 124 if riders else 112
+    open_a = max(beak * 0.4, 0.72 if riders else 0.0)
     tip_up = (bx0 + math.cos(-open_a) * L, by0 + math.sin(-open_a) * L)
     low_tip = (bx0 + L * 0.96, by0 + 10)
-    bulge = 50 if riders else 24
+    bulge = 62 if riders else 24
     pouch_pts = [(bx0, by0 + 6)]
     for k in range(1, 10):
         u = k / 10
@@ -436,16 +444,7 @@ def pelican_fly(c, x, y, s=1.0, face=1, t=0.0, beak=0.0, riders=(), flap_speed=5
     pouch_pts.append(low_tip)
     c.poly(pouch_pts + [(bx0 + L * 0.5, by0 + 8)], PEL_POUCH, w=2.5)
     if riders:
-        n = len(riders)
-        for k, (who, pal) in enumerate(riders):
-            px = bx0 + 24 + 64 * (k + 0.5) / n
-            py = by0 + 14 + 2 * math.sin(t * 3 + k)
-            if who == "pip":
-                D.mouse(c, px - 6, py + 12, 0.8, 1, t, eyes="open")
-            else:
-                D.cat(c, px - 12, py + 6, pal, 0.42, 1, "swim", t=t, seed=k * 1.3,
-                      mouth=pal.get("_mouth", 0.0), eyes=pal.get("_eyes", "open"))
-        c.poly(pouch_pts[:6] + [(bx0 + (L - 6) * 0.5, by0 + 22), (bx0, by0 + 16)], PEL_POUCH, ol=None)
+        _riders(c, riders, bx0, by0, L, t, pouch_pts)
     c.line([(bx0, by0 + 8), low_tip], mix(PEL_BEAK, OUT, 0.15), 6)
     c.ellipse(hx, hy, 26, 22, PEL_W)
     c.ellipse(hx - 4, hy - 16, 26, 12, CAP, w=2.5)
@@ -736,7 +735,7 @@ def puzzle_art(w, h, sun=False, hole=True):
     if hole:
         hole_img = Canvas(img)
         # the piece around the sun: cell (4, 1) -> x in [w*4/8, w*5/8], y in [h/5, 2h/5]  (+ tabs)
-        x0, x1, y0, y1 = w * 4 / 8, w * 5 / 8, h * 1 / 5, h * 2 / 5
+        x0, x1, y0, y1 = w * 4 / 8, w * 5 / 8, h * 0.315, h * 0.525
         x0, x1 = x0 + w * 0.0625, x1 + w * 0.0625
         dark = (90, 58, 46)
         hole_img.rect(x0, y0, x1, y1, dark, ol=None)

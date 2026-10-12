@@ -44,9 +44,9 @@ TICKS = [("tick", 0.0), ("tick", 0.333), ("tick", 0.667)]
 
 SCRIPT = [
     # ----------------------------------------------------------------- title
-    A("title", 2.2, "t_open", [("sparkle", 0.1), ("spin", 0.3)]),
+    A("title", 1.6, "t_open", [("sparkle", 0.1), ("spin", 0.3)]),
     S("narrator", "Whiskers and Luna's World. Episode one. Our Planet!", "title", "t_name"),
-    A("title", 1.6, "t_hold", [("sparkle", 0.2)]),
+    A("title", 1.2, "t_hold", [("sparkle", 0.2)]),
 
     # ------------------------------------------------------------------ sill
     A("sill", 1.4, "s_open", [("spin", 0.15)]),
@@ -135,11 +135,11 @@ SCRIPT = [
     # ------------------------------------------------------------------ quiz
     A("quiz", 0.6, "q_open", [("pop", 0.2)]),
     S("narrator", "Quiz time! Is the Earth flat like a pancake, or round like a ball?", "quiz", "q1"),
-    A("quiz", 2.9, "q1_count", TICKS),
+    A("quiz", 1.0, "q1_count", TICKS),
     S("narrator", "Round like a ball! Well done!", "quiz", "q1_ans", [("chime", 0.0)]),
     A("quiz", 0.8, "q1_end"),
     S("narrator", "Next. Is there more land, or more water on Earth?", "quiz", "q2"),
-    A("quiz", 2.9, "q2_count", TICKS),
+    A("quiz", 1.0, "q2_count", TICKS),
     S("narrator", "More water! Almost three quarters of the Earth is water.", "quiz", "q2_ans", [("chime", 0.0)]),
     A("quiz", 1.0, "q2_end"),
 
