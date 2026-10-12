@@ -81,7 +81,7 @@ def glass_bell(c, x, y, s=1.0, ang=0.0, shine=0.0, col=GLASS, dark=GLASS_D, glow
     c.poly([P(*p) for p in [(-9, 9), (-6, 9), (-8, 30), (-14, 38), (-15, 34), (-11, 26)]],
            mix(col, (255, 255, 255), 0.7), ol=None)
     c.line([P(-20, 40), P(20, 40)], dark, 2 * s, cap=False)
-    c.rect(*P(-3, -7), *P(3, 0), mix(col, (255, 255, 255), 0.3), w=1.5, r=1)
+    c.poly([P(-3, -7), P(3, -7), P(3, 0), P(-3, 0)], mix(col, (255, 255, 255), 0.3), w=1.5)
     if shine > 0.05:
         r = 9 * s * shine
         px, py = P(10, 14)

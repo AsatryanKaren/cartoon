@@ -313,7 +313,7 @@ def crate(c, x, y, s=1.0, lid=0.0, label="NORGE", lid_side=1):
         c.line([(-58, yy), (58, yy)], WOOD_D, 2, cap=False)
     c.rect(-60, -80, -48, 0, WOOD_D, w=2)
     c.rect(48, -80, 60, 0, WOOD_D, w=2)
-    c.text(0, -40, label, 18, (60, 80, 140))
+    c.text(0, -40, label, 18 * c.scale, (60, 80, 140))
     # little fish stencil
     c.ellipse(-22, -18, 10, 5, (60, 80, 140), ol=None)
     c.poly([(-12, -18), (-4, -24), (-4, -12)], (60, 80, 140), ol=None)
@@ -380,7 +380,7 @@ def fish_van(c, x, y, s=1.0, t=0.0, door=0.0, wheel=0.0, crates=True, inside=Non
         b = ox1 + dx
         c.rect(a, oy0, min(b, 92), oy1, body, w=2.5)
         if b < 92:
-            c.text((a + b) / 2, -160, "FRESH FISH", 22, (255, 255, 255), stroke=2, stroke_fill=dark)
+            c.text((a + b) / 2, -160, "FRESH FISH", 22 * c.scale, (255, 255, 255), stroke=2 * c.scale, stroke_fill=dark)
             c.push((a + b) / 2, -114, 1.2)
             fish(c, 0, 0, 1.2, 0, (255, 255, 255))
             c.pop()
@@ -390,7 +390,7 @@ def fish_van(c, x, y, s=1.0, t=0.0, door=0.0, wheel=0.0, crates=True, inside=Non
     c.line([(ox0, oy0 - 4), (96, oy0 - 4)], dark, 4, cap=False)
     # roof sign
     c.rect(-150, -252, 40, -226, (250, 250, 246), w=2.5, r=4)
-    c.text(-55, -239, "FROM NORWAY", 16, (200, 40, 50))
+    c.text(-55, -239, "FROM NORWAY", 16 * c.scale, (200, 40, 50))
     # wheels
     for wx in (-130, 130):
         c.circle(wx, -30, 32, (44, 44, 52), w=3)
@@ -427,7 +427,7 @@ def cargo_plane(c, x, y, s=1.0, t=0.0, tilt=0.0):
         px, py = R(-200 + k * 52, -18)
         c.circle(px, py, 6, (150, 190, 230), w=1.5)
     cx_, cy_ = R(-20, 28)
-    c.text(cx_, cy_, "CARGO", 18, stripe)
+    c.text(cx_, cy_, "CARGO", 18 * c.scale, stripe)
     # high wing + engines
     poly([(-60, -50), (90, -50), (110, -60), (-80, -62)], dark, w=2.5)
     for ex in (-10, 60):
@@ -535,7 +535,7 @@ def waffle_stand(c, x, y, s=1.0, t=0.0):
         c.poly([(a, -264), (a + 300 / 8, -264), (a + 300 / 8 + 4, -228), (a + 4, -228)], col, w=2)
         c.ellipse(a + 300 / 16 + 4, -228, 300 / 16, 8, col, w=2)
     c.rect(-110, -320, 110, -284, (250, 246, 230), w=2.5, r=6)
-    c.text(0, -302, "VAFLER", 26, (186, 52, 46))
+    c.text(0, -302, "VAFLER", 26 * c.scale, (186, 52, 46))
     c.rect(-160, -132, 160, -112, (226, 196, 150), w=3, r=3)      # counter
     c.pop()
 

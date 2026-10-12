@@ -71,13 +71,13 @@ A = Act
 
 SCRIPT = [
     # ---------------------------------------------------------------- title
-    A("title", 1.6, "t_open", [("bouzouki", 0.05)]),
+    A("title", 1.3, "t_open", [("bouzouki", 0.05)]),
     S("narrator", "Whiskers and the Owl of Athens.", "title", "t_name"),
-    A("title", 1.4, "t_hold", [("hoot", 0.3)]),
+    A("title", 1.0, "t_hold", [("hoot", 0.3)]),
 
     # ---------------------------------------------------------------- storm
     A("storm", 1.0, "s_open", [("rain", 0.0), ("thunder", 0.4)]),
-    S("narrator", "On a stormy night, Luna was reading her book of Greek myths.",
+    S("narrator", "One stormy night, Luna was reading Greek myths.",
       "storm", "s_narr", [("rain", 0.3)]),
     S("luna", "Long ago, Athena and Poseidon both wanted the same city.", "storm", "s_myth",
       [("page", 0.0)]),
@@ -89,7 +89,7 @@ SCRIPT = [
     A("storm", 0.9, "s_tree", [("sparkle", 0.1)]),
     S("whiskers", "Is there a myth about dinner?", "storm", "s_dinner", [("page", 0.85)]),
     A("storm", 1.0, "s_thump", [("thunder", 0.05), ("thump", 0.45)]),
-    S("sophia", "Hoo! The storm blew me here from Athens, and hurt my wing.",
+    S("sophia", "Hoo! The storm blew me all the way from Athens!",
       "storm", "s_sophia", [("rain", 0.2)]),
     S("sophia", "I'm Sophia. My family waits for me on the Parthenon at the full moon.",
       "storm", "s_home"),
@@ -131,7 +131,7 @@ SCRIPT = [
     S("sophia", "Hoo hoo hoo! He's got a big white beard!", "yogurt", "y_beard", [("hoot", 0.9)]),
     S("whiskers", "I am a great Greek thinker. And I think... more honey.", "yogurt", "y_think"),
     A("yogurt", 1.0, "y_lick", [("lick", 0.2), ("lick", 0.5)]),
-    S("luna", "The hill is right there. Which way now?", "yogurt", "y_which"),
+    S("luna", "Which way now?", "yogurt", "y_which"),
     S("whiskers", "Up. Obviously.", "yogurt", "y_up"),
     A("yogurt", 0.8, "y_go"),
 
@@ -146,8 +146,8 @@ SCRIPT = [
     A("theatre", 0.7, "th_echo2", [("echo_dont", 0.0)]),
     S("whiskers", "Hey! Echoes aren't supposed to argue!", "theatre", "th_argue"),
     A("theatre", 0.9, "th_reveal", [("meow", 0.3)]),
-    S("socrates", "I'm not an echo. I'm Socrates. And you, my friend, are lost.", "theatre", "th_lost"),
-    S("whiskers", "Lost? Us? We're... exploring.", "theatre", "th_explore"),
+    S("socrates", "I'm not an echo. I'm Socrates. And you are lost.", "theatre", "th_lost"),
+    S("whiskers", "Lost? Us? We're exploring.", "theatre", "th_explore"),
     A("theatre", 0.6, "th_end"),
 
     # ---------------------------------------------------------------- agora
@@ -162,7 +162,7 @@ SCRIPT = [
     S("sophia", "Like owls! That's why we always say: hoo? Hoo?", "agora", "ag_hoo", [("hoot", 0.75)]),
     A("agora", 0.6, "ag_think"),
     S("whiskers", "Please, Socrates, how do we get to the top?", "agora", "ag_ask"),
-    S("socrates", "Now that is a wise question. Follow the cats of Athens!", "agora", "ag_follow",
+    S("socrates", "A wise question! Follow the cats of Athens!", "agora", "ag_follow",
       [("meow", 0.95)]),
     A("agora", 1.4, "ag_cats", [("meow", 0.2), ("meow", 0.5)]),
 
@@ -175,7 +175,7 @@ SCRIPT = [
     A("acropolis", 1.4, "ac_top", [("chime", 0.2)]),
     S("sophia", "Grandma! I'm home!", "acropolis", "ac_home", [("flap", 0.6)]),
     A("acropolis", 1.2, "ac_fly", [("flap", 0.1), ("flap", 0.4), ("hoot", 0.8)]),
-    S("yaya", "Sophia! Oh, thank you, wise cats.", "acropolis", "ac_thanks"),
+    S("yaya", "Sophia! Thank you, wise cats.", "acropolis", "ac_thanks"),
     S("whiskers", "Wise? Me? I didn't know a thing. I just asked.", "acropolis", "ac_asked"),
     S("yaya", "Little cat, that is how all wisdom begins.", "acropolis", "ac_begins", [("hoot", 0.9)]),
     A("acropolis", 1.8, "ac_dance", [("bouzouki", 0.05), ("hoot", 0.4), ("hoot", 0.7)]),
@@ -188,7 +188,7 @@ SCRIPT = [
     S("whiskers", "Athens, Pip! Ask me anything. If I don't know, we'll ask together.",
       "home", "h_together"),
     A("home", 1.0, "h_owl", [("hoot", 0.3)]),
-    S("narrator", "Because nobody knows everything. The wisest words of all are: I don't know. Let's ask!",
+    S("narrator", "Because nobody knows everything. And the wisest words of all are: let's ask!",
       "home", "h_moral"),
-    A("home", 2.6, "h_end", [("hoot", 0.4)]),
+    A("home", 2.2, "h_end", [("hoot", 0.4)]),
 ]

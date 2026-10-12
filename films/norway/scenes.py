@@ -199,9 +199,9 @@ def water_glints(c, t, y0=HORIZON + 10, y1=H, n=26, seed=4, col=(120, 160, 210))
 def night_fjord(t, aurora=1.0, fg=None, clouds=None):
     """Night fjord frame: sky -> (clouds) -> aurora -> mountains -> fg layer."""
     img = night_sky().copy()
+    P.apply_aurora(img, t, RIBBONS, aurora, (0, 0, W, HORIZON), mirror=(HORIZON, H))
     if clouds is not None:
         clouds(img)
-    P.apply_aurora(img, t, RIBBONS, aurora, (0, 0, W, HORIZON), mirror=(HORIZON, H))
     img.paste(fjord_front(), (0, 0), fjord_front())
     c = Canvas(img)
     water_glints(c, t, col=mix((60, 90, 150), (120, 230, 170), clamp(aurora * 0.6)))
@@ -438,7 +438,8 @@ def plane_ground():
             x, y = rng.uniform(0, PW), rng.uniform(90, hh)
             c.line([(x, y), (x + rng.uniform(20, 60), y)], (110, 170, 220), 2, cap=False)
         for x in (900, 1300, 1500):
-            c.ellipse(x, 120, 60, 12, (110, 140, 100), w=2)
+            c.poly([(x - 70, 124), (x - 40, 104), (x - 10, 96), (x + 30, 100), (x + 70, 124)], (120, 130, 120), w=2)
+            c.poly([(x - 40, 104), (x - 10, 96), (x + 30, 100), (x + 10, 108)], (110, 150, 100), ol=None)
         x0 = 1800
         for k, x in enumerate(range(x0, PW + 300, 170)):
             h = 120 + 60 * math.sin(k * 1.7) + 30 * (k % 2)
@@ -523,7 +524,7 @@ def plane(tl, t):
     img.paste(far, (0, 0), far)
     landing = t >= T("pl_land")
     if landing:
-        gx = PW - W - 400 + (t - T("pl_land")) * 60
+        gx = PW - W - 520 + (t - T("pl_land")) * 50
     else:
         u = clamp((t - s0) / max(1e-3, T("pl_munch") - s0))
         gx = lerp(0, PW - W - 600, u ** 1.4)
@@ -583,7 +584,7 @@ def plane_hold(tl, t):
 
 HW = 2 * W + 300
 WHARF = 612
-STAND_X = 2020
+STAND_X = 2130
 CRATE_X = 520
 
 
@@ -689,7 +690,7 @@ def harbour(tl, t):
             "leap", eyes="happy")
     # positions after the pop
     walk0, walk1 = T("hb_walk", 0.1), T("hb_walk", 0.95)
-    WX2, LX2, TX2 = 1960, 1760, 2120
+    WX2, LX2, TX2 = 1850, 1680, 2210
     burn0, burn1 = T("hb_burn"), T("hb_burn", 1)
     if t >= T("hb_pop", 0.6):
         # Luna
@@ -773,3 +774,576 @@ def harbour(tl, t):
         P.waffle(c, STAND_X + 60, stand_top - 2 - k * 6, 0.9)
     c.pop()
     return finish(c, tl, t)
+
+
+# =================================================================== fjord
+
+FJ_WATER = 470
+SHIP_X, SHIP_Y, SHIP_S = 600, 586, 0.75
+CLW = 3 * W
+V_CLIFF = 110.0
+
+
+def _wrap(tile):
+    w, h = tile.size
+    out = Image.new(tile.mode, (w + W * SS, h), (0, 0, 0, 0) if tile.mode == "RGBA" else (0, 0, 0))
+    out.paste(tile, (0, 0))
+    out.paste(tile.crop((0, 0, W * SS, h)), (w, 0))
+    return out
+
+
+def fjord_far():
+    def make():
+        fw = 2 * W
+        c = Canvas(D.gradient(fw * SS, H * SS, [(0, (100, 164, 230)), (0.5, (206, 228, 248)), (1, (206, 228, 248))]),
+                   size=(fw, H))
+        for k, x in enumerate(range(0, fw + 300, 260)):
+            for dx in (0, -fw):
+                P.peak(c, x + dx, 330, 420, 200 + 50 * math.sin(k * 1.9), rock=(140, 156, 190), snow=(250, 252, 255),
+                       shade=(214, 224, 244), seed=k, ol=(110, 120, 156), cap=0.5)
+        D.cloud(c, 500, 110, 0.9)
+        D.cloud(c, 1900, 80, 0.7)
+        return _wrap(c.img)
+    return cached("fjord_far", make)
+
+
+def fjord_cliffs():
+    """The steep fjord wall (RGBA tile), with mossy tops and thin falls."""
+    def make():
+        img = Image.new("RGBA", (CLW * SS, H * SS), (0, 0, 0, 0))
+        c = Canvas(img, size=(CLW, H))
+        rng = np.random.default_rng(12)
+        x = -100
+        k = 0
+        while x < CLW + 100:
+            w = rng.uniform(380, 620)
+            top = rng.uniform(80, 200)
+            gap = rng.uniform(0, 1) < 0.25
+            if not gap:
+                pts = [(x, FJ_WATER + 4), (x + w * 0.08, top + 60), (x + w * 0.3, top + rng.uniform(-20, 20)),
+                       (x + w * 0.6, top + rng.uniform(-30, 10)), (x + w * 0.9, top + 50), (x + w, FJ_WATER + 4)]
+                for dx in (0, CLW):
+                    q = [(px - dx, py) for px, py in pts]
+                    c.poly(q, P.CLIFF, ol=(56, 62, 80), w=2.5)
+                    c.poly([q[2], q[3], q[4], q[5], (q[5][0] - w * 0.25, FJ_WATER)], P.CLIFF_D, ol=None)
+                    for j in range(8):                      # rock streaks
+                        sx = x - dx + w * rng.uniform(0.15, 0.85)
+                        c.line([(sx, top + 70 + rng.uniform(0, 60)), (sx + rng.uniform(-10, 10), FJ_WATER - 20)],
+                               (80, 88, 108), 2, cap=False)
+                    # mossy green top
+                    c.poly([q[1], q[2], q[3], q[4], (q[4][0], q[4][1] + 26), (q[3][0], q[3][1] + 34),
+                            (q[2][0], q[2][1] + 30), (q[1][0], q[1][1] + 20)], P.MOSS, ol=None)
+                    for j in range(5):
+                        P.pine(c, lerp(q[1][0], q[4][0], (j + 0.5) / 5), lerp(q[2][1], q[3][1], j / 4) + 18,
+                               rng.uniform(0.22, 0.32), snowy=False, col=(50, 100, 70), dark=(38, 80, 56))
+                    if rng.uniform() < 0.5:                 # a thin fall
+                        fx = x - dx + w * 0.5
+                        c.line([(fx, top + 30), (fx + 4, FJ_WATER)], (236, 246, 255), 4, cap=False)
+            x += w * (1.4 if gap else 0.92)
+            k += 1
+        return _wrap(img)
+    return cached("fjord_cliffs", make)
+
+
+def fjord_water_bg():
+    def make():
+        img = D.gradient(W * SS, (H - FJ_WATER) * SS, [(0, (40, 90, 150)), (1, (18, 44, 96))])
+        return img
+    return cached("fjord_water", make)
+
+
+def seven_sisters(c, x, t):
+    """Seven thin waterfalls side by side, tumbling down the cliff."""
+    if x < -300 or x > W + 300:
+        return
+    c.poly([(x - 220, FJ_WATER + 4), (x - 180, 130), (x - 60, 96), (x + 90, 104), (x + 200, 150), (x + 240, FJ_WATER + 4)],
+           P.CLIFF, ol=(56, 62, 80), w=2.5)
+    c.poly([(x - 180, 130), (x - 60, 96), (x + 90, 104), (x + 200, 150), (x + 200, 176), (x - 180, 156)], P.MOSS,
+           ol=None)
+    for k in range(7):
+        fx = x - 150 + k * 50 + 6 * math.sin(k * 2)
+        top = 140 + 10 * math.sin(k * 1.3)
+        wob = [(fx + 6 * math.sin(v * 5 + k) + v * 10, lerp(top, FJ_WATER, v)) for v in np.linspace(0, 1, 9)]
+        c.line(wob, (220, 236, 252), 9, cap=False)
+        c.line(wob, (255, 255, 255), 4, cap=False)
+        for j in range(4):                                # falling dashes
+            v = ((t * 0.9 + j / 4 + k * 0.13) % 1.0)
+            px, py = fx + 6 * math.sin(v * 5 + k) + v * 10, lerp(top, FJ_WATER, v)
+            c.line([(px, py), (px, py + 16)], (190, 214, 240), 3, cap=False)
+        c.ellipse(fx + 10, FJ_WATER + 4, 26, 8, (240, 248, 255), ol=None)
+
+
+def near_fall(c, x, t, splash=0.0):
+    """A big waterfall from an overhanging rock right above the boat."""
+    if x < -720 or x > W + 240:
+        return
+    rock = [(x - 230, -10), (x + 700, -10), (x + 700, 260), (x + 560, 240), (x + 420, 190), (x + 300, 150),
+            (x + 160, 110), (x + 90, 104), (x - 60, 98), (x - 150, 70), (x - 210, 34)]
+    c.poly(rock, (70, 76, 96), ol=(40, 44, 60), w=3)
+    c.poly([(x + 160, 110), (x + 300, 150), (x + 420, 190), (x + 560, 240), (x + 700, 260), (x + 700, 200),
+            (x + 300, 100)], (56, 62, 80), ol=None)
+    for k in range(6):
+        c.line([(x + 60 + k * 90, 20 + k * 10), (x + 80 + k * 90, 100 + k * 26)], (58, 64, 82), 3, cap=False)
+    c.poly([(x - 230, -10), (x + 700, -10), (x + 700, 14), (x - 220, 22)], P.MOSS, ol=None)
+    for w_, col in ((70, (210, 230, 250)), (50, (240, 248, 255)), (16, (255, 255, 255))):
+        pts = [(x + 10 + 8 * math.sin(v * 4 + t * 3), lerp(90, SHIP_Y + 10, v)) for v in np.linspace(0, 1, 10)]
+        c.line(pts, col, w_ * (1 + 0.4 * np.random.default_rng(int(t * 24) % 1000).uniform()), cap=False)
+    rng = np.random.default_rng(int(t * 12))
+    for k in range(18):
+        a = rng.uniform(math.pi * 1.05, math.pi * 1.95)
+        r = rng.uniform(20, 90)
+        c.circle(x + 10 + math.cos(a) * r, SHIP_Y - 60 + math.sin(a) * r * 0.5, rng.uniform(5, 12),
+                 (240, 248, 255), ol=None)
+
+
+def fjord(tl, t):
+    T = tl.t
+    s0, s1 = tl.scenes["fjord"]
+    dt = t - s0
+    fx = int((dt * 18) % (2 * W))
+    img = fjord_far().crop((fx * SS, 0, (fx + W) * SS, H * SS))
+    img.paste(fjord_water_bg(), (0, FJ_WATER * SS))
+    cl = fjord_cliffs()
+    cx = int((dt * V_CLIFF) % CLW)
+    crop = cl.crop((cx * SS, 0, (cx + W) * SS, H * SS))
+    img.paste(crop, (0, 0), crop)
+    c = Canvas(img)
+    # sisters on the far wall, at the right moment
+    sis_x = 900 - V_CLIFF * (t - T("fj_sisters", 0.4))
+    seven_sisters(c, sis_x, t)
+    # water ripples
+    for k in range(28):
+        y = FJ_WATER + 14 + (k * 37) % (H - FJ_WATER - 10)
+        x = (k * 211 - dt * (60 + 4 * (y - FJ_WATER))) % (W + 200) - 100
+        c.line([(x, y), (x + 30 + (y - FJ_WATER) * 0.3, y)], (90, 140, 200), 2, cap=False)
+    # reflections of the cliffs in the water: soft dark band
+    c.rect(0, FJ_WATER, W, FJ_WATER + 8, (30, 60, 110), ol=None)
+    # --- the longship
+    bob = 4 * math.sin(t * 1.4)
+    fall_x = W + 400 - 300 * (t - T("fj_splash", 0.0)) if t >= T("fj_splash") - 2 else W + 900
+    wet_t = T("fj_splash", 0.58)
+    wet = clamp((t - wet_t) / 0.4) * (1 - 0.6 * clamp((t - T("fj_end")) / 3)) if t >= wet_t else 0.0
+    lduck = abs(fall_x - (SHIP_X + 140 * SHIP_S)) < 160
+
+    def deck(cc):
+        # Whiskers midship; Luna near the prow
+        if t < wet_t - 0.3:
+            weyes = "closed" if T("fj_sisters", 0.6) <= t else ("wide" if tl.talking("luna", t) else "open")
+            kat(cc, tl, t, "whiskers", -150, -40, 1.0, 1, "sit", eyes=weyes, look=(0.6, -0.8))
+        else:
+            grumpy = t < T("fj_end", 0.6)
+            kat(cc, tl, t, "whiskers", -150, -40, 1.0, 1, "sit", wet=wet, eyes="open" if grumpy else "happy",
+                look=(0, 0.5) if grumpy else (1, 0), head_dy=4 if grumpy else 0)
+        if lduck and t < T("fj_wet"):
+            kat(cc, tl, t, "luna", 150, -30, 1.0, 1, "crouch", eyes="wide")
+        else:
+            laugh = T("fj_wet", 0.6) <= t < T("fj_end", 0.6)
+            kat(cc, tl, t, "luna", 150, -40, 1.0, 1 if not laugh else -1, "sit",
+                eyes="happy" if laugh else "wide" if tl.talking("luna", t) else "open",
+                look=(1, -1) if T("fj_cliffs") <= t < T("fj_sisters", 1) else (1, 0),
+                mouth=laughing(t) * 0.6 if laugh else tl.mouth("luna", t))
+
+    def front(cc):
+        tv = T("fj_splash", 0.3) <= t < T("fj_splash", 0.75)
+        hop = arc(tl.prog("fj_splash", t, 0.3, 0.75), 120) if tv else 0
+        tuva(cc, tl, t, 392, -262 + hop, 1.6, 1, fly=1.0 if tv else 0.0,
+             wing=0.8 if tl.talking("tuva", t) else 0.0, eyes="happy" if T("fj_wet") <= t else "open")
+
+    P.longship(c, SHIP_X, SHIP_Y + bob, SHIP_S, t, oar=t * 2.4, deck=deck, front=front)
+    # wake + waterline foam over the hull bottom
+    for k in range(12):
+        x = SHIP_X - 240 * SHIP_S + 40 * k - (dt * 90) % 40
+        c.ellipse(x, SHIP_Y + 6 + bob * 0.3, 26, 6, (60, 110, 170), ol=None)
+    for k in range(6):
+        u = ((dt * 0.8) + k / 6) % 1.0
+        c.ellipse(SHIP_X - 230 - 260 * u, SHIP_Y + 4, 30 + 30 * u, 5, mix((240, 248, 255), (60, 110, 170), u),
+                  ol=None)
+    near_fall(c, fall_x, t)
+    # dusk falls as they reach the end of the fjord
+    kd = ease(tl.prog("fj_end", t, 0.2, 1.0))
+    if kd > 0:
+        P.overlay(c, (60, 50, 110), 0.35 * kd)
+        P.snowfall(c, t, n=int(60 * kd), seed=9, speed=40, drift=-30, size=(1.2, 3))
+    return finish(c, tl, t)
+
+
+# ================================================================== forest
+
+GROUND = 640
+
+
+def forest_bg():
+    def make():
+        c = Canvas(D.gradient(W * SS, H * SS, [(0, (40, 44, 104)), (0.42, (120, 96, 160)), (0.62, (226, 156, 160)),
+                                               (1, (226, 156, 160))]))
+        D.stars(c, 31, 30, W, 200)
+        P.norway_mountain(c, 300, 470, 900, 200, (150, 140, 196), snow=(230, 226, 250), seed=1, snowline=0.6, ol=None)
+        P.norway_mountain(c, 1050, 470, 800, 240, (140, 128, 186), snow=(230, 226, 250), seed=2, snowline=0.6, ol=None)
+        rng = np.random.default_rng(4)
+        c.rect(0, 460, W, H, (196, 196, 232), ol=None)
+        for k in range(30):
+            P.pine(c, rng.uniform(-20, W + 20), rng.uniform(480, 520), rng.uniform(0.45, 0.65),
+                   col=(110, 112, 160), dark=(94, 96, 146))
+        c.poly([(0, 560)] + [(x, 556 + 12 * math.sin(x / 120)) for x in range(0, W + 40, 40)] + [(W, H), (0, H)],
+               (214, 216, 244), ol=None)
+        for k in range(16):
+            P.pine(c, rng.uniform(-20, W + 20), rng.uniform(570, 600), rng.uniform(0.8, 1.1),
+                   col=(54, 80, 104), dark=(42, 64, 90))
+        c.poly([(0, 620)] + [(x, 616 + 10 * math.sin(x / 90 + 2)) for x in range(0, W + 40, 40)] + [(W, H), (0, H)],
+               (232, 234, 252), ol=None)
+        for k in range(10):
+            x, y = rng.uniform(0, W), rng.uniform(660, 710)
+            c.ellipse(x, y, rng.uniform(40, 90), 5, (206, 210, 240), ol=None)
+        return c.img
+    return cached("forest_bg", make)
+
+
+def forest_front(c):
+    for x, y, s in ((1110, 700, 1.6), (1250, 720, 1.9), (-30, 730, 1.7)):
+        P.pine(c, x, y, s, col=(34, 56, 80), dark=(26, 44, 66))
+
+
+def forest(tl, t):
+    T = tl.t
+    s0, s1 = tl.scenes["forest"]
+    c = Canvas(forest_bg().copy())
+    c.tint = ((40, 40, 110), 0.18)
+    scared = T("fo_shadow", 0.3) <= t < T("fo_magnus", 0.3)
+    ride0 = T("fo_ride")
+    MX0, MX1 = 1070, 880
+    # --- Magnus
+    if t >= T("fo_shadow"):
+        if t < T("fo_reveal", 0.2):
+            sway = 10 * math.sin(t * 1.2)
+            P.moose(c, MX0 + sway, GROUND - 20, 0.8, -1, t, shadow=(26, 28, 58), eyeglow=True)
+            mx = MX0
+        elif t < ride0:
+            u = tl.prog("fo_reveal", t, 0.2, 0.8)
+            keys = [(T("fo_reveal", 0.2), MX0), (T("fo_reveal", 0.8), MX1)]
+            dark = 0.85 * (1 - ease(u))
+            c.tint = ((26, 28, 58), max(0.18, dark))
+            mx = actor(c, tl, t, "magnus", keys, GROUND - 20 + 20 * ease(u), 0.8, -1,
+                       head_up=-0.6 if T("fo_magnus") <= t < ride0 else 0.0,
+                       eyes="happy" if T("fo_magnus", 0.2) <= t < T("fo_magnus", 0.5) else "open")
+            c.tint = ((40, 40, 110), 0.18)
+        else:
+            keys = [(ride0 + 1.6, MX1), (s1 + 0.5, 1700)]
+            mx = actor(c, tl, t, "magnus", keys, GROUND, 0.8, 1)
+    # --- the cats + Tuva
+    if t < ride0:
+        lkeys = [(s0, -120), (T("fo_narr", 0.9), 560)]
+        wkeys = [(s0 + 0.6, -220), (T("fo_narr", 1.0), 430)]
+        tkeys = [(s0 + 0.2, -60), (T("fo_narr", 0.85), 680)]
+        if t < T("fo_troll", 0.2):
+            if scared:
+                kat(c, tl, t, "whiskers", 430 + 2 * math.sin(t * 40), GROUND, 1.0, 1, "crouch", eyes="wide",
+                    tail=math.sin(t * 20))
+            else:
+                actor(c, tl, t, "whiskers", wkeys, GROUND)
+        elif t < T("fo_troll", 0.5):
+            u = tl.prog("fo_troll", t, 0.2, 0.5)
+            kat(c, tl, t, "whiskers", lerp(430, 300, u), GROUND + arc(u, 160), 1.0, -1, "leap", eyes="wide")
+        elif t < T("fo_magnus", 0.3):
+            kat(c, tl, t, "whiskers", 300 + 2 * math.sin(t * 40), GROUND, 1.0, 1, "crouch", eyes="wide",
+                look=(1, 0), tail=math.sin(t * 20))
+        else:
+            kat(c, tl, t, "whiskers", 300 if t < T("fo_tonight") else smooth(t, [(T("fo_tonight"), 300), (T("fo_tonight", 1), 420)]),
+                GROUND, 1.0, 1, "sit" if t < T("fo_tonight") else "stand",
+                eyes="happy" if T("fo_magnus", 0.5) <= t < T("fo_tonight") else "open", look=(1, -0.6))
+        lface = 1
+        actor(c, tl, t, "luna", lkeys, GROUND, 1.0, lface, eyes="wide" if scared else "open",
+              look=(1, -0.6) if t >= T("fo_reveal") else (1, 0))
+        teyes = "happy" if T("fo_troll", 0.4) <= t < T("fo_reveal", 0.5) else "open"
+        actor(c, tl, t, "tuva", tkeys, GROUND, 1.3, 1, eyes=teyes,
+              mouth=laughing(t) * 0.8 if T("fo_troll", 0.4) <= t < T("fo_reveal", 0.3) else tl.mouth("tuva", t),
+              wing=1.0 if T("fo_troll", 0.4) <= t < T("fo_reveal", 0.3) else 0.0)
+    else:
+        # hop up onto Magnus' back, then ride away
+        mxs = smooth(t, [(ride0 + 1.6, MX1), (s1 + 0.5, 1700)])
+        bx, by = mxs + 10 * 0.8, GROUND + (-170 - 40 - 66) * 0.8
+        for k, (who, x0, dx, dl) in enumerate((("whiskers", 420, -40, 0.0), ("luna", 560, 30, 0.25),
+                                                ("tuva", 680, 90, 0.5))):
+            u = clamp((t - ride0 - dl) / 0.8)
+            x = lerp(x0, bx + dx, ease(u))
+            y = lerp(GROUND, by, ease(u)) + arc(u, 80)
+            if who == "tuva":
+                tuva(c, tl, t, x, y - 4, 1.2, 1, fly=1.0 if 0 < u < 1 else 0.0, eyes="happy")
+            else:
+                kat(c, tl, t, who, x, y, 0.85, 1, "sit" if u >= 1 else "leap", eyes="happy")
+    forest_front(c)
+    c.tint = None
+    P.snowfall(c, t, n=50, seed=11, speed=26, drift=8, size=(1.2, 2.8))
+    return finish(c, tl, t)
+
+
+# ==================================================================== hill
+
+HILL_Y = 650
+
+
+def hill_fg():
+    def make():
+        img = Image.new("RGBA", (W * SS, H * SS), (0, 0, 0, 0))
+        c = Canvas(img)
+        c.poly([(-20, H + 10), (-20, 600)] + [(x, 590 - 40 * math.sin(math.pi * x / W) + 8 * math.sin(x / 60))
+                                              for x in range(0, W + 40, 40)] + [(W + 20, 610), (W + 20, H + 10)],
+               (200, 210, 240), ol=(60, 70, 110), w=3)
+        c.poly([(-20, H + 10), (-20, 660)] + [(x, 650 - 20 * math.sin(math.pi * x / W)) for x in range(0, W + 40, 80)] +
+               [(W + 20, 670), (W + 20, H + 10)], (180, 190, 228), ol=None)
+        P.troll_rock(c, 150, 640, 0.95, col=(100, 104, 130))
+        for x, y, s in ((1230, 640, 1.0), (40, 700, 0.8)):
+            P.pine(c, x, y, s, col=(30, 52, 70), dark=(22, 40, 58))
+        return img
+    return cached("hill_fg", make)
+
+
+def hill_clouds():
+    def make():
+        out = []
+        for side in (0, 1):
+            img = Image.new("RGBA", (W * SS, (HORIZON + 40) * SS), (0, 0, 0, 0))
+            c = Canvas(img, size=(W, HORIZON + 40))
+            rng = np.random.default_rng(40 + side)
+            for k in range(26):
+                x = rng.uniform(-60, 760) + (520 if side else 0)
+                y = rng.uniform(-20, 330)
+                col = mix((60, 66, 100), (96, 100, 130), rng.uniform())
+                D.cloud(c, x, y, rng.uniform(1.3, 2.4), col=col)
+            for x in range(-40 + 640 * side, 700 + 640 * side, 110):
+                for y in (0, 80):
+                    D.cloud(c, x + 30 * (y > 0), y, 2.0, col=(72, 78, 110) if y else (64, 70, 102))
+            out.append(img)
+        return out
+    return cached("hill_clouds", make)
+
+
+def hill(tl, t):
+    T = tl.t
+    s0, s1 = tl.scenes["hill"]
+    part = ease(tl.prog("hi_part", t, 0.0, 1.0))
+    aur = 0.55 * part
+
+    def clouds(img):
+        a, b = hill_clouds()
+        img.paste(a, (int(-760 * part) * SS, 0), a)
+        img.paste(b, (int(760 * part) * SS, 0), b)
+
+    c = night_fjord(t, aur, hill_fg, clouds)
+    c.tint = ((30, 40, 90), 0.3 - 0.1 * part)
+    look_up = t >= T("hi_change", 0.5)
+    # Magnus lying down, Tuva asleep on his back
+    magnus(c, tl, t, 960, HILL_Y + 6, 0.62, -1, lie=1.0, head_up=1.0 if t >= T("hi_change") else 0.0,
+           eyes="closed" if T("hi_snuggle", 0.3) <= t < T("hi_change") else "open")
+    tuva(c, tl, t, 975, HILL_Y - 112, 1.1, -1, eyes="closed" if T("hi_snuggle", 0.2) <= t < T("hi_change", 0.6)
+         else ("wide" if look_up else "open"))
+    # the cats
+    lean = ease(tl.prog("hi_snuggle", t, 0.05, 0.3)) * (1 - ease(tl.prog("hi_part", t, 0.0, 0.3)))
+    wx = 470 + 50 * ease(tl.prog("hi_together", t, 0.3, 1.0))
+    sad = T("hi_narr", 0.6) <= t < T("hi_snuggle", 0.3)
+    leyes = "closed" if 0.6 < lean else ("wide" if look_up else "open")
+    kat(c, tl, t, "luna", 610 - 12 * lean, HILL_Y, 1.0, -1 if T("hi_waffles") <= t < T("hi_snuggle") else 1, "sit",
+        eyes=leyes, look=(0.4, -1) if look_up else ((0, 1) if sad else (1, -0.8)), head_dy=8 if sad else 6 * lean)
+    yawn = tl.prog("hi_snuggle", t, 0.45, 0.62)
+    weyes = "wide" if look_up or 0.62 < tl.prog("hi_snuggle", t) < 0.7 else ("closed" if 0 < yawn < 1 else "open")
+    wmouth = math.sin(math.pi * yawn) if 0 < yawn < 1 else tl.mouth("whiskers", t)
+    kat(c, tl, t, "whiskers", wx, HILL_Y, 1.0, 1, "sit", eyes=weyes, mouth=wmouth,
+        look=(0.5, -1) if look_up else (1, 0), tail=0.8 * math.sin(t * 0.8))
+    c.tint = None
+    if T("hi_snuggle", 0.1) <= t < T("hi_change"):
+        hearts(c, wx + 60, HILL_Y - 150, t, T("hi_snuggle", 0.1), n=2, col=(250, 150, 170))
+    if part < 0.9:
+        P.snowfall(c, t, n=int(60 * (1 - part)), seed=14, speed=30, drift=12, size=(1.2, 3))
+    return finish(c, tl, t)
+
+
+# ================================================================== aurora
+
+def aurora_fg():
+    def make():
+        img = Image.new("RGBA", (W * SS, H * SS), (0, 0, 0, 0))
+        c = Canvas(img)
+        c.poly([(700, H + 10), (760, 590), (960, 556), (1100, 546), (W + 20, 552), (W + 20, H + 10)], (150, 176, 214),
+               ol=(30, 36, 70), w=2.5)
+        c.poly([(760, 590), (960, 556), (1100, 546), (W + 20, 552), (W + 20, 566), (1100, 562), (900, 580)],
+               (190, 226, 230), ol=None)
+        c.poly([(-20, H + 10), (-20, 640), (200, 628), (420, 606), (620, 610), (760, 640), (840, H + 10)],
+               (130, 150, 196), ol=(30, 36, 70), w=3)
+        c.poly([(-20, 640), (200, 628), (420, 606), (620, 610), (760, 640), (600, 626), (400, 622), (200, 640)],
+               (176, 214, 222), ol=None)
+        P.troll_rock(c, 120, 650, 0.55, col=(56, 62, 96))
+        for x, y, s in ((1240, 600, 0.8), (1180, 590, 0.6), (30, 700, 0.9)):
+            P.pine(c, x, y, s, col=(20, 36, 56), dark=(14, 28, 46))
+        return img
+    return cached("aurora_fg", make)
+
+
+def closeup_fg():
+    def make():
+        img = Image.new("RGBA", (W * SS, H * SS), (0, 0, 0, 0))
+        c = Canvas(img)
+        c.poly([(-20, H + 10), (-20, 600), (300, 580), (640, 590), (980, 584), (W + 20, 600), (W + 20, H + 10)],
+               (70, 84, 132), ol=(30, 36, 70), w=3)
+        return img
+    return cached("closeup_fg", make)
+
+
+def shooting_star(c, t, t0, x0=1000, y0=60):
+    u = (t - t0) / 1.2
+    if not 0 <= u <= 1:
+        return
+    x, y = x0 - 500 * u, y0 + 180 * u
+    for k in range(8):
+        f = k / 8
+        c.circle(x + 60 * f, y - 22 * f, 3 * (1 - f) + 0.5, mix((255, 255, 240), (120, 200, 200), f), ol=None)
+
+
+def aurora(tl, t):
+    T = tl.t
+    s0, s1 = tl.scenes["aurora"]
+    close = T("au_worth") <= t < T("au_hold")
+    strength = 0.55 + 0.75 * ease(tl.prog("au_glow", t, 0.0, 0.6))
+    strength += 0.2 * ease(tl.prog("au_hold", t, 0.0, 0.5))
+    if close:
+        c = night_fjord(t, strength, closeup_fg)
+        c.tint = ((40, 110, 110), 0.3)
+        thanks = t >= T("au_thanks")
+        kat(c, tl, t, "whiskers", 470, 770, 1.7, 1, "sit", look=(0.6, -1) if not thanks else (1, 0),
+            eyes="happy" if T("au_worth", 0.85) <= t < T("au_thanks") else "open")
+        kat(c, tl, t, "luna", 800, 770, 1.7, -1 if thanks else 1, "sit", look=(1, -1) if not thanks else (1, 0),
+            eyes="happy" if t >= T("au_thanks", 0.7) else "open")
+        c.tint = None
+        if t >= T("au_thanks", 0.5):
+            hearts(c, 640, 420, t, T("au_thanks", 0.5), n=3, col=(120, 255, 180))
+        return finish(c, tl, t)
+    c = night_fjord(t, strength, aurora_fg)
+    c.tint = ((30, 60, 90), 0.3)
+    # reindeer crossing the far ridge
+    if T("au_reindeer") - 0.5 <= t:
+        for k in range(5):
+            u = (t - T("au_reindeer") + 0.5) * 34 - k * 70
+            x = 1360 - u
+            if 800 < x < W + 80:
+                P.reindeer(c, x, float(np.interp(x, [760, 960, 1100, 1300], [590, 556, 546, 552])) + 6, 0.8 - 0.08 * (k % 2), -1, walk=u / 14,
+                           col=(18, 24, 50))
+    look = (0.5, -1)
+    magnus(c, tl, t, 640, 626, 0.5, 1, lie=1.0, head_up=1.0, eyes="open")
+    tuva(c, tl, t, 650, 545, 0.95, 1, eyes="wide" if t < T("au_hold") else "happy",
+         wing=1.0 if tl.talking("tuva", t) else 0.0)
+    kat(c, tl, t, "luna", 430, 612, 0.78, 1, "sit", look=look, eyes="wide" if tl.talking("luna", t) else "open")
+    kat(c, tl, t, "whiskers", 340, 618, 0.8, 1, "sit", look=look,
+        eyes="happy" if t >= T("au_hold", 0.4) else "open")
+    c.tint = None
+    shooting_star(c, t, T("au_hold", 0.55))
+    shooting_star(c, t, T("au_glow", 0.7), 700, 40)
+    return finish(c, tl, t)
+
+
+# ==================================================================== home
+
+SILL_Y = 560
+
+
+def home_bg():
+    def make():
+        wall = (232, 206, 176)
+        c = Canvas(bg=wall)
+        for x in range(0, W, 64):
+            c.rect(x + 28, 0, x + 36, H, mix(wall, (255, 255, 255), 0.25), ol=None)
+        c.rect(0, SILL_Y, W, H, mix(wall, (0, 0, 0), 0.08), ol=None)
+        # window opening (sky pasted in per frame)
+        for x0, x1 in ((40, 150), (1130, 1240)):
+            c.rect(x0, 0, x1, 600, (190, 70, 64), r=10)
+            for xx in range(int(x0) + 18, int(x1), 26):
+                c.line([(xx, 10), (xx, 590)], (160, 56, 52), 3, cap=False)
+        c.rect(20, 0, 1260, 16, (150, 100, 60))
+        return c.img
+    return cached("home_bg", make)
+
+
+def home_window(t, dusk):
+    """The street outside at sunset, darkening into evening."""
+    def make(k):
+        sky = [(0, mix((120, 160, 230), (30, 36, 90), k)), (0.6, mix((255, 186, 150), (120, 80, 140), k)),
+               (1, mix((255, 220, 170), (170, 110, 130), k))]
+        c = Canvas(D.gradient(960 * SS, 470 * SS, sky), size=(960, 470))
+        if k > 0.5:
+            D.stars(c, 3, 30, 960, 160)
+        c.circle(720, 330, 40, mix((255, 230, 150), (255, 200, 140), k), ol=None)
+        for x, w, h, col in ((20, 200, 220, (200, 120, 100)), (240, 160, 280, (226, 196, 150)),
+                             (420, 220, 190, (170, 110, 120)), (660, 170, 250, (236, 222, 196))):
+            col = mix(col, (60, 50, 90), 0.45 * k)
+            c.rect(x, 470 - h, x + w, 470, col, w=2)
+            c.poly([(x - 10, 470 - h), (x + w / 2, 470 - h - 50), (x + w + 10, 470 - h)],
+                   mix((150, 80, 70), (60, 40, 70), k * 0.5), w=2)
+            for wy in range(int(470 - h + 30), 430, 70):
+                for wx in range(int(x) + 20, int(x + w) - 30, 50):
+                    c.rect(wx, wy, wx + 24, wy + 32, mix((170, 210, 240), (255, 210, 120), k), w=1.5)
+        c.rect(0, 440, 960, 470, mix((120, 120, 128), (60, 60, 80), k), ol=None)
+        return c.img
+    q = int(round(clamp(dusk) * 6))
+    return cached(("home_win", q), lambda: make(q / 6))
+
+
+def home(tl, t):
+    T = tl.t
+    s0, s1 = tl.scenes["home"]
+    c = Canvas(home_bg().copy())
+    dusk = tl.prog("h_moral", t, 0.0, 1.0) * 0.5 + tl.prog("h_end", t, 0.0, 0.6) * 0.5
+    win = home_window(t, dusk)
+    # the fish van driving away down the street (drawn inside the window picture)
+    vk = tl.prog("h_open", t, 0.0, 1.0) * 0.4 + tl.prog("h_narr", t) * 0.6
+    if vk < 1:
+        wc = Canvas(win.copy(), size=(960, 470))
+        P.fish_van(wc, lerp(420, 1150, ease(vk)), 466, 0.3, t, wheel=-vk * 40)
+        win = wc.img
+    c.img.paste(win, (160 * SS, 70 * SS))
+    c.rect(150, 60, 1130, 550, None, w=10)
+    c.line([(640, 64), (640, 548)], (250, 246, 236), 10, cap=False)
+    c.line([(156, 300), (1126, 300)], (250, 246, 236), 10, cap=False)
+    c.rect(150, 60, 1130, 550, None, ol=(250, 246, 236), w=6)
+    c.rect(110, 540, 1170, 572, (250, 246, 236), r=5)
+    # souvenirs on the sill
+    P.longship(c, 230, 520, 0.14, t)
+    c.rect(1000, 516, 1036, 541, (240, 240, 250), w=2, r=3)
+    P.flag(c, 1018, 520, 0.5, t, pole=70)
+    P.troll_rock(c, 1090, 541, 0.22)
+    Y = 546
+    c.tint = ((60, 40, 80), 0.18 * clamp(dusk * 1.5))
+    # waffle plate slides in from Luna
+    plate = ease(tl.prog("h_waffle", t, 0.1, 0.6))
+    if t >= T("h_waffle", 0.1):
+        px = lerp(470, 700, plate)
+        c.ellipse(px, Y - 4, 56, 12, (250, 250, 246), w=2.5)
+        bite = 0.0
+        if t >= T("h_perfect"):
+            bite = 0.2 + 0.7 * tl.prog("h_eat", t, 0.0, 0.8)
+        steam = 1.0 if t < T("h_perfect") else 0.0
+        P.waffle(c, px, Y - 10, 1.2, bite=bite, cheese=True, steam=steam, t=t)
+    counting = T("h_count", 0.25) <= t < T("h_perfect")
+    eating = T("h_perfect") <= t < T("h_eat", 0.8)
+    end = t >= T("h_moral")
+    kat(c, tl, t, "luna", 400, Y, 1.25, 1, "sit",
+        eyes="happy" if T("h_pip2", 0.5) <= t < T("h_waffle") or end else "open",
+        mouth=laughing(t) * 0.5 if T("h_pip2", 0.6) <= t < T("h_waffle") else tl.mouth("luna", t))
+    D.mouse(c, 580, Y + 2, 1.9, 1, t, mouth=tl.mouth("pip", t),
+            proud=T("h_pip") <= t < T("h_pip", 1), hop=abs(math.sin(t * 9)) * 10 if T("h_pip") <= t < T("h_pip", 1) else 0,
+            eyes="wide" if T("h_pip2") <= t < T("h_pip2", 1) or counting else ("happy" if end else "open"))
+    weyes = "closed" if counting else "happy" if (eating or end) else "open"
+    kat(c, tl, t, "whiskers", 860, Y, 1.25, -1, "sit", eyes=weyes,
+        mouth=0.3 + 0.3 * math.sin(t * 14) if eating and not tl.talking("whiskers", t) else tl.mouth("whiskers", t),
+        look=(1, 0.6) if T("h_waffle") <= t < T("h_count") else (1, 0), head_dy=6 if eating else 0)
+    c.tint = None
+    if eating or (T("h_eat") <= t < T("h_moral")):
+        hearts(c, 860, Y - 190, t, T("h_perfect"), n=3)
+    k = ease(tl.prog("h_end", t, 0.15, 0.45))
+    if k > 0:
+        c.text(W / 2, 646, "The End", 30 + 44 * k, mix((236, 214, 178), (255, 250, 236), k), stroke=4 * k,
+               stroke_fill=(70, 50, 60))
+    return finish(c, tl, t)
+
+
+SCENE_FUNCS = {"title": title, "van": van, "plane": plane, "harbour": harbour, "fjord": fjord,
+               "forest": forest, "hill": hill, "aurora": aurora, "home": home}
+
+CONTINUOUS = {"aurora"}
+EXTRA_CUTS = ["pl_munch", "pl_land", "au_worth", "au_hold"]
