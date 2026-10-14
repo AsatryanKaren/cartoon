@@ -245,7 +245,7 @@ def map_(tl, t):
         c, v = K.map_view(*cam, t=t)
         K.map_labels(c, v, "continents", 1 - k1)
         K.map_highlight(c, v, "europe", tl.prog("m_farm", t, 0.2, 0.4) * (1 - tl.prog("m_path", t, 0.0, 0.3)), t=t)
-        K.map_label(c, v, 14, 54, "Europe", 34, k=tl.prog("m_farm", t, 0.3, 0.5) * (1 - k2))
+        K.map_label(c, v, 24, 57, "Europe", 34, k=tl.prog("m_farm", t, 0.3, 0.5) * (1 - k2))
         hx, hy = v.xy(*HOME)
         K.you_are_here(c, hx, hy, t, tl.prog("m_farm", t, 0.3, 0.5), "Home" if t < T("m_path") else "", side=1)
         fk = tl.prog("m_farm", t, 0.65, 0.85)
@@ -514,7 +514,6 @@ def orbit(tl, t):
     c = Canvas(K.space_bg().copy())
     K.twinkle(c, t)
     ok = tl.prog("o_open", t, 0.0, 0.8)
-    P.dashed_ellipse(c, SUN[0], SUN[1], ORX, ORY, (190, 196, 255), 3, k=ease(ok), a0=math.pi)
     # "one year" arrow along the front of the orbit
     yk = ten(tl, t, "o_tilt", 0.0, 0.25, "o_tiltact", 0.5, 1.0)
     if yk > 0.01:
@@ -537,9 +536,13 @@ def orbit(tl, t):
     if t < T("o_trip", 1) - 0.05 or not ghosts:
         items.append((orbit_xy(th)[1], "earth", None, th))
     items.sort(key=lambda it: it[0])
+    sr = SUN_R * pop(ok)
+    if sr > 1:
+        c.glow(SUN[0], SUN[1], sr * 2.3, sr * 2.3, (255, 210, 110), (46, 40, 96), steps=12)
+    P.dashed_ellipse(c, SUN[0], SUN[1], ORX, ORY, (190, 196, 255), 3, k=ease(ok), a0=math.pi)
     for yy, kind, sea, deg in items:
         if not sun_drawn and yy > SUN[1]:
-            P.sun(c, SUN[0], SUN[1], SUN_R * pop(ok), t)
+            P.sun(c, SUN[0], SUN[1], sr, t, glow=0)
             sun_drawn = True
         x, y = orbit_xy(deg)
         sc = 1 + 0.12 * (y - SUN[1]) / ORY
@@ -557,11 +560,11 @@ def orbit(tl, t):
             lx, ly = x, y + (E_R + 44) * (1 if deg % 360 in (270,) else -1) - (8 if deg % 360 == 90 else 0)
             if sea in ("summer", "winter"):
                 ly = y + E_R + 46
-            if sea == "spring":
+            if sea in ("spring", "autumn"):
                 lx, ly = x + 150, y - 10
             K.label(c, lx, ly, name, 30, k=tl.prog("o_trip", t, 0.0, 0.1) if True else 1, col=col)
     if not sun_drawn:
-        P.sun(c, SUN[0], SUN[1], SUN_R * pop(ok), t)
+        P.sun(c, SUN[0], SUN[1], sr, t, glow=0)
     # "Tilted!" with a straight-up guide line on the travelling Earth
     tk = ten(tl, t, "o_tiltact", 0.0, 0.3, "o_trip", 0.0, 0.2)
     if tk > 0.01:
@@ -606,9 +609,10 @@ def orbit(tl, t):
     return c
 
 
-CU = (470, 360)
+CU = (470, 330)
 CU_R = 230
 CU_LON = 75
+CU_LAT = 12
 
 
 def closeup(tl, t):
@@ -618,7 +622,7 @@ def closeup(tl, t):
     K.twinkle(c, t)
     P.sun(c, 1250, 300, 170, t, face=False)
     lon = CU_LON + 6 * math.sin(t * 0.3)
-    ux, uy = P.tilted_earth(c, CU[0], CU[1], CU_R, lon=lon, lat=0, sun_xy=(2600, 300), axis=1.0, roll=P.TILT,
+    ux, uy = P.tilted_earth(c, CU[0], CU[1], CU_R, lon=lon, lat=CU_LAT, sun_xy=(2600, 300), axis=1.0, roll=P.TILT,
                             glow_north=1.0)
     # sunbeams onto the top half (straight on) and the bottom half (glancing)
     rk = tl.prog("o_aus", t, 0.1, 0.6)
@@ -628,32 +632,32 @@ def closeup(tl, t):
         ray(c, 1060, yy - 40, CU[0] + CU_R * 0.6 - j * 50, yy + 10, clamp(rk * 2 - j * 0.3 - 0.4), (255, 240, 170), 5)
     # pins: Europe and Australia
     ek = tl.prog("o_aus", t, 0.3, 0.5)
-    ex, ey, ev = K.globe_xy(CU[0], CU[1], CU_R, 10, 50, lon, 0, P.TILT)
-    ax, ay, av = K.globe_xy(CU[0], CU[1], CU_R, 134, -25, lon, 0, P.TILT)
+    ex, ey, ev = K.globe_xy(CU[0], CU[1], CU_R, 10, 50, lon, CU_LAT, P.TILT)
+    ax, ay, av = K.globe_xy(CU[0], CU[1], CU_R, 134, -25, lon, CU_LAT, P.TILT)
     if ek > 0.01:
         P.tilted_earth  # noqa
         c.circle(ex, ey, 9 * pop(ek), (226, 56, 60), w=3)
-        K.label(c, ex - 120, ey - 120, "Europe", 30, tip=(ex - 6, ey - 12), k=ek)
+        K.label(c, ex - 150, ey - 40, "Europe", 30, tip=(ex - 12, ey - 4), k=ek)
     ak = tl.prog("o_aus", t, 0.6, 0.8)
     if ak > 0.01:
         c.circle(ax, ay, 9 * pop(ak), (226, 56, 60), w=3)
-        K.label(c, ax + 40, ay + 150, "Australia", 30, tip=(ax + 4, ay + 14), k=ak)
+        K.label(c, ax - 220, ay - 10, "Australia", 30, tip=(ax - 12, ay), k=ak)
     # leaning toward / away
     tk = ten(tl, t, "o_ausact", 0.0, 0.3, "o_swap", 0.0, 0.2)
     K.label(c, 860, 120, "Leans toward the Sun", 28, tip=(CU[0] + 150, CU[1] - 170), k=tk)
-    K.label(c, 860, 600, "Leans away", 28, tip=(CU[0] + 120, CU[1] + 190), k=tl.prog("o_ausact", t, 0.4, 0.7) *
+    K.label(c, 900, 480, "Leans away", 28, tip=(CU[0] + 170, CU[1] + 130), k=tl.prog("o_ausact", t, 0.4, 0.7) *
             (1 - tl.prog("o_swap", t, 0.0, 0.2)))
     # summer / winter labels
     sk = tl.prog("o_swap", t, 0.15, 0.35)
     if sk > 0.01:
-        K.label(c, ex - 40, ey - 200, "Summer!", 40, k=sk, col=(220, 120, 20), bg=(255, 246, 200))
-        c.push(ex + 90, ey - 200, pop(sk))
+        K.label(c, ex + 10, ey - 90, "Summer!", 40, k=sk, col=(220, 120, 20), bg=(255, 246, 200))
+        c.push(ex + 120, ey - 90, pop(sk))
         c.circle(0, 0, 22, (255, 222, 96), ol=(236, 160, 50), w=3)
         c.pop()
     wk = tl.prog("o_swap", t, 0.45, 0.65)
     if wk > 0.01:
-        K.label(c, ax + 100, ay + 80, "Winter!", 40, k=wk, col=(50, 100, 200), bg=(230, 240, 255))
-        c.push(ax + 210, ay + 80, pop(wk))
+        K.label(c, ax - 230, ay + 62, "Winter!", 40, k=wk, col=(50, 100, 200), bg=(230, 240, 255))
+        c.push(ax - 120, ay + 62, pop(wk))
         for k in range(3):
             a = k * math.pi / 3
             c.line([(-math.cos(a) * 20, -math.sin(a) * 20), (math.cos(a) * 20, math.sin(a) * 20)], (90, 150, 230), 5)
@@ -664,14 +668,14 @@ def closeup(tl, t):
     extra = {"luna": {"mouth": laughing(t)}, "pip": {"mouth": laughing(t)}} if laugh else None
     bk = ten(tl, t, "o_forever", 0.2, 0.4, "o_back", 0.0, 0.3)
     gk = ease(tl.prog("o_back", t, 0.2, 1.0))
-    cx_, cy_ = lerp(1000, 1500, gk), lerp(650, 300, gk)
+    cx_, cy_ = lerp(1110, 1500, gk), lerp(668, 300, gk)
     K.crew(c, tl, t, cx_, cy_, 0.62, -1, fly=1.0, eyes=eyes, extra=extra,
            look={"luna": (-1, -0.5), "whiskers": (-1, -0.5), "pip": (-1, -0.5)})
     P.rooster(c, cx_ - 128, cy_ - 26, 0.5, -1, t, tl.mouth("rufus", t), "happy" if laugh else "open",
               flap=0.4 * abs(math.sin(t * 5)))
     if bk > 0.01:
-        K.bubble(c, 1080, 470, 100, 66, bk, tail=(cx_ + 30, cy_ - 80))
-        c.push(1080, 470, bk)
+        K.bubble(c, 1010, 540, 100, 66, bk, tail=(cx_ + 30, cy_ - 80))
+        c.push(1010, 540, bk)
         c.circle(-36, -18, 18, (255, 222, 96), ol=(236, 160, 50), w=2)
         c.ellipse(0, 36, 70, 10, (244, 220, 150), w=2)
         c.line([(30, 34), (30, -16)], (140, 100, 70), 3)
@@ -686,25 +690,26 @@ def closeup(tl, t):
 
 RAIN_BOX = (0, 160, W, 700)
 STORM = (820, 420)
-RB = (330, 600, 470)            # rainbow centre x, y and radius (opposite the sun, at upper right)
+RB = (380, 560, 430)            # rainbow centre x, y and radius (opposite the sun, at upper right)
 
 
 def weather(tl, t):
     T = tl.t
     sun_k = ease(tl.prog("w_sun", t, 0.0, 0.5)) * 0.75
-    c = Canvas(P.farm_mix("rain", "autumn", sun_k))
-    # far storm cloud flashing on the horizon
-    fl = 0.0
-    for ev in ("w_flash",):
-        u = tl.prog(ev, t, 0.05, 0.5)
-        if 0 < u < 1:
-            fl = max(fl, 1 - abs(u * 4 % 2 - 1) if u < 0.5 else (1 - u) * 2 * 0.5)
-    if t >= T("w_open"):
-        P.storm_cloud(c, STORM[0], STORM[1] - 30, 0.75, fl)
-    # rainbow: appears once the sun is out, opposite the sun
+    base = P.farm_mix("rain", "autumn", sun_k)
+    c = Canvas(base.copy())
+    # rainbow: appears once the sun is out, opposite the sun (behind the barn and the hills)
     rbk = ease(tl.prog("w_sun", t, 0.3, 1.0) * 0.5 + tl.prog("w_look", t, 0.0, 1.0) * 0.5)
     rbk *= 1 - 0.5 * tl.prog("w_flash", t, 0.0, 0.5)
-    P.rainbow(c, RB[0], RB[1], RB[2], rbk, 16)
+    if rbk > 0.01:
+        P.rainbow(c, RB[0], RB[1], RB[2], rbk, 16)
+        c.img.paste(base, (0, 0), P.fg_mask("rain"))
+    # far storm cloud flashing on the horizon
+    fl = 0.0
+    u = tl.prog("w_flash", t, 0.05, 0.5)
+    if 0 < u < 1:
+        fl = 1 - abs(u * 4 % 2 - 1) if u < 0.5 else (1 - u) * 2 * 0.5
+    P.storm_cloud(c, STORM[0], STORM[1] - 30, 0.75, fl)
     # rain: heavy, then lighter when the sun comes out, then stops
     rk = 1.0 - 0.6 * tl.prog("w_sun", t, 0.0, 0.5) - 0.4 * tl.prog("w_purpose", t, 0.0, 1.0)
     P.rain(c, t, RAIN_BOX, 90, rk * ease(tl.prog("w_open", t, 0.0, 0.5)))

@@ -382,10 +382,15 @@ def fence(c, x0, x1, y, col=(236, 222, 196)):
 
 @lru_cache(None)
 def farm_bg(season="autumn"):
+    return _farm(season, False)
+
+
+def _farm(season, alt):
     """The farm on the hill: sky, hills, barn (no vane), fence and the big tree, for one season
     (or "rain": autumn under grey clouds). Returns a supersampled image."""
     tree_season = "autumn" if season == "rain" else season
-    c = Canvas(D.gradient(W * SS, H * SS, SKIES[season]))
+    c = Canvas(D.gradient(W * SS, H * SS, SKIES[season]) if not alt else Image.new("RGB", (W * SS, H * SS),
+                                                                                     (255, 0, 255)))
     if season in SUNS:
         sx, sy, sr = SUNS[season]
         pale = season == "winter"
@@ -428,6 +433,16 @@ def farm_bg(season="autumn"):
     if season == "rain":
         c.img.paste((60, 64, 90), (0, 0, W * SS, H * SS), Image.new("L", (W * SS, H * SS), 40))
     return c.img
+
+
+@lru_cache(None)
+def fg_mask(season="autumn"):
+    """L mask of everything in front of the sky (hills, barn, tree, clouds) for one farm background:
+    the pixels that stay the same when the sky behind them changes colour."""
+    a = np.asarray(farm_bg(season)).astype(np.int16)
+    b = np.asarray(_farm(season, True)).astype(np.int16)
+    m = (np.abs(a - b).max(axis=2) < 4).astype(np.uint8) * 255
+    return Image.fromarray(m, "L")
 
 
 def farm_mix(a, b, k):
