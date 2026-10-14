@@ -655,3 +655,30 @@ It's raining again! Luna shows the Equator on her globe, and the friends fly to 
 ```
 rainforest for kids, Amazon rainforest, rainforest layers, sloth, toucan, Equator, geography for kids, kids cartoon, educational cartoon, Whiskers and Luna
 ```
+
+---
+
+## World 8. The Frozen Poles
+
+**Title**
+```
+The Frozen Poles 🐧🐻‍❄️ | Geography for Kids with Whiskers & Luna | Episode 8
+```
+**Description**
+```
+Is there whipped cream on top of the globe? No, it's ice! The friends visit the South Pole, where Pebble the penguin slides on thick ice, and the North Pole, where Bjorn the polar bear lives on floating sea ice. Whiskers tries to bring Pebble north to meet Bjorn, but penguins and polar bears never meet! A torch shows why the poles are so cold, and the night ends with the northern lights.
+
+🧠 What we learn:
+1. The North Pole is at the top of the Earth. The South Pole is at the bottom.
+2. Polar bears live in the north. Penguins live in the south.
+3. The poles are the coldest places, because the sun's light there is weak.
+
+❓ Quiz at the end: Which pole is at the top of the Earth? Where do penguins live?
+
+🌍 Whiskers & Luna's World: Geography for Kids. Episode 8.
+#geographyforkids #northpole #kidslearning
+```
+**Tags**
+```
+North Pole, South Pole, Arctic, Antarctica, penguins, polar bears, northern lights, geography for kids, kids cartoon, Whiskers and Luna
+```
