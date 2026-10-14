@@ -514,11 +514,6 @@ def orbit(tl, t):
     c = Canvas(K.space_bg().copy())
     K.twinkle(c, t)
     ok = tl.prog("o_open", t, 0.0, 0.8)
-    # "one year" arrow along the front of the orbit
-    yk = ten(tl, t, "o_tilt", 0.0, 0.25, "o_tiltact", 0.5, 1.0)
-    if yk > 0.01:
-        P5.arc_arrow(c, SUN[0], SUN[1], ORX + 34, ORY + 30, 150, 30, yk, (255, 236, 110), 7, 18)
-        K.label(c, SUN[0], SUN[1] + ORY + 70, "One trip = one year", 30, k=yk)
     th = earth_theta(tl, t)
     ax_k = tl.prog("o_tilt", t, 0.55, 0.85)
     hl_sum = ten(tl, t, "o_summer", 0.0, 0.2, "o_not", 0.0, 0.3)
@@ -565,6 +560,11 @@ def orbit(tl, t):
             K.label(c, lx, ly, name, 30, k=tl.prog("o_trip", t, 0.0, 0.1) if True else 1, col=col)
     if not sun_drawn:
         P.sun(c, SUN[0], SUN[1], sr, t, glow=0)
+    # "one year" arrow along the front of the orbit
+    yk = ten(tl, t, "o_tilt", 0.0, 0.25, "o_tiltact", 0.5, 1.0)
+    if yk > 0.01:
+        P5.arc_arrow(c, SUN[0], SUN[1], ORX + 34, ORY + 30, 150, 30, yk, (255, 236, 110), 7, 18)
+        K.label(c, SUN[0], SUN[1] + ORY + 70, "One trip = one year", 30, k=yk)
     # "Tilted!" with a straight-up guide line on the travelling Earth
     tk = ten(tl, t, "o_tiltact", 0.0, 0.3, "o_trip", 0.0, 0.2)
     if tk > 0.01:

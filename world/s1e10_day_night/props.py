@@ -194,13 +194,9 @@ def moon_phase(c, x, y, r, phase, dark=MOON_NIGHT, outline=True, glow=False):
         pts.append((x + s * k * math.cos(u) * r, y + math.sin(u) * r))
     if abs(k) < 0.999 or k < 0:
         c.poly(pts, MOON, ol=None)
-    if phase > 0.06 and phase < 0.94:
+    if abs(phase - 0.5) < 0.1:
         for dx, dy, rr in ((-0.3, -0.2, 0.18), (0.25, 0.15, 0.12), (-0.05, 0.4, 0.1)):
-            px = dx
-            lit_edge = k if right else -k
-            if (right and px > lit_edge * math.sqrt(max(0, 1 - dy * dy)) * 0.9) or \
-                    (not right and px < -lit_edge * math.sqrt(max(0, 1 - dy * dy)) * 0.9) or abs(phase - 0.5) < 0.12:
-                c.circle(x + dx * r, y + dy * r, rr * r, MOON_D, ol=None)
+            c.circle(x + dx * r, y + dy * r, rr * r, MOON_D, ol=None)
     if outline:
         c.circle(x, y, r, None, ol=OUT, w=max(1.5, min(LW, r * 0.06)))
 
