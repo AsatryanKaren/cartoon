@@ -442,3 +442,162 @@ A fluffy sheep named Wolli is stuck in the garden hedge, far from her home under
 ```
 kids cartoon, cat cartoon, Zermatt for kids, Matterhorn, Swiss chocolate, alphorn, sheep, Switzerland cartoon, Whiskers and Luna, travel cartoon
 ```
+
+---
+---
+
+# Playlist 2: Whiskers & Luna's World (geography for kids)
+
+**Playlist title**
+```
+Whiskers & Luna's World: Geography for Kids 🌍
+```
+**Playlist description**
+```
+Learn about our amazing planet with Whiskers, Luna and Pip! In every episode, Luna's old globe glows, Whiskers' nap cushion flies the friends into a magic map, and a friendly animal guide shows them a new part of the world.
+
+Each episode teaches 3 easy facts, shows them on a "Remember!" card, and ends with a fun quiz with a 3-2-1 countdown, so children can answer out loud.
+
+🌍 Episodes about the Earth, continents, oceans, mountains, rivers and more
+🧠 For ages 4–8, each episode 5:55
+💛 Made for kids and families
+
+Start with Episode 1: Our Planet.
+```
+**Settings:** Visibility Public · Default video order **Manual** (or Date published, oldest) · Language English.
+Each video: **Made for kids → Yes**, add the `.srt` subtitles, playlist **Whiskers & Luna's World**.
+
+---
+
+## World 1. Our Planet
+
+**Title**
+```
+Our Planet 🌍 | Geography for Kids with Whiskers & Luna | Episode 1
+```
+**Description**
+```
+Why is Luna's globe round? Whiskers' nap cushion flies the friends into space to see that the Earth is a giant ball! The globe flattens into a map, a compass shows north, south, east and west ("Never Eat Soggy Waffles!"), and Grandpa Shelby the sea turtle shows them that a round Earth has no edge.
+
+🧠 What we learn:
+1. The Earth is round, like a ball.
+2. Almost three quarters of the Earth is water.
+3. Maps show four directions: North, South, East and West.
+
+❓ Quiz at the end: Is the Earth flat or round? Is there more land or more water?
+
+🌍 Whiskers & Luna's World: Geography for Kids. Episode 1.
+#geographyforkids #kidslearning #catcartoon
+```
+**Tags**
+```
+geography for kids, learning video for kids, kids cartoon, Earth for kids, globe, map, compass, north south east west, educational cartoon, Whiskers and Luna
+```
+
+---
+
+## World 2. The Seven Continents
+
+**Title**
+```
+The Seven Continents 🌎 | Geography for Kids with Whiskers & Luna | Episode 2
+```
+**Description**
+```
+What are the coloured shapes on the globe? They're continents, and there are seven! Albert the albatross takes the friends on a flying tour: Europe, Africa, Asia, Australia, Antarctica, South America and North America. Sing along with the continents song, and see what happens when Whiskers wears sunglasses to Antarctica!
+
+🧠 What we learn:
+1. The Earth's land is split into seven continents.
+2. Asia is the biggest continent.
+3. Antarctica is the coldest continent, covered in ice.
+
+❓ Quiz at the end: How many continents are there? Which continent is the coldest?
+
+🌍 Whiskers & Luna's World: Geography for Kids. Episode 2.
+#geographyforkids #sevencontinents #kidslearning
+```
+**Tags**
+```
+seven continents, continents song, geography for kids, learning video for kids, kids cartoon, Asia, Africa, Antarctica, educational cartoon, Whiskers and Luna
+```
+
+---
+
+## World 3. The Five Oceans
+
+**Title**
+```
+The Five Oceans 🌊 | Geography for Kids with Whiskers & Luna | Episode 3
+```
+**Description**
+```
+Most of our planet is blue! The friends visit the five oceans: the Pacific, Atlantic, Indian, Arctic and Southern. Bluebell the blue whale, the biggest animal ever, shows them why the sea is salty (Whiskers tastes it: BLEH!), how wind makes waves, and the deep sea. Then Nipper the crab explains the tides and the Moon.
+
+🧠 What we learn:
+1. There are five oceans.
+2. The Pacific is the biggest and deepest ocean.
+3. Sea water is salty.
+
+❓ Quiz at the end: Which ocean is the biggest? Is sea water salty or sweet?
+
+🌍 Whiskers & Luna's World: Geography for Kids. Episode 3.
+#geographyforkids #oceans #kidslearning
+```
+**Tags**
+```
+five oceans, oceans for kids, Pacific Ocean, blue whale, why is the sea salty, tides, geography for kids, kids cartoon, educational cartoon, Whiskers and Luna
+```
+
+---
+
+## World 4. Mountains and Volcanoes
+
+**Title**
+```
+Mountains and Volcanoes 🌋 | Geography for Kids with Whiskers & Luna | Episode 4
+```
+**Description**
+```
+Why is the globe bumpy? Luna and Pip push Whiskers' blanket into "Nap Mountain" to show how mountains grow! Tashi the snow leopard shows them Mount Everest in the Himalayas, and Iggy the iguana takes them to a volcano on the Galapagos Islands. Whiskers thinks it's a pot of hot chocolate…
+
+🧠 What we learn:
+1. Mountains grow when the land pushes together.
+2. Mount Everest is the tallest mountain on Earth.
+3. Volcanoes have hot, melted rock inside.
+
+❓ Quiz at the end: Which is the tallest mountain? What is inside a volcano?
+
+🌍 Whiskers & Luna's World: Geography for Kids. Episode 4.
+#geographyforkids #volcano #kidslearning
+```
+**Tags**
+```
+mountains for kids, volcanoes for kids, Mount Everest, how mountains form, lava, geography for kids, kids cartoon, educational cartoon, snow leopard, Whiskers and Luna
+```
+
+---
+
+## World 5. Rivers and Lakes
+
+**Title**
+```
+Rivers and Lakes 💧 | Geography for Kids with Whiskers & Luna | Episode 5
+```
+**Description**
+```
+Follow Drip the raindrop on a big journey: from snow on a mountain, down tiny streams, into a river, through a lake and all the way to the sea! Ollie the otter shows the friends the Nile and the Amazon, and the water cycle: sun, vapour, clouds and rain. Whiskers tries to paddle back upstream for a fish snack…
+
+🧠 What we learn:
+1. Rivers flow downhill, all the way to the sea.
+2. River and lake water is fresh, not salty.
+3. Water goes round and round in the water cycle.
+
+❓ Quiz at the end: Does a river flow uphill or downhill?
+
+🌍 Whiskers & Luna's World: Geography for Kids. Episode 5.
+#geographyforkids #watercycle #kidslearning
+```
+**Tags**
+```
+rivers for kids, water cycle for kids, Nile, Amazon river, lakes, raindrop, geography for kids, kids cartoon, educational cartoon, Whiskers and Luna
+```
