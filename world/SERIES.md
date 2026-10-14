@@ -36,7 +36,7 @@ continue them from the existing files. 09 and 10 have not been started.
 - [x] 06 - Deserts: the hot Sahara, why it rarely rains, oases, the camel's secrets (guides: camel, fennec fox)
 - [x] 07 - Rainforests: the Amazon, layers from floor to treetops, so many animals (guides: toucan, sloth)
 - [x] 08 - The Frozen Poles: Arctic and Antarctica, penguins vs polar bears, ice, northern lights (guide: penguin)
-- [ ] 09 - Weather and Seasons: summer and winter, the Earth's tilt, rain, wind, rainbows (guide: weather-vane rooster)
+- [x] 09 - Weather and Seasons: summer and winter, the Earth's tilt, rain, wind, rainbows (guide: weather-vane rooster)
 - [ ] 10 - Day and Night, Earth and Sun: the Earth spins, time zones, the Moon (Moon Fish callback!) (guide: owl)
 
 ## Season 2 (ideas for later)
