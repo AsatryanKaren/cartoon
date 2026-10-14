@@ -447,7 +447,7 @@ MAP_SLON = 2 - (8 - 12) * 15       # 8 o'clock in the morning at home
 def map_(tl, t):
     T = tl.t
     pk = tl.prog("m_path", t, 0.25, 1.0)
-    cam = K.lerp_view((-40, 10, 1.0), (HAWAII[0] + 8, HAWAII[1] + 4, 2.4), ease(pk))
+    cam = K.lerp_view((-40, 10, 1.0), (HAWAII[0] + 20, HAWAII[1] + 6, 2.0), ease(pk))
     c, v = K.map_view(*cam, t=t)
     P.night_overlay(c, v, MAP_SLON, 0.0, ease(tl.prog("m_open", t, 0.1, 0.8)))
     K.map_clip(c, v)
@@ -733,8 +733,8 @@ def moon_year(tl, t):
         K.sparkles(c, ex, ey, 90, t, 10, 1.0, seed=3)
     bk = tl.prog("mo_bday", t, 0.4, 0.7)
     if bk > 0:
-        P.cake(c, ex + 110, ey + 40, 0.9, t, bk)
-        K.label(c, ex + 110, ey + 80, "Happy birthday!", 24, k=bk)
+        P.cake(c, ex + 190, ey - 10, 0.9, t, bk)
+        K.label(c, ex + 190, ey + 30, "Happy birthday!", 24, k=bk)
     laugh = T("mo_laugh") <= t
     crew_corner(c, tl, t, laugh)
     if T("mo_cake", 0.3) <= t:
@@ -779,9 +779,9 @@ def icon_orbit(c, x, y, r, t=0.0):
 
 
 def icon_moonlight(c, x, y, r, t=0.0):
-    P.sun(c, x - r * 0.55, y - r * 0.5, r * 0.28, t, face=False, rays=False, glow=False)
-    K.arrow(c, x - r * 0.25, y - r * 0.3, x + r * 0.1, y - r * 0.02, (255, 196, 60), 4, 1.0, head=10)
-    P.moon_ball(c, x + r * 0.35, y + r * 0.3, r * 0.4, sun_dir=225)
+    P.sun(c, x - r * 0.5, y - r * 0.45, r * 0.36, t, face=False, rays=False, glow=False)
+    K.arrow(c, x - r * 0.12, y - r * 0.2, x + r * 0.12, y + r * 0.0, (255, 196, 60), 5, 1.0, head=12)
+    P.moon_ball(c, x + r * 0.42, y + r * 0.36, r * 0.46, sun_dir=225)
 
 
 def remember(tl, t):
@@ -960,7 +960,12 @@ def recap(tl, t):
     K.twinkle(c, t, 40)
     tk = tl.prog("rc_open", t, 0.0, 0.8)
     K.ribbon(c, 640, 70, 560, 70, (240, 180, 50), tk)
-    if tk > 0.5:
+    lk = tl.prog("rc_open", t, 0.0, 0.6) * (1 - tl.prog("rc_2", t, 0.0, 0.08))
+    if lk > 0.01:
+        K.logo(c, 640, 300, 72, t, lk)
+        K.crew(c, tl, t, 640, 540, 1.0 * pop(lk), 1, fly=1)
+        K.sparkles(c, 640, 400, 380, t, 14, lk, seed=17)
+    if tk > 0.3:
         K.text(c, 640, 70, "Season 1: our whole world!", 38, (255, 255, 255), stroke=4)
     hold = tl.prog("rc_hold", t, 0.0, 1.0)
     for i, (name, fn) in enumerate(CARDS):
