@@ -36,7 +36,7 @@ Status: Season 1 is complete (all 10 episodes finished).
 - [x] 07 - Rainforests: the Amazon, layers from floor to treetops, so many animals (guides: toucan, sloth)
 - [x] 08 - The Frozen Poles: Arctic and Antarctica, penguins vs polar bears, ice, northern lights (guide: penguin)
 - [x] 09 - Weather and Seasons: summer and winter, the Earth's tilt, rain, wind, rainbows (guide: weather-vane rooster)
-- [ ] 10 - Day and Night, Earth and Sun: the Earth spins, time zones, the Moon (Moon Fish callback!) (guide: owl)
+- [x] 10 - Day and Night, Earth and Sun: the Earth spins, time zones, the Moon (Moon Fish callback!) (guide: owl)
 
 ## Season 2 (ideas for later)
 
