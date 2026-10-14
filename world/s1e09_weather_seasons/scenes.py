@@ -427,7 +427,7 @@ def farm(tl, t):
     if T("f_windact") <= t < T("f_feel", 1):
         eyes.update({"pip": "wide", "luna": "happy"})
     face = -1 if T("f_narr") <= t < T("f_hazel") else 1
-    if T("f_whyq") <= t:
+    if T("f_closer") <= t:
         face = -1
         look = {"luna": (-1, -1), "pip": (-1, -1), "whiskers": (-1, -1)}
     jit = math.sin(t * 50) * 3 if shiver else 0
@@ -454,8 +454,8 @@ def farm(tl, t):
     if ks > 0.01:
         K.label(c, 700, 150, "Snow = frozen water from clouds", 32, k=ks, col=(40, 90, 170))
     # the four season tags at the top
-    kc = tl.prog("f_four", t, 0.0, 0.8) * (1 - tl.prog("f_whyq", t, 0.0, 0.3))
-    k_all = 1 - tl.prog("f_whyq", t, 0.0, 0.3)
+    kc = tl.prog("f_four", t, 0.0, 0.8) * (1 - tl.prog("f_closer", t, 0.0, 0.3))
+    k_all = 1 - tl.prog("f_closer", t, 0.0, 0.3)
     season_tags(c, tl, t, cur if t < T("f_four") else None, k_all, kc)
     # Pip's question bubble: closer to the Sun?
     bk = ten(tl, t, "f_closer", 0.15, 0.35, "f_go", 0.0, 0.2)
@@ -569,7 +569,7 @@ def orbit(tl, t):
         for j in range(6):
             c.line([(x, y - E_R * 1.6 + j * 34), (x, y - E_R * 1.6 + j * 34 + 18)], (255, 255, 255), 3 * tk)
         K.label(c, x + 30, y - E_R - 110, "Tilted!", 36, tip=(x + 28, y - E_R - 30), k=tk, col=(200, 70, 60))
-    sk = ten(tl, t, "o_same", 0.2, 0.4, "o_trip", 0.2, 0.4)
+    sk = ten(tl, t, "o_trip", 0.0, 0.08, "o_summer", 0.0, 0.2)
     K.label(c, 640, 70, "It always leans the same way", 32, k=sk)
     # summer / winter: sunbeams + sky insets
     if hl_sum > 0.01:
