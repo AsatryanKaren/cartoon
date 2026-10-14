@@ -682,3 +682,30 @@ Is there whipped cream on top of the globe? No, it's ice! The friends visit the 
 ```
 North Pole, South Pole, Arctic, Antarctica, penguins, polar bears, northern lights, geography for kids, kids cartoon, Whiskers and Luna
 ```
+
+---
+
+## World 9. Weather and Seasons
+
+**Title**
+```
+Weather and Seasons 🌦️ | Geography for Kids with Whiskers & Luna | Episode 9
+```
+**Description**
+```
+Why does the tree outside lose its leaves? It's autumn! Sir Rufus, a very proud weather-vane rooster, and Hazel the squirrel show the friends spring, summer, autumn and winter. A trip to space shows the real reason we have seasons: the Earth is tilted! Then rain, wind, a rainbow and a far-away thunderstorm. Whiskers looks for the rainbow in the wrong place…
+
+🧠 What we learn:
+1. There are four seasons: spring, summer, autumn and winter.
+2. We have seasons because the Earth is tilted.
+3. A rainbow needs sun and rain together.
+
+❓ Quiz at the end: Why do we have seasons? What makes a rainbow?
+
+🌍 Whiskers & Luna's World: Geography for Kids. Episode 9.
+#geographyforkids #seasons #kidslearning
+```
+**Tags**
+```
+four seasons for kids, why do we have seasons, Earth tilt, weather for kids, rainbow, thunder and lightning, geography for kids, kids cartoon, educational cartoon, Whiskers and Luna
+```
