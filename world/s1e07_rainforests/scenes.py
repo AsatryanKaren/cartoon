@@ -237,7 +237,8 @@ def map_(tl, t):
         P.equator_on_globe(c, gx, gy, r, lon, lat, ek, w=6)
         K.label(c, gx - r - 120, gy - 110, "Equator", 30, tip=(gx - r * 0.75, gy + r * math.sin(math.radians(lat)) * 0.5),
                 k=tl.prog("m_eqline", t, 0.5, 0.7), col=(150, 100, 20))
-        K.label(c, gx + r + 110, gy - 150, "Rainforests", 30, tip=(gx + r * 0.1, gy + 20),
+        rx, ry, _ = K.globe_xy(gx, gy, r, 22, -1, lon, lat)
+        K.label(c, gx + r + 110, gy - 150, "Rainforests", 30, tip=(rx, ry),
                 k=tl.prog("m_green", t, 0.3, 0.5), col=(30, 110, 50))
         fkk = ease_out(tl.prog("m_fly", t, 0.0, 0.8))
         x = lerp(-200, 170, fkk)
@@ -673,8 +674,8 @@ def jungle(tl, t):
     gk = gauge_k(tl, t)
     if gk > 0.01:
         ly = cy
-        if wst is not None and wst["mode"] in ("tumble", "hang"):
-            ly = wst["y"]
+        if wst is not None and t >= tl.t("k_hang"):
+            ly = wst["y"]                 # follow Whiskers through the fall and the landing
         P.gauge(c, 1080, 150, gk, P.level_of(ly - 110), t)
     K.sub_band(c, tl, t)
     K.flash(c, 1 - tl.prog("f_land", t, 0.0, 0.25), (255, 255, 255))

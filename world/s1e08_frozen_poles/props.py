@@ -538,7 +538,7 @@ def never_diagram(ic, t, k=1.0, cross=0.0):
         ic.circle(0, 0, 44, (255, 255, 255), ol=(226, 56, 60), w=6)
         ic.line([(-30, -30), (30, 30)], (226, 56, 60), 8)
         ic.pop()
-        K.label(ic, cx - R - 50, cy, "Never meet!", 24, k=cross, col=(200, 40, 50))
+        K.label(ic, max(cx - R - 50, 96), cy, "Never meet!", 24, k=cross, col=(200, 40, 50))
 
 
 def thermometer(c, x, y, s=1.0, level=0.2, t=0.0):
