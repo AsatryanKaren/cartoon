@@ -628,3 +628,30 @@ Whiskers wants the sunniest nap spot on Earth, so the friends fly to the Sahara!
 ```
 deserts for kids, Sahara desert, camel hump, fennec fox, sand dunes, oasis, geography for kids, kids cartoon, educational cartoon, Whiskers and Luna
 ```
+
+---
+
+## World 7. Rainforests
+
+**Title**
+```
+Rainforests 🦜 | Geography for Kids with Whiskers & Luna | Episode 7
+```
+**Description**
+```
+It's raining again! Luna shows the Equator on her globe, and the friends fly to the Amazon, the biggest rainforest in the world. Coco the toucan lifts them up through the layers of the forest, from the dark forest floor to the leafy canopy where most animals live. Whiskers tries to nap upside down like Mossy the sloth, and falls all the way down!
+
+🧠 What we learn:
+1. Rainforests are warm and rainy, and grow near the Equator.
+2. The Amazon is the biggest rainforest in the world.
+3. Rainforests have layers, and most animals live high up in the canopy.
+
+❓ Quiz at the end: Is a rainforest cold and dry, or warm and wet? Where do most rainforest animals live?
+
+🌍 Whiskers & Luna's World: Geography for Kids. Episode 7.
+#geographyforkids #rainforest #kidslearning
+```
+**Tags**
+```
+rainforest for kids, Amazon rainforest, rainforest layers, sloth, toucan, Equator, geography for kids, kids cartoon, educational cartoon, Whiskers and Luna
+```
