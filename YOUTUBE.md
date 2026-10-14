@@ -709,3 +709,30 @@ Why does the tree outside lose its leaves? It's autumn! Sir Rufus, a very proud 
 ```
 four seasons for kids, why do we have seasons, Earth tilt, weather for kids, rainbow, thunder and lightning, geography for kids, kids cartoon, educational cartoon, Whiskers and Luna
 ```
+
+---
+
+## World 10. Day and Night, Earth and Sun (season finale)
+
+**Title**
+```
+Day and Night, Earth and Sun 🌙☀️ | Geography for Kids with Whiskers & Luna | Episode 10
+```
+**Description**
+```
+Where does the Sun go at night? Professor Hoot the owl shows the friends with a torch and Luna's globe: the Earth spins around once a day! Whiskers tries to stop the Earth from spinning (it doesn't go well), visits Grandpa Shelby going to bed in Hawaii while it's morning at home, finds the "Moon Fish" again, and flies up to the Moon to see why it shines. A big season recap ends Season 1!
+
+🧠 What we learn:
+1. The Earth spins around once a day. That makes day and night.
+2. The Earth goes around the Sun once a year.
+3. The Moon shines with light from the Sun.
+
+❓ Quiz at the end: At night, is the Sun gone? Where does moonlight come from?
+
+🌍 Whiskers & Luna's World: Geography for Kids. Episode 10, the Season 1 finale.
+#geographyforkids #dayandnight #kidslearning
+```
+**Tags**
+```
+day and night for kids, Earth spins, Earth and Sun, Moon phases, time zones for kids, why does the moon shine, geography for kids, kids cartoon, educational cartoon, Whiskers and Luna
+```

@@ -25,8 +25,7 @@ Facts must be correct and simple for ages 4–8. Use simple diagrams (arrows, la
 
 ## Season 1
 
-Status: 01–05 are finished. 06, 07 and 08 are unfinished drafts in their folders (stopped mid-work):
-continue them from the existing files. 09 and 10 have not been started.
+Status: Season 1 is complete (all 10 episodes finished).
 
 - [x] 01 - Our Planet: the Earth is round, land and water, globe and map, north/south/east/west (guide: wise old turtle)
 - [x] 02 - The Seven Continents: a flying tour, one famous animal or place each (guide: albatross)
