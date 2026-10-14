@@ -601,3 +601,30 @@ Follow Drip the raindrop on a big journey: from snow on a mountain, down tiny st
 ```
 rivers for kids, water cycle for kids, Nile, Amazon river, lakes, raindrop, geography for kids, kids cartoon, educational cartoon, Whiskers and Luna
 ```
+
+---
+
+## World 6. Deserts
+
+**Title**
+```
+Deserts 🐪 | Geography for Kids with Whiskers & Luna | Episode 6
+```
+**Description**
+```
+Whiskers wants the sunniest nap spot on Earth, so the friends fly to the Sahara! They learn what really makes a desert, watch the wind build sand dunes, and meet Humphrey the camel. Whiskers looks for water in his hump, but finds something else. Fizz the fennec fox shows off her giant ears at the oasis, and at night the desert gets surprisingly cold.
+
+🧠 What we learn:
+1. A desert is a place where very little rain falls.
+2. The Sahara, in Africa, is the biggest hot desert.
+3. A camel's hump stores fat, not water.
+
+❓ Quiz at the end: What makes a place a desert? What is inside a camel's hump?
+
+🌍 Whiskers & Luna's World: Geography for Kids. Episode 6.
+#geographyforkids #desert #kidslearning
+```
+**Tags**
+```
+deserts for kids, Sahara desert, camel hump, fennec fox, sand dunes, oasis, geography for kids, kids cartoon, educational cartoon, Whiskers and Luna
+```
