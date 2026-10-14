@@ -226,7 +226,11 @@ def map_scene(tl, t):
     kt = tl.prog("m_third", t, 0.25, 0.5) * (1 - tl.prog("m_litter", t, 0.0, 0.2))
     if kt > 0.01:
         K.map_highlight(c, v, "africa", kt * 0.7, (140, 240, 140), t)
+        # repaint the Sahara's sand on top of the green glow so it stays yellow
+        sp = [v.xy(lo, la) for lo, la in K.spline(K.DESERTS[0] + K.DESERTS[0][:3], 8)]
+        c.poly(sp[8:len(sp) - 8], (236, 206, 128), ol=None)
         desert_outline(c, v, K.DESERTS[0], 1.0, t)
+        K.map_label(c, v, SAHARA[0], SAHARA[1] - 1, "SAHARA", 22 * v.z ** 0.6, (255, 236, 110), ks)
         pk = tl.prog("m_third", t, 0.4, 0.9)
         K.inset(c, 1100, 230, 240, 250, kt, lambda ic: third_pie(ic, t, pk))
     # home pin + dotted path + the cushion flying along it
@@ -671,8 +675,8 @@ def night(tl, t):
     # the empty water bowl
     bk = tl.prog("n_bowl", t, 0.2, 0.35) * (1 - tl.prog("n_laugh", t, 0.6, 1.0))
     if bk > 0.01:
-        K.bubble(c, 420, 320, 100, 62, bk, tail=(O_CUSH[0] - 60, O_CUSH[1] - 150))
-        c.push(420, 345, bk)
+        K.bubble(c, 640, 330, 100, 62, bk, tail=(O_CUSH[0] - 40, O_CUSH[1] - 150))
+        c.push(640, 355, bk)
         P.bowl(c, 0, 0, 1.0, 0.0)
         c.pop()
     K.sub_band(c, tl, t)
