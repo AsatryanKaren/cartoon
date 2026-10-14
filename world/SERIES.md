@@ -34,7 +34,7 @@ continue them from the existing files. 09 and 10 have not been started.
 - [x] 04 - Mountains and Volcanoes: how mountains grow, Everest the tallest, a volcano erupts (guide: snow leopard)
 - [x] 05 - Rivers and Lakes: from a raindrop to the sea, the Nile and the Amazon, the water cycle (guide: otter)
 - [x] 06 - Deserts: the hot Sahara, why it rarely rains, oases, the camel's secrets (guides: camel, fennec fox)
-- [ ] 07 - Rainforests: the Amazon, layers from floor to treetops, so many animals (guides: toucan, sloth)
+- [x] 07 - Rainforests: the Amazon, layers from floor to treetops, so many animals (guides: toucan, sloth)
 - [ ] 08 - The Frozen Poles: Arctic and Antarctica, penguins vs polar bears, ice, northern lights (guide: penguin)
 - [ ] 09 - Weather and Seasons: summer and winter, the Earth's tilt, rain, wind, rainbows (guide: weather-vane rooster)
 - [ ] 10 - Day and Night, Earth and Sun: the Earth spins, time zones, the Moon (Moon Fish callback!) (guide: owl)
