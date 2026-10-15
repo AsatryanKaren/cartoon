@@ -5,7 +5,7 @@ from interactive.pond_or_tree.shared import MOODS, EXTRA_SFX  # noqa: F401
 
 TITLE = "intro"
 PLACE = "Interactive/pond_or_tree"
-FILM_SECONDS = 50
+FILM_SECONDS = 46
 EDGE_FADES = False
 SCENES = ['garden', 'ask']
 MUSIC = {'garden': 'play', 'ask': 'ask'}

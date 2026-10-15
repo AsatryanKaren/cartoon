@@ -21,6 +21,25 @@ from films.venice.props import balloon as _venice_balloon
 from films.london.props import robin, nest  # noqa: F401
 from films.copenhagen.props import duck  # noqa: F401
 
+# ------------------------------------------------------------------ engine workaround
+# render.cuts() returns [] for a clip with EDGE_FADES = False and no fading scene changes, and then
+# render.frame() fails on min() of an empty list. Until the engine handles that, give it one cut
+# time far outside the clip (so no frame is faded). Only touches the running render script.
+def _patch_render_cuts():
+    import sys
+    m = sys.modules.get("__main__")
+    orig = getattr(m, "cuts", None)
+    if orig is None or getattr(orig, "_never_empty", False) or not hasattr(m, "frame"):
+        return
+
+    def cuts(tl):
+        return orig(tl) or [-1e9]
+    cuts._never_empty = True
+    m.cuts = cuts
+
+
+_patch_render_cuts()
+
 BALL = (226, 52, 52)
 BALL_D = (176, 30, 36)
 STAR = (255, 222, 90)
@@ -423,9 +442,9 @@ def q2_backdrop():
 
 # ================================================================== home garden
 
-GW, GY = 2400, 600        # garden world width and ground line
-HOUSE_X = 60
-STREAM_X = 1820           # the garden ends at a stream here
+GW, GY = 2200, 600        # garden world width and ground line
+HOUSE_X = 640
+STREAM_X = 1700           # the garden ends at a stream here
 
 
 def garden_bg(sunset=False):
@@ -436,7 +455,7 @@ def garden_bg(sunset=False):
             for x in range(200, GW, 560):
                 D.cloud(c, x + rng.uniform(-60, 60), rng.uniform(70, 150), rng.uniform(0.6, 1.0))
         else:
-            c.circle(1500, 360, 70, (255, 226, 150), ol=None)
+            c.circle(1900, 330, 70, (255, 226, 150), ol=None)
         pts = [(x, 420 + 36 * math.sin(x / 260)) for x in range(0, GW + 50, 50)]
         c.poly(pts + [(GW, H), (0, H)], (150, 200, 130) if not sunset else (170, 150, 140), ol=None)
         for x in range(500, GW, 470):
@@ -470,7 +489,7 @@ def garden_bg(sunset=False):
         for dx in (-30, 0, 30):
             D.flower(c, hx + 265 + dx, 446, (250, 120, 150), 0.7)
         # bushes, flowers, fence posts
-        for x in range(520, STREAM_X - 100, 300):
+        for x in list(range(80, HOUSE_X - 60, 260)) + list(range(HOUSE_X + 480, STREAM_X - 100, 300)):
             D.bush(c, x + rng.uniform(-40, 40), GY - 34, rng.uniform(0.7, 1.0))
         cols = [(250, 120, 150), (255, 230, 90), (180, 140, 250), (255, 255, 255)]
         for _ in range(110):
@@ -513,7 +532,6 @@ def lake_bg():
         for x in range(30, BANK_X, 90):
             D.flower(c, x + rng.uniform(-20, 20), LY + rng.uniform(0, 80), (255, 255, 255), 0.7)
         reeds(c, BANK_X + 40, LY + 30, 1.0, 0, 4)
-        c.rect(BANK_X - 30, LY - 120, BANK_X - 16, LY + 10, TRUNK, w=2.5)     # mooring post
         return c.img
     return cached("lake", make)
 
