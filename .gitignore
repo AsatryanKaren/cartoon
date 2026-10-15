@@ -4,3 +4,4 @@ __pycache__/
 *.mp4
 .DS_Store
 !catcute/**/*.mp4
+!app/public/stories/**/*.mp4

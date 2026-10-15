@@ -34,6 +34,9 @@ export function Player({ storyId, onExit }: Props) {
           srcs.map(async (src) => {
             const res = await fetch(`${BASE}${storyId}/${src}`);
             if (!res.ok) throw new Error(`${src}: HTTP ${res.status}`);
+            // a dev server answers a missing file with the web page itself, so check it really is a video
+            const type = res.headers.get("content-type") ?? "";
+            if (!type.startsWith("video/")) throw new Error(`clip "${src}" is missing`);
             const url = URL.createObjectURL(await res.blob());
             created.push(url);
             map[src] = url;
