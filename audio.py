@@ -12,7 +12,11 @@ import film as story
 from timeline import SR
 
 TAU = 2 * np.pi
-N = story.FILM_SECONDS * SR
+
+
+def _n():
+    # length of the current film in samples (films may set their own FILM_SECONDS)
+    return int(round(story.FILM_SECONDS * SR))
 
 
 def midi(n):
@@ -126,7 +130,7 @@ def music(tl):
     for event_id, frac, mood in story.MUSIC_CUES:
         sections.append((tl.t(event_id, frac), mood))
     sections.sort()
-    track = np.zeros(N, np.float32)
+    track = np.zeros(_n(), np.float32)
     fade = 0.8
     for k, (start, mood) in enumerate(sections):
         end = sections[k + 1][0] if k + 1 < len(sections) else story.FILM_SECONDS
@@ -139,8 +143,9 @@ def music(tl):
         ramp[-f:] *= np.linspace(1, 0, f)
         place(track, a, x * ramp)
     # gentle overall fade-in and fade-out at film edges
-    track[:SR] *= np.linspace(0, 1, SR)
-    track[-4 * SR:] *= np.linspace(1, 0, 4 * SR)
+    if story.EDGE_FADES:
+        track[:SR] *= np.linspace(0, 1, SR)
+        track[-4 * SR:] *= np.linspace(1, 0, 4 * SR)
     return track
 
 
@@ -230,7 +235,7 @@ SFX_GAIN = {"meow": 0.7, "splash": 0.9, "clink": 0.5, "whoosh": 0.45, "ribbit": 
 
 
 def effects(tl):
-    track = np.zeros(N, np.float32)
+    track = np.zeros(_n(), np.float32)
     rng = np.random.default_rng(11)
     table = {k: (fn, SFX_GAIN[k]) for k, fn in SFX.items()}
     table.update(story.EXTRA_SFX)
@@ -244,6 +249,7 @@ def effects(tl):
 # -------------------------------------------------------------------- mix
 
 def mix(tl, path):
+    N = _n()
     voice = np.zeros(N, np.float32)
     talking = np.zeros(N, np.float32)
     for start, x in tl.voices:

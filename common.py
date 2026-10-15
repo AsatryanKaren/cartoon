@@ -71,3 +71,4 @@ MUSIC = {}          # scene name -> mood name (default: the scene's own name, se
 MOODS = {}          # extra/override moods: name -> dict like audio.MOODS entries
 MUSIC_CUES = []     # [(event_id, fraction, mood)] mood changes in the middle of a scene
 EXTRA_SFX = {}      # name -> (function(rng) -> float32 samples at 48 kHz, gain)
+EDGE_FADES = True   # fade picture/music in and out at the very start/end (False for seamless interactive clips)

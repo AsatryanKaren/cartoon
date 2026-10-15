@@ -32,7 +32,7 @@ _tl = None
 
 def cuts(tl):
     """Times where the picture fades through black."""
-    out = [0.0, float(story.FILM_SECONDS)]
+    out = [0.0, float(story.FILM_SECONDS)] if story.EDGE_FADES else []
     sc = story.scenes()
     for name in story.SCENES[1:]:
         if name not in getattr(sc, "CONTINUOUS", ()):
