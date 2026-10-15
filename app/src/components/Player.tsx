@@ -3,7 +3,7 @@ import { allSources, initialState, reduce, type EngineEvent, type EngineState } 
 import { useSpeechRecognition } from "../speech/useSpeechRecognition";
 import type { Story } from "../types/story";
 import { ListeningIndicator } from "./ListeningIndicator";
-import { VideoStage } from "./VideoStage";
+import { VideoStage, type StageHandle } from "./VideoStage";
 
 const BASE = import.meta.env.BASE_URL + "stories/";
 
@@ -87,7 +87,11 @@ function StoryRunner({ story, urls, onExit }: RunnerProps) {
     initialState,
   );
   const [showHeard, setShowHeard] = useState(false);
-  const listening = state.kind === "listening";
+  // Nothing plays until a tap: browsers only allow video with sound after a user gesture.
+  const [started, setStarted] = useState(false);
+  const [needsTap, setNeedsTap] = useState(false);
+  const stage = useRef<StageHandle>(null);
+  const listening = started && state.kind === "listening";
 
   // Only listen during the silent "listening" loop, so the microphone never hears the cartoon's own question.
   const onText = useCallback((text: string) => dispatch({ type: "HEARD", text }), []);
@@ -137,9 +141,38 @@ function StoryRunner({ story, urls, onExit }: RunnerProps) {
     );
   }
 
+  const start = () => {
+    stage.current?.unlock(urls[state.src]);
+    setStarted(true);
+  };
+
   return (
     <div className="player">
-      <VideoStage src={urls[state.src]} loop={listening} onEnded={() => dispatch({ type: "CLIP_ENDED" })} />
+      <VideoStage
+        stageRef={stage}
+        src={started ? urls[state.src] : null}
+        loop={listening}
+        onEnded={() => dispatch({ type: "CLIP_ENDED" })}
+        onBlocked={() => setNeedsTap(true)}
+      />
+      {!started && (
+        <button className="start" onClick={start} aria-label="Start the story">
+          {story.cover && <img src={`${BASE}${story.id}/${story.cover}`} alt="" />}
+          <span className="play">▶</span>
+        </button>
+      )}
+      {needsTap && (
+        <button
+          className="start tap"
+          onClick={() => {
+            setNeedsTap(false);
+            stage.current?.resume();
+          }}
+          aria-label="Continue"
+        >
+          <span className="play">▶</span>
+        </button>
+      )}
       {listening && <ListeningIndicator heard={speech.heard} showHeard={showHeard} />}
       {!speech.supported && (
         <div className="banner">Voice answers need Chrome, Edge or Safari. The story will choose by itself.</div>
