@@ -1,0 +1,41 @@
+{
+  "id": "pond_or_tree",
+  "title": "Whiskers and the Lost Ball",
+  "cover": "cover.png",
+  "start": "intro",
+  "nodes": {
+    "intro":   { "type": "clip", "src": "intro.mp4", "next": "q1" },
+    "q1": {
+      "type": "question",
+      "listen": "q1_listen.mp4",
+      "reask": "q1_reask.mp4",
+      "auto": "q1_auto.mp4",
+      "timeoutSec": 7,
+      "maxReasks": 1,
+      "default": "pond",
+      "choices": [
+        { "id": "pond", "keywords": ["pond", "ponds", "water", "fish", "frog", "duck", "lake", "swim"], "next": "pond" },
+        { "id": "tree", "keywords": ["tree", "trees", "climb", "up", "bird", "branch", "leaves", "high"], "next": "tree" }
+      ]
+    },
+    "pond":    { "type": "clip", "src": "pond.mp4", "next": "middle" },
+    "tree":    { "type": "clip", "src": "tree.mp4", "next": "middle" },
+    "middle":  { "type": "clip", "src": "middle.mp4", "next": "q2" },
+    "q2": {
+      "type": "question",
+      "listen": "q2_listen.mp4",
+      "reask": "q2_reask.mp4",
+      "auto": "q2_auto.mp4",
+      "timeoutSec": 7,
+      "maxReasks": 1,
+      "default": "boat",
+      "choices": [
+        { "id": "boat",    "keywords": ["boat", "boats", "sail", "ship", "row", "water", "swim"], "next": "boat" },
+        { "id": "balloon", "keywords": ["balloon", "balloons", "fly", "air", "sky", "float", "up"], "next": "balloon" }
+      ]
+    },
+    "boat":    { "type": "clip", "src": "boat.mp4", "next": "ending" },
+    "balloon": { "type": "clip", "src": "balloon.mp4", "next": "ending" },
+    "ending":  { "type": "clip", "src": "ending.mp4", "next": null }
+  }
+}

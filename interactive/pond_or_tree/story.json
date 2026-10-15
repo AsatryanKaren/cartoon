@@ -14,8 +14,8 @@
       "maxReasks": 1,
       "default": "pond",
       "choices": [
-        { "id": "pond", "keywords": ["pond", "water", "fish", "frog", "duck", "lake", "swim"], "next": "pond" },
-        { "id": "tree", "keywords": ["tree", "climb", "up", "bird", "branch", "leaves", "high"], "next": "tree" }
+        { "id": "pond", "keywords": ["pond", "ponds", "water", "fish", "frog", "duck", "lake", "swim"], "next": "pond" },
+        { "id": "tree", "keywords": ["tree", "trees", "climb", "up", "bird", "branch", "leaves", "high"], "next": "tree" }
       ]
     },
     "pond":    { "type": "clip", "src": "pond.mp4", "next": "middle" },
@@ -30,8 +30,8 @@
       "maxReasks": 1,
       "default": "boat",
       "choices": [
-        { "id": "boat",    "keywords": ["boat", "sail", "ship", "row", "water", "swim"], "next": "boat" },
-        { "id": "balloon", "keywords": ["balloon", "fly", "air", "sky", "float", "up"], "next": "balloon" }
+        { "id": "boat",    "keywords": ["boat", "boats", "sail", "ship", "row", "water", "swim"], "next": "boat" },
+        { "id": "balloon", "keywords": ["balloon", "balloons", "fly", "air", "sky", "float", "up"], "next": "balloon" }
       ]
     },
     "boat":    { "type": "clip", "src": "boat.mp4", "next": "ending" },

@@ -46,7 +46,7 @@ def frame(tl, i, cut_times):
     t = i / story.FPS
     name = tl.scene_at(t)
     img = story.scenes().SCENE_FUNCS[name](tl, t).finish()
-    k = min(min(1.0, abs(t - c) / FADE) for c in cut_times)
+    k = min((min(1.0, abs(t - c) / FADE) for c in cut_times), default=1.0)
     if k < 1:
         img = Image.blend(Image.new("RGB", img.size), img, k)
     line = tl.line_at(t)

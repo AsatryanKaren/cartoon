@@ -21,25 +21,6 @@ from films.venice.props import balloon as _venice_balloon
 from films.london.props import robin, nest  # noqa: F401
 from films.copenhagen.props import duck  # noqa: F401
 
-# ------------------------------------------------------------------ engine workaround
-# render.cuts() returns [] for a clip with EDGE_FADES = False and no fading scene changes, and then
-# render.frame() fails on min() of an empty list. Until the engine handles that, give it one cut
-# time far outside the clip (so no frame is faded). Only touches the running render script.
-def _patch_render_cuts():
-    import sys
-    m = sys.modules.get("__main__")
-    orig = getattr(m, "cuts", None)
-    if orig is None or getattr(orig, "_never_empty", False) or not hasattr(m, "frame"):
-        return
-
-    def cuts(tl):
-        return orig(tl) or [-1e9]
-    cuts._never_empty = True
-    m.cuts = cuts
-
-
-_patch_render_cuts()
-
 BALL = (226, 52, 52)
 BALL_D = (176, 30, 36)
 STAR = (255, 222, 90)

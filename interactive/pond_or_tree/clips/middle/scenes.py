@@ -32,7 +32,7 @@ def pip_inside(tl, t):
 
 def river(tl, t):
     T = tl.t
-    camx = S.smooth(t, [(0, 0), (T("m_no"), 0), (T("m_island", 0.7), 1440), (T("m_pip_in"), 1440),
+    camx = S.smooth(t, [(0, 0), (T("m_no"), 0), (T("m_island", 0.7), 1320), (T("m_pip_in"), 1320),
                         (T("m_pip_in", 0.85), 0)], r=0.4)
     c = S.lake_view(camx)
     c.push(-camx, 0)
@@ -56,7 +56,7 @@ def river(tl, t):
             r = 26 + 30 * ((t * 0.9 + k * 0.5) % 1.0)
             c.ellipse(bx, by + 16, r, r * 0.25, None, ol=S.WATER_L, w=2)
     # Luna
-    lx = S.smooth(t, [(0, -300), (T("m_arrive", 0.9), 290)])
+    lx = S.smooth(t, [(0, -300), (T("m_arrive", 0.9), 255)])
     lmov = t < T("m_arrive", 0.95)
     D.cat(c, lx, S.LY, D.LUNA, 1.0, 1, "walk" if lmov else "stand", walk=lx / 12 if lmov else 0, t=t,
           mouth=tl.mouth("luna", t), seed=1.3, look=(1, 0.4),
