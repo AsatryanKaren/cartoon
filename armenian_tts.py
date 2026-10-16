@@ -92,13 +92,58 @@ def _reference(who, english_speak):
     return path
 
 
+MAX_CHARS_PER_SEC = 20     # faster than this means the model stopped early: try again
+PAUSE = {".": 0.28, "?": 0.3, "!": 0.28}
+
+
+def sentences(text):
+    """Split a line after . ? ! (the model drops words at the end of long multi-sentence input)."""
+    t = normalise(text)
+    out, cur = [], ""
+    for ch in t:
+        cur += ch
+        if ch in ".?!":
+            out.append(cur.strip())
+            cur = ""
+    if cur.strip():
+        out.append(cur.strip())
+    return [s for s in out if any(c.isalpha() for c in s)]
+
+
+def _one(who, s, seed, tries=8):
+    """One sentence; regenerate (new seed) while it is too short to contain every word."""
+    import torch
+    best = None
+    for k in range(tries):
+        torch.manual_seed(seed + 7919 * k)
+        chunks = [np.asarray(c, dtype=np.float32).reshape(-1)
+                  for c in _model.generate_audio_stream(_states[who], s)]
+        x = np.concatenate(chunks) if chunks else np.zeros(1, np.float32)
+        if best is None or len(x) > len(best):
+            best = x
+        letters = sum(c.isalpha() for c in s)
+        if len(x) / SR_MODEL >= letters / MAX_CHARS_PER_SEC:
+            return x
+    return best
+
+
 def synth(who, text, english_speak, seed=0):
     """Mono float32 Armenian speech at 24 kHz."""
-    import torch
     _load()
     if who not in _states:
         _states[who] = _model.get_state_for_audio_prompt(_reference(who, english_speak))
-    torch.manual_seed(seed)
-    chunks = [np.asarray(c, dtype=np.float32).reshape(-1)
-              for c in _model.generate_audio_stream(_states[who], normalise(text))]
-    return np.concatenate(chunks) if chunks else np.zeros(1, np.float32)
+    parts = []
+    for k, s in enumerate(sentences(text)):
+        if parts:
+            parts.append(np.zeros(int(PAUSE.get(prev[-1], 0.25) * SR_MODEL), np.float32))
+        x = _one(who, s, seed + 101 * k)
+        parts.append(_trim(x))
+        prev = s
+    return np.concatenate(parts) if parts else np.zeros(1, np.float32)
+
+
+def _trim(x, thresh=0.01):
+    loud = np.nonzero(np.abs(x) > thresh)[0]
+    if len(loud) == 0:
+        return x
+    return x[max(0, loud[0] - int(0.02 * SR_MODEL)):min(len(x), loud[-1] + int(0.06 * SR_MODEL))]
