@@ -38,6 +38,8 @@ export function initialState(story: Story): EngineState {
 export function words(text: string): string[] {
   return text
     .toLowerCase()
+    // Armenian stress/question/exclamation marks sit inside a word (լճա՞կ): drop them, don't split there
+    .replace(/[\u055b\u055c\u055e]/gu, "")
     .replace(/[^\p{L}\p{N}\s']/gu, " ")
     .split(/\s+/)
     .filter(Boolean);
@@ -58,8 +60,13 @@ export function matchChoice(text: string, choices: Choice[]): Choice | null {
     for (const k of c.keywords) {
       const kw = words(k).join(" ");
       if (!kw) continue;
-      // whole-word match; also accept simple plurals ("trees", "boats")
-      if (joined.includes(` ${kw} `) || joined.includes(` ${kw}s `)) score += 1;
+      if (k.trim().endsWith("*")) {
+        // stem: any word that starts with it ("ծառ*" matches ծառը, ծառի, ծառին), for languages with endings
+        if (joined.includes(` ${kw}`)) score += 1;
+      } else if (joined.includes(` ${kw} `) || joined.includes(` ${kw}s `)) {
+        // whole-word match; also accept simple plurals ("trees", "boats")
+        score += 1;
+      }
     }
     if (score > bestScore) {
       best = c;

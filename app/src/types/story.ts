@@ -10,7 +10,10 @@ export interface ClipNode {
 
 export interface Choice {
   id: string;
-  /** Words that select this choice when heard in the child's answer. */
+  /**
+   * Words that select this choice when heard in the child's answer.
+   * A word ending in "*" is a stem and matches any word starting with it (for Armenian endings).
+   */
   keywords: string[];
   next: string;
 }
@@ -37,6 +40,8 @@ export type StoryNode = ClipNode | QuestionNode;
 export interface Story {
   id: string;
   title: string;
+  /** Language the child answers in, for speech recognition (BCP 47, e.g. "hy-AM"). Default "en-US". */
+  lang?: string;
   cover?: string;
   start: string;
   nodes: Record<string, StoryNode>;
@@ -45,5 +50,7 @@ export interface Story {
 export interface StorySummary {
   id: string;
   title: string;
+  /** Language label shown on the picker card, e.g. "English", "Հայերեն". */
+  language?: string;
   cover?: string;
 }

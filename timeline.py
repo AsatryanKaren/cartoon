@@ -84,6 +84,32 @@ def trim_silence(x, thresh=0.01):
 
 def speak(who, text, backend, premium=False):
     """Return mono float32 speech at SR for one line (cached on disk)."""
+    if getattr(story, "LANG", "en") == "hy":
+        return speak_armenian(who, text, backend, premium)
+    return speak_english(who, text, backend, premium)
+
+
+def speak_armenian(who, text, backend, premium=False):
+    """Armenian line in the character's own voice (armenian_tts clones it from his English voice)."""
+    import armenian_tts
+    import soundfile
+    h = hashlib.sha1(f"pocket_hy|{story.CAST[who]}|{armenian_tts.REFERENCE[who]}|{text}".encode()).hexdigest()[:16]
+    os.makedirs(CACHE, exist_ok=True)
+    out = os.path.join(CACHE, f"hy_{who}_{h}.wav")
+    if not os.path.exists(out):
+        x = armenian_tts.synth(who, text, lambda w, t: speak_english(w, t, backend, premium),
+                               seed=int(h[:8], 16))
+        raw = out + f".{os.getpid()}.raw.wav"
+        soundfile.write(raw, x, armenian_tts.SR_MODEL)
+        tmp = out + f".{os.getpid()}.tmp.wav"
+        subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", raw, "-ac", "1", "-ar", str(SR),
+                        "-sample_fmt", "s16", tmp], check=True)
+        os.replace(tmp, out)
+        os.remove(raw)
+    return trim_silence(read_wav(out))
+
+
+def speak_english(who, text, backend, premium=False):
     v = story.CAST[who]
     if backend == "kokoro":
         key = f"kokoro|{v.kokoro}|{v.k_speed}|{v.k_pitch}|{text}"

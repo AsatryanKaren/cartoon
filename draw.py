@@ -48,9 +48,25 @@ FONT_CANDIDATES = [
 ]
 
 
+# Fonts that have Armenian letters, used for any text that contains them (the fonts above do not).
+ARMENIAN_FONTS = [
+    "/System/Library/Fonts/Supplemental/Arial Unicode.ttf",
+    "/Library/Fonts/Arial Unicode.ttf",
+    "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
+    "/usr/share/fonts/truetype/freefont/FreeSansBold.ttf",
+]
+
+# On-screen words a film may swap for another language, e.g. {"The End": "Վերջ"} (empty = as written).
+TEXTS = {}
+
+
+def is_armenian(s):
+    return any("\u0531" <= ch <= "\u058f" for ch in s)
+
+
 @lru_cache(None)
-def font(size):
-    for path in FONT_CANDIDATES:
+def font(size, armenian=False):
+    for path in (ARMENIAN_FONTS if armenian else FONT_CANDIDATES):
         if os.path.exists(path):
             return ImageFont.truetype(path, int(size * SS))
     return ImageFont.load_default(int(size * SS))
@@ -147,7 +163,8 @@ class Canvas:
         self.d.arc(self._box(cx, cy, rx, ry), a0, a1, fill=self.c(fill), width=self._w(w))
 
     def text(self, x, y, s, size, fill, anchor="mm", stroke=0, stroke_fill=OUT):
-        self.d.text(self.P(x, y), s, font=font(size), fill=self.c(fill), anchor=anchor,
+        s = TEXTS.get(s, s)
+        self.d.text(self.P(x, y), s, font=font(size, is_armenian(s)), fill=self.c(fill), anchor=anchor,
                     stroke_width=int(stroke * SS), stroke_fill=self.c(stroke_fill), align="center")
 
     def glow(self, cx, cy, rx, ry, inner, outer, steps=10):
@@ -511,8 +528,8 @@ def zzz(c, x, y, t):
 
 
 @lru_cache(None)
-def font_px(size):
-    for path in FONT_CANDIDATES:
+def font_px(size, armenian=False):
+    for path in (ARMENIAN_FONTS if armenian else FONT_CANDIDATES):
         if os.path.exists(path):
             return ImageFont.truetype(path, size)
     return ImageFont.load_default(size)
@@ -531,6 +548,6 @@ def subtitle(img, text, col, size=30, width=52):
     d = ImageDraw.Draw(img)
     y = H - 34 - (size + 10) * (len(lines) - 1)
     for ln in lines:
-        d.text((W / 2, y), ln, font=font_px(size), fill=col, anchor="mm",
+        d.text((W / 2, y), ln, font=font_px(size, is_armenian(ln)), fill=col, anchor="mm",
                stroke_width=3, stroke_fill=(20, 15, 20))
         y += size + 10

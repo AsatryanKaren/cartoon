@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useReducer, useRef, useState } from "react";
 import { allSources, initialState, reduce, type EngineEvent, type EngineState } from "../engine/storyEngine";
 import { useSpeechRecognition } from "../speech/useSpeechRecognition";
+import { uiText } from "../i18n";
 import type { Story } from "../types/story";
 import { ListeningIndicator } from "./ListeningIndicator";
 import { VideoStage, type StageHandle } from "./VideoStage";
@@ -98,7 +99,8 @@ function StoryRunner({ story, urls, onExit }: RunnerProps) {
 
   // Only listen during the silent "listening" loop, so the microphone never hears the cartoon's own question.
   const onText = useCallback((text: string) => dispatch({ type: "HEARD", text }), []);
-  const speech = useSpeechRecognition(listening, onText);
+  const speech = useSpeechRecognition(listening, onText, story.lang);
+  const ui = uiText(story.lang);
 
   // Silence timer: re-ask (or choose automatically) if nobody answers. Talking pushes it back.
   const timer = useRef<number | undefined>(undefined);
@@ -134,11 +136,11 @@ function StoryRunner({ story, urls, onExit }: RunnerProps) {
   if (state.kind === "finished") {
     return (
       <div className="end">
-        <h2>The End</h2>
-        <p>Thank you for helping Whiskers and Luna!</p>
+        <h2>{ui.theEnd}</h2>
+        <p>{ui.thanks}</p>
         <div className="row">
-          <button className="big" onClick={() => dispatch({ type: "RESTART" })}>Play again</button>
-          <button className="big secondary" onClick={onExit}>Other stories</button>
+          <button className="big" onClick={() => dispatch({ type: "RESTART" })}>{ui.playAgain}</button>
+          <button className="big secondary" onClick={onExit}>{ui.otherStories}</button>
         </div>
       </div>
     );
@@ -176,12 +178,12 @@ function StoryRunner({ story, urls, onExit }: RunnerProps) {
           <span className="play">▶</span>
         </button>
       )}
-      {listening && <ListeningIndicator heard={speech.heard} showHeard={showHeard} />}
+      {listening && <ListeningIndicator heard={speech.heard} showHeard={showHeard} text={ui.listening} />}
       {!speech.supported && (
-        <div className="banner">Voice answers need Chrome, Edge or Safari. The story will choose by itself.</div>
+        <div className="banner">{ui.noSpeech}</div>
       )}
       {speech.error === "not-allowed" && (
-        <div className="banner">The microphone is blocked. Allow it in the browser to answer with your voice.</div>
+        <div className="banner">{ui.micBlocked}</div>
       )}
       <button className="exit" onClick={onExit} aria-label="Close story">✕</button>
     </div>

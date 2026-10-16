@@ -28,6 +28,7 @@ export function StoryPicker({ onPick }: Props) {
           <button key={s.id} className="card" onClick={() => onPick(s)}>
             {s.cover && <img src={`${BASE}${s.id}/${s.cover}`} alt="" />}
             <span>{s.title}</span>
+            {s.language && <span className="lang">{s.language}</span>}
           </button>
         ))}
       </div>

@@ -79,3 +79,25 @@ describe("story engine", () => {
     );
   });
 });
+
+describe("matchChoice in Armenian (stems)", () => {
+  const choices = [
+    { id: "pond", keywords: ["լճ*", "լիճ*", "ջր*", "գորտ*", "pond"], next: "pond" },
+    { id: "tree", keywords: ["ծառ*", "վերև*", "թռչուն*", "tree"], next: "tree" },
+  ];
+  it("matches a word with an ending", () => {
+    expect(matchChoice("Լճակի մոտ", choices)?.id).toBe("pond");
+    expect(matchChoice("ծառի վրա", choices)?.id).toBe("tree");
+    expect(matchChoice("Ծառը", choices)?.id).toBe("tree");
+  });
+  it("ignores Armenian stress and question marks inside a word", () => {
+    expect(matchChoice("լճա՞կը", choices)?.id).toBe("pond");
+    expect(matchChoice("ծա՛ռ", choices)?.id).toBe("tree");
+  });
+  it("only matches at the start of a word", () => {
+    expect(matchChoice("բարեծառ", choices)).toBeNull();
+  });
+  it("still returns null on a tie", () => {
+    expect(matchChoice("լճակ, թե՞ ծառ", choices)).toBeNull();
+  });
+});
