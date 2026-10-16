@@ -1,3 +1,4 @@
 [
-  { "id": "pond_or_tree", "title": "Whiskers and the Lost Ball", "cover": "cover.png" }
+  { "id": "pond_or_tree", "title": "Whiskers and the Lost Ball", "language": "English", "cover": "cover.png" },
+  { "id": "pond_or_tree_hy", "title": "Վիսկերսը և կորած գնդակը", "language": "Հայերեն", "cover": "cover.png" }
 ]
