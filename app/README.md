@@ -40,6 +40,14 @@ A question in `story.json`:
 
 If nobody answers within `timeoutSec`, Whiskers asks again (`reask`); after `maxReasks` he picks `default` himself (`auto`).
 
+## Languages
+
+A story can be in any language the browser's speech recognition knows. Set `"lang"` in its `story.json`
+(default `"en-US"`). `pond_or_tree_hy` is the Armenian version of the English story: `"lang": "hy-AM"`
+(works in Chrome; Safari may not recognise Armenian, then the story chooses by itself).
+A keyword ending in `*` is a stem: `"ծառ*"` matches ծառ, ծառը, ծառի, ծառին. The on-screen words of the
+player (I'm listening…, Play again …) come from `src/i18n.ts`.
+
 ## Add a new story
 
 1. Make the clips with the cartoon engine (see `interactive/pond_or_tree/` for the pattern).

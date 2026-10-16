@@ -5,5 +5,5 @@ from interactive.pond_or_tree_hy.lines import armenian
 
 PLACE = "Interactive/pond_or_tree_hy"
 LANG = "hy"
-FILM_SECONDS = 5
+FILM_SECONDS = 6  # English clip + the extra time the Armenian lines take
 SCRIPT = armenian("q2_auto", _en.SCRIPT)
