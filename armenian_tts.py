@@ -33,6 +33,8 @@ REFERENCE = {
     "pip": "Hello, friends! Need some help? Leave it to me! I'm the bravest mouse in the meadow!",
     "frog": "Ribbit! Are you looking for a big red ball? It bounced on my lily pad. Boing!",
     "bird": "Tweet! Hello! I saw it from up here! It bounced down the hill, all the way to the river!",
+    "hedgie": "Hello! I'm Hedgie. Are you gathering apples? Watch how I do it. Roll, roll!",
+    "buzzy": "Bzzz! Hello! I'm Buzzy. Of course! But first, help me water the flowers.",
 }
 
 _model = None
