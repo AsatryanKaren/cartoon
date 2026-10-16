@@ -1,4 +1,6 @@
 [
-  { "id": "pond_or_tree", "title": "Whiskers and the Lost Ball", "language": "English", "cover": "cover.png" },
-  { "id": "pond_or_tree_hy", "title": "Վիսկերսը և կորած գնդակը", "language": "Հայերեն", "cover": "cover.png" }
+  {"id": "pond_or_tree", "title": "Whiskers and the Lost Ball", "language": "English", "cover": "cover.png"},
+  {"id": "pond_or_tree_hy", "title": "Վիսկերսը և կորած գնդակը", "language": "Հայերեն", "cover": "cover.png"},
+  {"id": "birthday", "title": "Pip's Birthday Surprise", "language": "English", "cover": "cover.png"},
+  {"id": "birthday_hy", "title": "Պիպի ծննդյան անակնկալը", "language": "Հայերեն", "cover": "cover.png"}
 ]

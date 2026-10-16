@@ -90,3 +90,5 @@ The English story stays untouched; the translation reuses its pictures and timin
 |---|---|---|---|
 | Whiskers and the Lost Ball | `interactive/pond_or_tree/` | English | [x] done, in the app |
 | Վիսկերսը և կորած գնդակը | `interactive/pond_or_tree_hy/` | Armenian (hy-AM) | [x] done, in the app |
+| Pip's Birthday Surprise | `interactive/birthday/` | English | [x] done, in the app |
+| Պիպի ծննդյան անակնկալը | `interactive/birthday_hy/` | Armenian (hy-AM) | [x] done, in the app |

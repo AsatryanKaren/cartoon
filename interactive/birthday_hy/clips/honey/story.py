@@ -5,5 +5,5 @@ from interactive.birthday_hy.lines import armenian
 
 PLACE = "Interactive/birthday_hy"
 LANG = "hy"
-FILM_SECONDS = 40
+FILM_SECONDS = 43  # English clip + the extra time the Armenian lines take
 SCRIPT = armenian("honey", _en.SCRIPT)
