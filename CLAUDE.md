@@ -10,3 +10,8 @@
 - Second series: **Whiskers & Luna's World** (geography, educational) in `world/`. Its guide, format and
   episode checklist are in `world/SERIES.md`: read it first, never remake a ticked episode, tick each finished one.
   Episodes render with `--film world/s1eNN_slug`; videos go to `catcute/World/Season N/`.
+- **All workflows** (set-up, films, episodes, interactive voice stories, translations, voice checks, YouTube,
+  agent prompts, publish scripts) are in `tools/WORKFLOWS.md`: read it before continuing any of them.
+- Interactive voice stories (React app in `app/`) live in `interactive/<story>/`; the Armenian version of
+  "Whiskers and the Lost Ball" is `interactive/pond_or_tree_hy/` (voice: `armenian_tts.py`). The table of
+  done interactive stories is at the bottom of `tools/WORKFLOWS.md`: tick each new one.
