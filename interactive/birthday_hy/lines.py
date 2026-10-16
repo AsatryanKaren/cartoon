@@ -96,3 +96,20 @@ def armenian(clip, script):
             e = replace(e, text=LINES[ALIASES.get((clip, e.id), e.id)])
         out.append(e)
     return out
+
+# Animation cued on an English word (see interactive/birthday/shared.py WORDS): the Armenian word to follow.
+WORDS = {
+    ("i_options", "apple"): "խնձորենի", ("i_options", "bees"): "մեղուներ",
+    ("c_help", "will"): "կօգնե",
+    ("c_q", "apples"): "խնձո", ("c_q", "honey"): "մեղր",
+    ("c_q", "balloons"): "փուչիկ", ("c_q", "flowers"): "ծաղիկ",
+    ("r_q", "apples"): "խնձո", ("r_q", "honey"): "մեղր",
+    ("r_q", "balloons"): "փուչիկ", ("r_q", "flowers"): "ծաղիկ",
+    ("a_say", "choose"): "կընտրեմ", ("a_say", "apples"): "խնձո", ("a_say", "balloons"): "փուչիկ",
+    ("k_narr", "flour"): "ալյուր", ("k_narr", "eggs"): "ձվեր", ("k_narr", "milk"): "կաթ",
+    ("k_taste", "taste"): "համտեսեմ", ("k_taste", "more"): "էլ",
+    ("b_colors", "red"): "կարմիր", ("b_colors", "yellow"): "դեղին", ("b_colors", "blue"): "կապույտ",
+    ("b_big", "phoo"): "ֆո",
+    ("f_names", "poppies"): "կակաչ", ("f_names", "daisies"): "երիցուկ", ("f_names", "roses"): "վարդ",
+    ("f_sniff", "ah"): "ա՜", ("f_sniff", "achoo"): "ափչի",
+}
